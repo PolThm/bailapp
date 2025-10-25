@@ -4,22 +4,25 @@ A modern PWA application for creating choreographies, learning new dance moves, 
 
 ## Features
 
+- 📱 **Mobile-First** - Optimized for mobile with touch-friendly UI and bottom navigation
 - 🎭 **Learn** - Browse and learn new dance moves
 - 🎨 **Create** - Design and save your own choreographies
 - 📊 **Progress** - Track your dance journey and improvements
 - 🌍 **Multilingual** - Full support for English, French, and Spanish
-- 📱 **PWA** - Install on any device and use offline
+- 📲 **PWA** - Install on any device and use offline
 - 🔒 **Optional Auth** - Explore freely, sign in only when needed
+- ⚡ **Fast** - Code splitting, lazy loading, and optimized caching
 
 ## Tech Stack
 
 ### Frontend
-- **React 19** with TypeScript
-- **Vite 5** for fast development
-- **TailwindCSS 3.4** + **Shadcn UI** for beautiful components
+- **React 19** with TypeScript (mobile-optimized)
+- **Vite 5** for fast development with code splitting
+- **TailwindCSS 3.4** + **Shadcn UI** for touch-friendly components
 - **React Query 5** for data fetching
 - **react-i18next 15** for internationalization
 - **Firebase SDK 11** for authentication and data
+- **Mobile-First Design** with bottom navigation and safe areas
 
 ### Backend
 - **Firebase Functions 6** (TypeScript, Node.js 20)
@@ -151,6 +154,18 @@ The app supports three languages:
 - 🇪🇸 Spanish
 
 Translation files are located in `apps/web/src/locales/`.
+
+## Mobile-First Architecture
+
+Bailapp is **designed mobile-first** with:
+- ✅ Touch-optimized UI (44px minimum touch targets)
+- ✅ Bottom navigation bar (4 main items)
+- ✅ Safe area support (iPhone X+ notches)
+- ✅ Responsive typography and spacing
+- ✅ Performance optimized (code splitting, caching)
+- ✅ PWA ready (installable, offline mode)
+
+See `MOBILE_FIRST.md` for complete documentation.
 
 ## Authentication Flow
 

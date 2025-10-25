@@ -39,7 +39,7 @@ export function Create() {
               <Plus className="h-12 w-12 text-purple-500" />
               <div>
                 <CardTitle>{t('create.comingSoon')}</CardTitle>
-                <CardDescription>{t('create.description')}</CardDescription>
+                <CardDescription className='mt-2'>{t('create.description')}</CardDescription>
               </div>
             </div>
             <Button onClick={handleSaveChoreography}>

@@ -28,7 +28,7 @@ export function Progress() {
             <TrendingUp className="h-12 w-12 text-green-500" />
             <div>
               <CardTitle>{t('progress.comingSoon')}</CardTitle>
-              <CardDescription>{t('progress.description')}</CardDescription>
+              <CardDescription className='mt-2'>{t('progress.description')}</CardDescription>
             </div>
           </div>
         </CardHeader>

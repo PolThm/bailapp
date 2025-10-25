@@ -3,11 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icons/icon-192.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Mobile-First Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+    
+    <!-- SEO & Description -->
     <meta name="description" content="Create choreographies, learn new dance moves, and track your dance progress" />
+    <meta name="keywords" content="dance, choreography, learning, mobile app, PWA" />
+    
+    <!-- PWA Theme Colors -->
     <meta name="theme-color" content="#6366f1" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1e1b4b" />
+    
+    <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.webmanifest" />
+    
+    <!-- iOS Specific -->
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Bailapp" />
+    
+    <!-- Mobile Safari -->
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Android -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Prevent automatic zooming on input focus (better UX) -->
+    <meta name="HandheldFriendly" content="true" />
+    
     <title>Bailapp - Dance Choreography & Learning</title>
   </head>
   <body>

@@ -24,7 +24,7 @@ export function Learn() {
             <BookOpen className="h-12 w-12 text-blue-500" />
             <div>
               <CardTitle>{t('learn.comingSoon')}</CardTitle>
-              <CardDescription>{t('learn.description')}</CardDescription>
+              <CardDescription className='mt-2'>{t('learn.description')}</CardDescription>
             </div>
           </div>
         </CardHeader>
