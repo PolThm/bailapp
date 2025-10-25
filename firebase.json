@@ -32,7 +32,7 @@
   "functions": {
     "source": "apps/functions",
     "predeploy": ["cd apps/functions && npm run build"],
-    "runtime": "nodejs18"
+    "runtime": "nodejs20"
   },
   "firestore": {
     "rules": "firestore.rules",

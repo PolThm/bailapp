@@ -84,16 +84,16 @@ bailapp/
 ## Architecture Highlights
 
 ### Frontend (apps/web)
-- ⚛️ **React 18** with TypeScript
-- ⚡ **Vite** for fast development
-- 🎨 **TailwindCSS** + **Shadcn UI** for styling
-- 🌍 **react-i18next** for multilingual support (en, fr, es)
+- ⚛️ **React 19** with TypeScript 5.6
+- ⚡ **Vite 5.4** for fast development
+- 🎨 **TailwindCSS 3.4** + **Shadcn UI** for styling
+- 🌍 **react-i18next 15** for multilingual support (en, fr, es)
 - 📱 **PWA** ready with offline support
-- 🔥 **Firebase SDK** for auth and data
-- 🔄 **React Query** for data fetching
+- 🔥 **Firebase SDK 11** for auth and data
+- 🔄 **React Query 5** for data fetching
 
 ### Backend (apps/functions)
-- ☁️ **Firebase Functions** (TypeScript)
+- ☁️ **Firebase Functions 6** (TypeScript 5.6, Node.js 20)
 - 🔐 **Firebase Auth** for authentication
 - 💾 **Firestore** for database
 - 🛡️ Security rules configured
@@ -145,16 +145,16 @@ bun format
 
 | Layer | Technologies |
 |-------|-------------|
-| **Frontend** | React, TypeScript, Vite, TailwindCSS, Shadcn UI |
-| **State** | React Context, React Query |
-| **Routing** | React Router v6 |
-| **i18n** | react-i18next |
-| **PWA** | vite-plugin-pwa, Workbox |
-| **Backend** | Firebase Functions, Firestore, Auth |
+| **Frontend** | React 19, TypeScript 5.6, Vite 5.4, TailwindCSS 3.4, Shadcn UI |
+| **State** | React Context, React Query 5 |
+| **Routing** | React Router v7 |
+| **i18n** | react-i18next 15 |
+| **PWA** | vite-plugin-pwa 0.20, Workbox |
+| **Backend** | Firebase Functions 6 (Node.js 20), Firestore, Auth |
 | **Hosting** | Firebase Hosting |
 | **Package Manager** | Bun |
-| **Build Tool** | Vite |
-| **Linting** | ESLint, Prettier |
+| **Build Tool** | Vite 5.4 |
+| **Linting** | ESLint 9, Prettier 3 |
 
 ## Next Steps
 

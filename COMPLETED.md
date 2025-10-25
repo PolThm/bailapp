@@ -10,20 +10,20 @@ Your full-stack monorepo project has been successfully created! 🎉
 - **ESLint + Prettier** configured for code quality
 
 ### ✅ Frontend App (apps/web)
-- ⚛️ React 18 + TypeScript
-- ⚡ Vite for fast development
-- 🎨 TailwindCSS + Shadcn UI components (Button, Card, Dialog)
-- 🌍 i18n support (English, French, Spanish)
+- ⚛️ React 19 + TypeScript 5.6
+- ⚡ Vite 5.4 for fast development
+- 🎨 TailwindCSS 3.4 + Shadcn UI components (Button, Card, Dialog)
+- 🌍 i18n support (English, French, Spanish) with react-i18next 15
 - 📱 PWA ready with manifest and service worker
-- 🔥 Firebase client SDK integrated
-- 🔄 React Query configured
-- 📍 React Router with 4 pages (Home, Learn, Create, Progress)
+- 🔥 Firebase SDK 11 integrated
+- 🔄 React Query 5 configured
+- 📍 React Router 7 with 4 pages (Home, Learn, Create, Progress)
 - 🔐 Optional authentication pattern implemented
 
 ### ✅ Backend App (apps/functions)
-- ☁️ Firebase Functions with TypeScript
+- ☁️ Firebase Functions 6 with TypeScript 5.6 (Node.js 20)
 - 🔐 Auth-protected endpoint examples
-- 💾 Firestore integration
+- 💾 Firestore integration with Firebase Admin 12.7
 - 📝 Example functions: getUserProfile, updateUserProfile, saveChoreography
 
 ### ✅ Firebase Configuration

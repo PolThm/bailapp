@@ -14,15 +14,15 @@ A modern PWA application for creating choreographies, learning new dance moves, 
 ## Tech Stack
 
 ### Frontend
-- **React** with TypeScript
-- **Vite** for fast development
-- **TailwindCSS** + **Shadcn UI** for beautiful components
-- **React Query** for data fetching
-- **react-i18next** for internationalization
-- **Firebase SDK** for authentication and data
+- **React 19** with TypeScript
+- **Vite 5** for fast development
+- **TailwindCSS 3.4** + **Shadcn UI** for beautiful components
+- **React Query 5** for data fetching
+- **react-i18next 15** for internationalization
+- **Firebase SDK 11** for authentication and data
 
 ### Backend
-- **Firebase Functions** (TypeScript)
+- **Firebase Functions 6** (TypeScript, Node.js 20)
 - **Firestore** for database
 - **Firebase Auth** (Google)
 - **Firebase Hosting**

@@ -225,9 +225,9 @@ bun install
 
 ### Functions deployment fails
 
-Make sure you're on Node 18:
+Make sure you're on Node 20:
 ```bash
-node --version  # Should be 18.x
+node --version  # Should be 20.x
 ```
 
 ### PWA not installing
