@@ -8,12 +8,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
+      includeAssets: ['dancing-couple.png'],
       manifest: {
         name: 'Bailapp',
         short_name: 'Bailapp',
         description: 'Create choreographies, learn dance moves, track progress',
-        theme_color: '#6366f1',
+        theme_color: '#EF4444',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait-primary',
@@ -23,13 +23,7 @@ export default defineConfig({
         prefer_related_applications: false,
         icons: [
           {
-            src: '/icons/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
-          {
-            src: '/icons/icon-512.png',
+            src: '/dancing-couple.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',

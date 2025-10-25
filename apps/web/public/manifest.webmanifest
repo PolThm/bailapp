@@ -2,7 +2,7 @@
   "name": "Bailapp",
   "short_name": "Bailapp",
   "description": "Create choreographies, learn new dance moves, and track your dance progress",
-  "theme_color": "#6366f1",
+  "theme_color": "#EF4444",
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",
@@ -10,13 +10,7 @@
   "start_url": "/",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-512.png",
+      "src": "/dancing-couple.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

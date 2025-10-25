@@ -2,7 +2,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Music, BookOpen, Plus, TrendingUp, LogOut, Home, Menu, X } from 'lucide-react';
+import { BookOpen, Plus, TrendingUp, LogOut, Home, Menu, X } from 'lucide-react';
+import dancingCoupleLogo from '@/components/icons/dancing-couple.png';
 import { useState } from 'react';
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -29,7 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             className="flex items-center gap-2 active:scale-95 transition-transform touch-manipulation"
             onClick={() => setMenuOpen(false)}
           >
-            <Music className="h-6 w-6 text-primary" />
+            <img src={dancingCoupleLogo} alt="Bailapp" className="h-8 w-8 object-contain" />
             <span className="font-bold text-lg">{t('app.name')}</span>
           </Link>
 
