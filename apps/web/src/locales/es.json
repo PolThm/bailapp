@@ -1,0 +1,68 @@
+{
+  "app": {
+    "name": "Bailapp",
+    "tagline": "Crear, Aprender, Bailar"
+  },
+  "nav": {
+    "home": "Inicio",
+    "learn": "Aprender",
+    "create": "Crear",
+    "progress": "Progreso",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión"
+  },
+  "home": {
+    "welcome": "Bienvenido a Bailapp",
+    "subtitle": "Tu compañero personal de baile para crear coreografías, aprender nuevos movimientos y seguir tu progreso",
+    "cta": "Comenzar",
+    "features": {
+      "learn": {
+        "title": "Aprender",
+        "description": "Descubre y domina nuevos movimientos de baile con guías paso a paso"
+      },
+      "create": {
+        "title": "Crear",
+        "description": "Diseña tus propias coreografías y guárdalas para más tarde"
+      },
+      "progress": {
+        "title": "Progreso",
+        "description": "Sigue tu mejora y celebra tus logros"
+      }
+    }
+  },
+  "learn": {
+    "title": "Aprender movimientos",
+    "subtitle": "Explora nuestra colección de movimientos y tutoriales de baile",
+    "comingSoon": "¡Biblioteca de movimientos próximamente!",
+    "description": "Pronto podrás explorar cientos de movimientos de baile en diferentes estilos."
+  },
+  "create": {
+    "title": "Crear coreografía",
+    "subtitle": "Diseña tus propias rutinas de baile únicas",
+    "comingSoon": "¡Constructor de coreografías próximamente!",
+    "description": "Pronto podrás crear y guardar tus propias coreografías.",
+    "requiresAuth": "Inicia sesión para guardar tus coreografías"
+  },
+  "progress": {
+    "title": "Tu progreso de baile",
+    "subtitle": "Sigue tu viaje y celebra los hitos",
+    "comingSoon": "¡Seguimiento de progreso próximamente!",
+    "description": "Pronto podrás seguir tu tiempo de práctica, movimientos aprendidos y logros.",
+    "requiresAuth": "Inicia sesión para seguir tu progreso"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "signInRequired": "Inicio de sesión requerido",
+    "signInToSave": "Por favor inicia sesión para guardar tu trabajo",
+    "signInToContinue": "Inicia sesión para continuar",
+    "cancel": "Cancelar"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "tryAgain": "Intentar de nuevo",
+    "close": "Cerrar"
+  }
+}
+

@@ -1,0 +1,68 @@
+{
+  "app": {
+    "name": "Bailapp",
+    "tagline": "Créer, Apprendre, Danser"
+  },
+  "nav": {
+    "home": "Accueil",
+    "learn": "Apprendre",
+    "create": "Créer",
+    "progress": "Progrès",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter"
+  },
+  "home": {
+    "welcome": "Bienvenue sur Bailapp",
+    "subtitle": "Votre compagnon de danse personnel pour créer des chorégraphies, apprendre de nouveaux mouvements et suivre vos progrès",
+    "cta": "Commencer",
+    "features": {
+      "learn": {
+        "title": "Apprendre",
+        "description": "Découvrez et maîtrisez de nouveaux mouvements de danse avec des instructions étape par étape"
+      },
+      "create": {
+        "title": "Créer",
+        "description": "Concevez vos propres chorégraphies et sauvegardez-les pour plus tard"
+      },
+      "progress": {
+        "title": "Progrès",
+        "description": "Suivez votre amélioration et célébrez vos réussites"
+      }
+    }
+  },
+  "learn": {
+    "title": "Apprendre les mouvements",
+    "subtitle": "Parcourez notre collection de mouvements et tutoriels de danse",
+    "comingSoon": "Bibliothèque de mouvements bientôt disponible !",
+    "description": "Bientôt, vous pourrez explorer des centaines de mouvements de danse dans différents styles."
+  },
+  "create": {
+    "title": "Créer une chorégraphie",
+    "subtitle": "Concevez vos propres routines de danse uniques",
+    "comingSoon": "Créateur de chorégraphie bientôt disponible !",
+    "description": "Bientôt, vous pourrez créer et sauvegarder vos propres chorégraphies.",
+    "requiresAuth": "Connectez-vous pour sauvegarder vos chorégraphies"
+  },
+  "progress": {
+    "title": "Vos progrès en danse",
+    "subtitle": "Suivez votre parcours et célébrez les étapes importantes",
+    "comingSoon": "Suivi des progrès bientôt disponible !",
+    "description": "Bientôt, vous pourrez suivre votre temps de pratique, les mouvements appris et vos réalisations.",
+    "requiresAuth": "Connectez-vous pour suivre vos progrès"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signInWithGoogle": "Se connecter avec Google",
+    "signInRequired": "Connexion requise",
+    "signInToSave": "Veuillez vous connecter pour sauvegarder votre travail",
+    "signInToContinue": "Connectez-vous pour continuer",
+    "cancel": "Annuler"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "tryAgain": "Réessayer",
+    "close": "Fermer"
+  }
+}
+

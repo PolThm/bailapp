@@ -1,0 +1,68 @@
+{
+  "app": {
+    "name": "Bailapp",
+    "tagline": "Create, Learn, Dance"
+  },
+  "nav": {
+    "home": "Home",
+    "learn": "Learn",
+    "create": "Create",
+    "progress": "Progress",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "home": {
+    "welcome": "Welcome to Bailapp",
+    "subtitle": "Your personal dance companion for creating choreographies, learning new moves, and tracking your progress",
+    "cta": "Get Started",
+    "features": {
+      "learn": {
+        "title": "Learn",
+        "description": "Discover and master new dance moves with step-by-step guidance"
+      },
+      "create": {
+        "title": "Create",
+        "description": "Design your own choreographies and save them for later"
+      },
+      "progress": {
+        "title": "Progress",
+        "description": "Track your improvement and celebrate your achievements"
+      }
+    }
+  },
+  "learn": {
+    "title": "Learn Dance Moves",
+    "subtitle": "Browse our collection of dance moves and tutorials",
+    "comingSoon": "Dance move library coming soon!",
+    "description": "Soon you'll be able to explore hundreds of dance moves across different styles."
+  },
+  "create": {
+    "title": "Create Choreography",
+    "subtitle": "Design your own unique dance routines",
+    "comingSoon": "Choreography builder coming soon!",
+    "description": "Soon you'll be able to create and save your own choreographies.",
+    "requiresAuth": "Sign in to save your choreographies"
+  },
+  "progress": {
+    "title": "Your Dance Progress",
+    "subtitle": "Track your journey and celebrate milestones",
+    "comingSoon": "Progress tracking coming soon!",
+    "description": "Soon you'll be able to track your practice time, moves learned, and achievements.",
+    "requiresAuth": "Sign in to track your progress"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signInWithGoogle": "Sign in with Google",
+    "signInRequired": "Sign In Required",
+    "signInToSave": "Please sign in to save your work",
+    "signInToContinue": "Sign in to continue",
+    "cancel": "Cancel"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "tryAgain": "Try Again",
+    "close": "Close"
+  }
+}
+

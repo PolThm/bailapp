@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Anyone can read user profiles
+      allow read: if true;
+      // Only the user can create/update their own profile
+      allow create, update: if isOwner(userId);
+      // Users can delete their own profile
+      allow delete: if isOwner(userId);
+    }
+    
+    // Choreographies collection
+    match /choreographies/{choreographyId} {
+      // Anyone can read choreographies
+      allow read: if true;
+      // Only authenticated users can create choreographies
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // Only the owner can update their choreography
+      allow update: if isOwner(resource.data.userId);
+      // Only the owner can delete their choreography
+      allow delete: if isOwner(resource.data.userId);
+    }
+    
+    // Dance moves library (public read, admin write)
+    match /danceMoves/{moveId} {
+      // Anyone can read dance moves
+      allow read: if true;
+      // Only admins can create/update/delete (you can implement custom claims for admin)
+      allow write: if false; // For now, manage via Firebase Console
+    }
+    
+    // User progress tracking
+    match /progress/{userId} {
+      // Only the user can read their own progress
+      allow read: if isOwner(userId);
+      // Only the user can update their own progress
+      allow create, update: if isOwner(userId);
+      // Users can delete their own progress
+      allow delete: if isOwner(userId);
+    }
+  }
+}
+
