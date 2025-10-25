@@ -1,0 +1,409 @@
+{
+  "app": {
+    "name": "Bailapp",
+    "tagline": "Créer, Apprendre, Danser",
+    "slowConnectionTip": "Si tu as une mauvaise connexion, tu peux lancer l'app en mode avion pour utiliser les données en cache"
+  },
+  "nav": {
+    "home": "Accueil",
+    "discover": "Découvrir",
+    "favorites": "Favoris",
+    "choreographies": "Chorés",
+    "profile": "Profil",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter"
+  },
+  "home": {
+    "welcome": "Bienvenue sur Bailapp",
+    "subtitle": "Quel est le programme du jour ?",
+    "options": {
+      "discover": {
+        "title": "Découvrir de nouveaux pas",
+        "description": "Explorer les figures de salsa et bachata"
+      },
+      "favorites": {
+        "title": "Revoir tes classiques",
+        "description": "Pratiquer les mouvements que tu aimes"
+      },
+      "choreographies": {
+        "title": "Peaufiner tes chorégraphies",
+        "description": "Créer et affiner tes séquences"
+      }
+    }
+  },
+  "discover": {
+    "title": "Découvrir",
+    "subtitle": "Explorer les figures et pas de danse",
+    "categories": {
+      "salsa": {
+        "description": "Apprendre les figures et combinaisons de Salsa"
+      },
+      "bachata": {
+        "description": "Maîtriser les pas et séquences de Bachata"
+      }
+    },
+    "filter": {
+      "placeholder": "Filtrer par style",
+      "all": "Tous les styles"
+    },
+    "search": {
+      "placeholder": "Chercher un mouvement..."
+    },
+    "results": {
+      "showing_zero": "Aucun résultat",
+      "showing_one": "{{count}} résultat trouvé",
+      "showing_other": "{{count}} résultats trouvés",
+      "clear": "Effacer les filtres"
+    },
+    "advancedFilters": {
+      "button": "Autres filtres",
+      "title": "Filtres avancés",
+      "figureType": "Type de mouvement",
+      "selectFigureType": "Sélectionner un type",
+      "allTypes": "Tous les types",
+      "complexity": "Complexité",
+      "selectComplexity": "Sélectionner une complexité",
+      "allComplexities": "Toutes les complexités",
+      "videoLanguage": "Langue de la vidéo",
+      "selectLanguage": "Sélectionner une langue",
+      "allLanguages": "Toutes les langues",
+      "videoFormat": "Format de vidéo",
+      "selectFormat": "Sélectionner un format",
+      "allFormats": "Tous les formats",
+      "danceSubStyle": "Sous-style de danse",
+      "selectSubStyle": "Sélectionner un sous-style",
+      "allSubStyles": "Tous les sous-styles",
+      "subStyleHint": "Sélectionnez un style principal pour débloquer ce filtre",
+      "activeFilters": "Filtres actifs",
+      "reset": "Réinitialiser",
+      "apply": "Appliquer"
+    },
+    "empty": {
+      "title": "Aucune figure pour l'instant",
+      "description": "Sois le premier à ajouter une figure à cette catégorie !",
+      "action": "Ajouter une figure",
+      "filtered": {
+        "title": "Aucune figure de ce style pour l'instant",
+        "description": "Sois le premier à l'ajouter !"
+      }
+    },
+    "addFigure": "Ajouter une nouvelle figure"
+  },
+  "favorites": {
+    "title": "Favoris",
+    "subtitle": "Ta collection personnelle",
+    "subtitle_zero": "Aucun favori pour l'instant",
+    "subtitle_one": "{{count}} mouvement favori",
+    "subtitle_other": "{{count}} mouvements favoris",
+    "empty": {
+      "title": "Aucun favori pour l'instant",
+      "description": "Commence à ajouter des mouvements à tes favoris pour les retrouver ici plus tard !",
+      "action": "Découvrir des mouvements"
+    }
+  },
+  "choreographies": {
+    "title": "Chorégraphies",
+    "subtitle": "Créer et gérer tes séquences",
+    "new": "Nouvelle",
+    "empty": {
+      "title": "Aucune chorégraphie pour l'instant",
+      "description": "Crée ta première chorégraphie pour combiner des figures et pratiquer des séquences !",
+      "action": "Nouvelle chorégraphie"
+    },
+    "newChoreography": {
+      "title": "Nouvelle Chorégraphie",
+      "name": "Nom",
+      "namePlaceholder": "Nom de la chorégraphie",
+      "validate": "Créer",
+      "errors": {
+        "nameRequired": "Le nom de la chorégraphie est requis",
+        "danceStyleRequired": "Le style de danse est requis"
+      }
+    },
+    "edit": {
+      "title": "Modifier la chorégraphie"
+    },
+    "detail": {
+      "notFound": "Chorégraphie non trouvée",
+      "notFoundDescription": "Cette chorégraphie n'existe pas ou tu n'y as pas accès. Connecte-toi pour voir les chorégraphies partagées.",
+      "backToChoreographies": "Retour aux chorégraphies",
+      "edit": "Modifier",
+      "share": "Partager",
+      "duplicate": "Dupliquer",
+      "delete": "Supprimer",
+      "copyOf": "Copie de {{name}}",
+      "duplicateSuccess": "Chorégraphie dupliquée avec succès"
+    },
+    "share": {
+      "shareText": "Découvre cette chorégraphie de {{style}} « {{name}} » sur Bailapp :",
+      "shared": "Chorégraphie partagée avec succès",
+      "linkCopied": "Lien copié dans le presse-papiers",
+      "public": "Publique",
+      "private": "Privée",
+      "duplicateToMyChoreographies": "Dupliquer dans mes chorégraphies",
+      "follow": "Suivre",
+      "unfollow": "Ne plus suivre",
+      "following": "Suivi",
+      "followSuccess": "Vous suivez maintenant cette chorégraphie",
+      "unfollowSuccess": "Vous ne suivez plus cette chorégraphie",
+      "sharingMode": {
+        "title": "Mode de partage",
+        "viewOnly": "Lecture seule",
+        "collaborative": "Collaboratif",
+        "private": "Privé",
+        "viewOnlyDescription": "Les autres peuvent voir mais pas modifier",
+        "collaborativeDescription": "Les abonnés peuvent modifier cette chorégraphie",
+        "privateDescription": "Visible uniquement par vous",
+        "updated": "Mode de partage mis à jour"
+      },
+      "madePrivate": "La chorégraphie est maintenant privée",
+      "ownedBy": "Propriétaire : {{name}}",
+      "myself": "Moi-même",
+      "info": "Informations sur la chorégraphie partagée",
+      "createdAt": "Créée le",
+      "privateInfo": {
+        "title": "Cette chorégraphie est maintenant privée",
+        "description": "Le propriétaire a rendu cette chorégraphie privée. Elle n'est plus visible pour les abonnés.",
+        "removeFromList": "Retirer de ma liste"
+      }
+    },
+    "delete": {
+      "title": "Supprimer la chorégraphie",
+      "message": "Es-tu sûr de vouloir supprimer cette chorégraphie ?",
+      "confirm": "Supprimer",
+      "success": "Chorégraphie supprimée avec succès"
+    },
+    "menu": {
+      "title": "Menu"
+    },
+    "movements": {
+      "add": "Ajouter un mouvement",
+      "namePlaceholder": "Nom du mouvement",
+      "menu": "Menu",
+      "duplicate": "Dupliquer",
+      "copy": "Copier",
+      "paste": "Coller",
+      "copySuccess": "Mouvement copié",
+      "pasteSuccess": "Mouvement collé avec succès",
+      "changeColor": "Changer couleur",
+      "delete": "Supprimer",
+      "deleteTitle": "Supprimer le Mouvement",
+      "deleteMessage": "Es-tu sûr de vouloir supprimer ce mouvement ?",
+      "deleteConfirm": "Supprimer",
+      "empty": {
+        "title": "Aucun mouvement pour l'instant",
+        "description": "Commence à créer ta chorégraphie en ajoutant ton premier pas de danse ou figure."
+      },
+      "mentionTitle": "Lier une Chorégraphie ou Figure",
+      "mentionSearchPlaceholder": "Chercher...",
+      "mentionChoreographies": "Chorégraphies",
+      "mentionFavoriteFigures": "Figures Favoris",
+      "mentionOtherFigures": "Autres Figures",
+      "noMentionsFound": "Aucun résultat trouvé",
+      "mentionHint": "Tape « @ » pour lier tes favoris et chorés"
+    },
+    "example": {
+      "name": "Exemple Salsa",
+      "movements": {
+        "pasoBasico": "Pas de base"
+      }
+    },
+    "myChoreographies": "Mes chorégraphies",
+    "followed": "Suivies"
+  },
+  "profile": {
+    "title": "Profil",
+    "signIn": "Se connecter",
+    "signInRequired": "Connecte-toi pour voir ton profil",
+    "signInDescription": "Accéder à tes préférences et paramètres",
+    "languagePreferences": "Préférences linguistiques",
+    "selectLanguage": "Choisis ta langue préférée",
+    "signOut": "Se déconnecter",
+    "signOutConfirm": {
+      "title": "Se déconnecter",
+      "message": "Es-tu sûr de vouloir te déconnecter ?"
+    },
+    "about": {
+      "title": "À propos",
+      "version": "V{{version}}",
+      "developed": "Développé avec ❤️ par"
+    }
+  },
+  "figure": {
+    "notFound": "Figure non trouvée",
+    "backToDiscover": "Retour à Découvrir",
+    "addToFavorites": "Ajouter aux favoris",
+    "removeFromFavorites": "Retirer des favoris",
+    "fullTitle": "Titre Complet",
+    "description": "Description",
+    "showMore": "Voir plus",
+    "showLess": "Voir moins",
+    "videoAuthor": "Auteur",
+    "videoLanguage": "Langue",
+    "duration": "Durée",
+    "phrases": "{{count}} phrase",
+    "phrases_one": "{{count}} phrase",
+    "phrases_other": "{{count}} phrases",
+    "importedBy": "Importé par",
+    "visibility": "Visibilité",
+    "shareText": "Découvre vite ce mouvement de {{style}} « {{title}} » sur Bailapp :",
+    "mastery": {
+      "title": "Maîtrise du mouvement",
+      "enter": "Entrer mon niveau de maîtrise",
+      "updateTitle": "Niveau de maîtrise"
+    }
+  },
+  "badges": {
+    "danceStyle": {
+      "salsa": "Salsa",
+      "bachata": "Bachata"
+    },
+    "figureType": {
+      "figure": "Figure",
+      "basicstep": "Pas de base",
+      "complexstep": "Pas complexe",
+      "mix": "Mixte"
+    },
+    "complexity": {
+      "basic": "Basique",
+      "basicintermediate": "Basique/Inter",
+      "basicIntermediate": "Basique/Inter",
+      "intermediate": "Intermédiaire",
+      "intermediateadvanced": "Inter/Avancé",
+      "intermediateAdvanced": "Inter/Avancé",
+      "advanced": "Avancé"
+    },
+    "videoLanguage": {
+      "french": "Français",
+      "english": "Anglais",
+      "spanish": "Espagnol"
+    },
+    "videoFormat": {
+      "classic": "Classique",
+      "short": "Short"
+    },
+    "visibility": {
+      "public": "Publique",
+      "private": "Privé",
+      "unlisted": "Non répertorié"
+    },
+    "danceSubStyle": {
+      "cuban": "Cubaine",
+      "lastyle": "LA Style",
+      "nystyle": "NY Style",
+      "puertorican": "Porto-Ricaine",
+      "colombian": "Colombienne",
+      "ruedadecasino": "Rueda de Casino",
+      "romantica": "Romantique",
+      "dominican": "Dominicaine",
+      "modern": "Moderne",
+      "sensual": "Sensuel",
+      "urban": "Urbain",
+      "fusion": "Fusion",
+      "ballroom": "Ballroom"
+    }
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signInWithGoogle": "Se connecter avec Google",
+    "signInRequired": "Se connecter",
+    "signInToSave": "Sauvegarde tes préférences et accède à tes données personnelles.",
+    "signInToContinue": "Connecte-toi pour continuer"
+  },
+  "common": {
+    "error": "Une erreur s'est produite",
+    "tryAgain": "Réessayer",
+    "close": "Fermer",
+    "back": "Retour",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "addNew": "Ajouter",
+    "addChoreography": "Ajouter une chorégraphie",
+    "addFigure": "Ajouter une figure",
+    "update": "Mettre à jour",
+    "offline": {
+      "title": "Tu es hors ligne",
+      "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement.",
+      "verySlowConnection": {
+        "title": "Connexion lente",
+        "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement."
+      },
+      "backOnline": "Connexion rétablie !"
+    }
+  },
+  "modal": {
+    "newChoreographyTitle": "Nouvelle chorégraphie",
+    "newChoreographyDescription": "Créer une nouvelle chorégraphie de danse en combinant des figures et des pas",
+    "newFigureTitle": "Nouvelle figure",
+    "newFigureDescription": "Ajouter une nouvelle figure de danse ou un pas depuis YouTube",
+    "close": "Fermer"
+  },
+  "newFigure": {
+    "title": "Ajouter une nouvelle figure",
+    "youtubeUrl": "URL YouTube",
+    "youtubeUrlPlaceholder": "https://www.youtube.com/watch?v=...",
+    "thumbnail": "Miniature",
+    "figureTitle": "Titre",
+    "titlePlaceholder": "Nom ou description de la figure",
+    "description": "Description (optionnel)",
+    "descriptionPlaceholder": "Détails supplémentaires sur cette figure...",
+    "videoAuthor": "Auteur de la vidéo (optionnel)",
+    "videoAuthorPlaceholder": "Nom de la chaîne ou du créateur",
+    "startTime": "Temps de début (optionnel)",
+    "endTime": "Temps de fin (optionnel)",
+    "timePlaceholder": "MM:SS ou HH:MM:SS",
+    "danceStyle": "Style de danse",
+    "danceStylePlaceholder": "Sélectionner le style",
+    "danceSubStyle": "Sous-style de danse (optionnel)",
+    "danceSubStylePlaceholder": "Sélectionner le sous-style",
+    "shortTitle": "Titre court",
+    "shortTitlePlaceholder": "Nom court de la figure",
+    "fullTitle": "Titre complet",
+    "fullTitlePlaceholder": "Nom complet de la figure",
+    "figureType": "Type de mouvement",
+    "figureTypePlaceholder": "Sélectionner le type",
+    "complexity": "Complexité (optionnel)",
+    "complexityPlaceholder": "Sélectionner la complexité",
+    "phrasesCount": "Nombre de phrases",
+    "phrasesCountPlaceholder": "4",
+    "videoLanguage": "Langue de la vidéo",
+    "visibility": "Visibilité",
+    "visibilityPlaceholder": "Sélectionner la visibilité",
+    "addButton": "Ajouter la figure",
+    "required": "*",
+    "errors": {
+      "youtubeUrlRequired": "L'URL YouTube est requise",
+      "titleRequired": "Le titre est requis",
+      "danceStyleRequired": "Le style de danse est requis",
+      "figureTypeRequired": "Le type de mouvement est requis",
+      "complexityRequired": "La complexité est requise",
+      "phrasesCountMin": "Le nombre de phrases doit être au moins 1"
+    }
+  },
+  "pwa": {
+    "update": {
+      "title": "Nouvelle version disponible",
+      "message": "Mise à jour en cours...",
+      "close": "Fermer"
+    },
+    "install": {
+      "title": "Installer Bailapp sur ton appareil",
+      "instructions": {
+        "title": "Instructions d'installation",
+        "intro": "Cherchez les boutons dans votre navigateur, pas dans l'application.",
+        "android1": "Trouve le bouton menu : (<b>⋮</b>)",
+        "android2": "Puis « <b>Installer l'application</b> »,",
+        "android3": "ou « <b>Ajouter à l'écran d'accueil</b> ».",
+        "ios1": "Trouve le bouton partager :",
+        "ios2": "Puis « <b>Ajouter à l'écran d'accueil</b> ».",
+        "otherLabel": "Autres navigateurs",
+        "other": "Rechercher l'option « <b>Installer</b> » ou bouton « <b>Ajouter à l'écran d'accueil</b> » dans le menu du navigateur.",
+        "close": "Fermer"
+      }
+    }
+  },
+  "comingSoon": {
+    "title": "Bientôt disponible",
+    "description": "On y travaille ! Tu pourras bientôt ajouter tes propres figures."
+  }
+}

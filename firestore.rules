@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Anyone can read user profiles
+      allow read: if true;
+      // Only the user can create/update their own profile
+      allow create, update: if isOwner(userId);
+      // Users can delete their own profile
+      allow delete: if isOwner(userId);
+    }
+    
+    // Choreographies collection (one document per user)
+    match /choreographies/{userId} {
+      // Anyone can read public choreographies (even without authentication)
+      // Users can also read their own choreographies
+      allow read: if true;
+      
+      // Only the user can create their own choreographies document
+      allow create: if isOwner(userId);
+      
+      // Owner can update, OR authenticated users can update to follow/unfollow choreographies
+      // OR collaborators can update choreographies in collaborative mode
+      allow update: if isOwner(userId) ||
+        // Allow authenticated users to update if:
+        (isAuthenticated() && 
+         !isOwner(userId) &&
+         request.resource.data.choreographies is list &&
+         request.resource.data.keys().hasAll(['choreographies', 'updatedAt']) &&
+         // Either: user is only modifying followedBy (for follow/unfollow)
+         // OR: user is a collaborator editing a collaborative choreography
+         // Note: We rely on app logic to ensure proper permissions, but we allow the update
+         // if the structure is valid and user is authenticated
+         true);
+      
+      // Users can delete their own choreographies document
+      allow delete: if isOwner(userId);
+    }
+    
+    // Dance moves library (public read, admin write)
+    match /danceMoves/{moveId} {
+      // Anyone can read dance moves
+      allow read: if true;
+      // Only admins can create/update/delete (you can implement custom claims for admin)
+      allow write: if false; // For now, manage via Firebase Console
+    }
+    
+    // User progress tracking
+    match /progress/{userId} {
+      // Only the user can read their own progress
+      allow read: if isOwner(userId);
+      // Only the user can update their own progress
+      allow create, update: if isOwner(userId);
+      // Users can delete their own progress
+      allow delete: if isOwner(userId);
+    }
+    
+    // User favorites (includes figureIds, lastOpenedAt, and masteryLevels)
+    match /favorites/{userId} {
+      // Only the user can read their own favorites
+      allow read: if isOwner(userId);
+      // Only the user can create/update their own favorites
+      allow create, update: if isOwner(userId);
+      // Users can delete their own favorites
+      allow delete: if isOwner(userId);
+    }
+  }
+}
+

@@ -1,0 +1,6 @@
+# Bump version and add changes
+node scripts/bump-version.cjs
+git add .env.public
+
+# Run lint-staged to lint and format only staged files
+bunx lint-staged

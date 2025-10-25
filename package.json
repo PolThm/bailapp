@@ -1,0 +1,47 @@
+{
+  "name": "bailapp",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Bailapp - A PWA app for creating choreographies and learning dance moves",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "bun --cwd apps/web dev",
+    "build": "bun --cwd apps/web build",
+    "preview": "bun --cwd apps/web preview",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "emu": "firebase emulators:start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "typecheck": "bun --cwd apps/web run type-check",
+    "type-check": "bun --cwd apps/web run type-check",
+    "prepare": "husky",
+    "ngrok": "bun scripts/ngrok.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@typescript-eslint/parser": "^8.46.2",
+    "dotenv-cli": "^11.0.0",
+    "eslint": "^9.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-no-relative-import-paths": "^1.6.1",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "globals": "^15.9.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.7.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.0.1"
+  }
+}

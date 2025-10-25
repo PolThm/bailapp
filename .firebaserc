@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "bailapp-polthm"
+  },
+  "targets": {
+    "bailapp-polthm": {
+      "hosting": {
+        "bailapp": [
+          "bailapp"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

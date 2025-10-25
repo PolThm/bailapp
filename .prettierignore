@@ -1,0 +1,46 @@
+# Dependencies
+node_modules
+**/node_modules/**
+
+# Build outputs
+dist
+build
+.firebase
+apps/web/dev-dist
+apps/web/dist
+
+# Cache
+.cache
+
+# Generated files
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+.env*.local
+
+# IDE
+.idea
+.vscode
+.vscode/settings.json
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lock
+
+# Misc
+.DS_Store
+*.pem
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
