@@ -18,9 +18,7 @@ export function Profile() {
   return (
     <>
       {/* Header */}
-      <div className="pt-6">
-        <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
-      </div>
+      <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
 
       {/* Language Preferences */}
       <Card className="my-6">

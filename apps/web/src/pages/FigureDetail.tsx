@@ -81,7 +81,7 @@ export function FigureDetail() {
   return (
     <>
       {/* Header with back icon and title */}
-      <div className="pt-6 pb-2">
+      <div className="pb-2">
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}

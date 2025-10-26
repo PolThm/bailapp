@@ -33,10 +33,10 @@ export function Discover() {
   return (
     <>
       {/* Header */}
-      <div className="pt-6">
+      <>
         <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
         <p className="text-muted-foreground mt-1">{t('discover.subtitle')}</p>
-      </div>
+      </>
 
       {/* Categories Grid */}
       <div className="flex flex-col w-full flex-1 justify-around items-center">

@@ -43,7 +43,7 @@ export function DiscoverCategory() {
   return (
     <>
       {/* Header with back icon */}
-      <div className="py-6">
+      <div className="pb-6">
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate('/discover')}

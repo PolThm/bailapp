@@ -15,7 +15,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`min-h-[calc(100vh-${bottomNavigationHeight}px)] bg-background flex flex-col`}>
       {/* Main Content - Mobile Optimized with Bottom Padding */}
-      <main className={`flex-1 safe-top ${isHomePage ? 'bg-red-500' : ''} bg-gradient-to-br from-background via-background to-muted/20 flex flex-col container max-w-7xl mx-auto px-5`}>
+      <main className={`flex-1 safe-top ${isHomePage ? 'bg-red-500' : ''} bg-gradient-to-br from-background via-background to-muted/20 flex flex-col container max-w-7xl mx-auto px-5 pt-6`}>
           {children}
       </main>
 
