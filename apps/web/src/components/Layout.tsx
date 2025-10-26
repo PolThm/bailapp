@@ -10,12 +10,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const isHomePage = location.pathname === '/';
 
-  const bottomNavigationHeight = 72;
+  const mainBottomPadding = 92; // 72px for the bottom navigation + 20px for the global bottom padding
 
   return (
-    <div className={`min-h-[calc(100vh-${bottomNavigationHeight}px)] bg-background flex flex-col`}>
+    <>
       {/* Main Content - Mobile Optimized with Bottom Padding */}
-      <main className={`flex-1 safe-top ${isHomePage ? 'bg-red-500' : ''} bg-gradient-to-br from-background via-background to-muted/20 flex flex-col container max-w-7xl mx-auto px-5 pt-5`}>
+      <main className={`flex-1 safe-top min-h-screen ${isHomePage ? 'bg-red-500' : ''} bg-gradient-to-br from-background via-background to-muted/20 flex flex-col container max-w-7xl mx-auto px-5 pt-5 pb-[${mainBottomPadding}px]`}>
           {children}
       </main>
 
@@ -69,7 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
       </nav>
-    </div>
+    </>
   );
 }
 

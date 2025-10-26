@@ -104,7 +104,7 @@ export function Profile() {
         ) : (
           <Button
             onClick={() => setShowAuthDialog(true)}
-            className="w-full min-h-[48px] mt-auto mb-6"
+            className="w-full min-h-[48px] mt-auto"
           >
             <LogIn className="h-5 w-5 mr-2" />
             {t('profile.signIn')}
