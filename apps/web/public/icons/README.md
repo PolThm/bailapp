@@ -1,56 +1,56 @@
 # PWA Icons Configuration
 
-## Structure des icônes
+## Icon Structure
 
-Cette configuration utilise les icônes générées avec la couleur rouge du thème (#EF4444).
+This configuration uses icons generated with the theme's red color (#EF4444).
 
-### Icônes PWA et navigateurs
-- `icon-512.png` - Icône PWA large et maskable (512x512)
-- `icon-192.png` - Icône PWA standard (192x192)
-- `icon-144.png` - Icône PWA moyenne (144x144)
-- `icon-96.png` - Icône PWA petite (96x96)
-- `icon-72.png` - Icône PWA très petite (72x72)
-- `icon-48.png` - Icône PWA minimale (48x48)
+### PWA and Browser Icons
+- `icon-512.png` - Large maskable PWA icon (512x512)
+- `icon-192.png` - Standard PWA icon (192x192)
+- `icon-144.png` - Medium PWA icon (144x144)
+- `icon-96.png` - Small PWA icon (96x96)
+- `icon-72.png` - Very small PWA icon (72x72)
+- `icon-48.png` - Minimal PWA icon (48x48)
 
 ### Favicons
-- `favicon-32x32.png` - Favicon standard (32x32)
-- `favicon-16x16.png` - Favicon petit (16x16)
+- `favicon-32x32.png` - Standard favicon (32x32)
+- `favicon-16x16.png` - Small favicon (16x16)
 
 ### iOS
-- `apple-touch-icon.png` - Icône iOS (180x180)
+- `apple-touch-icon.png` - iOS icon (180x180)
 
-### Splash screens
-- `splash-1240x600.png` - Splash screen large
-- `splash-620x300.png` - Splash screen standard
+### Splash Screens
+- `splash-1240x600.png` - Large splash screen
+- `splash-620x300.png` - Standard splash screen
 
 ### Windows
-- `windows-tile-150.png` - Tuile Windows standard (300x300)
-- `windows-small-tile.png` - Petite tuile Windows (142x142)
-- `windows-wide-tile.png` - Tuile Windows large (620x300)
-- `windows-large-tile.png` - Grande tuile Windows (620x620)
+- `windows-tile-150.png` - Standard Windows tile (300x300)
+- `windows-small-tile.png` - Small Windows tile (142x142)
+- `windows-wide-tile.png` - Large Windows tile (620x300)
+- `windows-large-tile.png` - Extra large Windows tile (620x620)
 
-## Configuration PWA
+## PWA Configuration
 
 ### Manifest (`manifest.webmanifest`)
-- Icônes multiples tailles pour Android
-- Screenshots pour l'installation
-- Raccourcis vers Discover et Favorites
-- Couleur de thème : #EF4444
+- Multiple icon sizes for Android
+- Screenshots for installation
+- Shortcuts to Discover and Favorites
+- Theme color: #EF4444
 
 ### HTML (`index.html`)
-- Favicons multiples tailles
-- Icônes Apple Touch
-- Splash screens iOS
-- Configuration Windows (browserconfig.xml)
-- Méta-tags pour toutes les plateformes
+- Multiple favicon sizes
+- Apple Touch icons
+- iOS splash screens
+- Windows configuration (browserconfig.xml)
+- Meta tags for all platforms
 
 ### Browserconfig (`browserconfig.xml`)
-Configuration spécifique pour Windows avec tuiles colorées.
+Specific Windows configuration with colored tiles.
 
-## Couleurs utilisées
+## Colors Used
 
-- **Thème principal** : #EF4444 (rouge)
-- **Thème sombre** : #DC2626 (rouge foncé)
-- **Arrière-plan** : #ffffff (blanc)
+- **Primary theme**: #EF4444 (red)
+- **Dark theme**: #DC2626 (dark red)
+- **Background**: #ffffff (white)
 
-Ces couleurs sont cohérentes avec le design system de l'application.
+These colors are consistent with the application's design system.

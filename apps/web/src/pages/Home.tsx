@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Compass, Heart, Music, ArrowRight } from 'lucide-react';
-import dancingCoupleLogo from '../../public/dancing-couple-transparent.png';
+import dancingCoupleLogo from '../../public/images/dancing-couple-transparent.png';
 
 export function Home() {
   const { t } = useTranslation();

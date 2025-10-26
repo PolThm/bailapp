@@ -125,8 +125,10 @@ bailapp/
 ├── apps/
 │   ├── web/                  # Frontend React app
 │   │   ├── public/
-│   │   │   ├── icons/
-│   │   │   └── manifest.webmanifest
+│   │   │   ├── icons/        # PWA icons, favicons
+│   │   │   ├── images/       # UI images (logos, illustrations)
+│   │   │   ├── manifest.webmanifest
+│   │   │   └── browserconfig.xml
 │   │   └── src/
 │   │       ├── components/   # Reusable components
 │   │       ├── context/      # React Context providers
