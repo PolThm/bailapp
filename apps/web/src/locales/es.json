@@ -35,10 +35,10 @@
     "subtitle": "Elige un estilo de baile para explorar",
     "categories": {
       "salsa": {
-        "description": "Aprender figuras y combinaciones de salsa cubana"
+        "description": "Aprender figuras y combinaciones de Salsa"
       },
       "bachata": {
-        "description": "Dominar pasos y secuencias de bachata"
+        "description": "Dominar pasos y secuencias de Bachata"
       }
     },
     "category": {
@@ -131,7 +131,7 @@
     "signIn": "Iniciar sesión",
     "signInWithGoogle": "Iniciar sesión con Google",
     "signInRequired": "Inicio de sesión requerido",
-    "signInToSave": "Por favor inicia sesión para guardar tu trabajo",
+    "signInToSave": "Por favor inicia sesión para guardar tu trabajo y crear nuevo contenido",
     "signInToContinue": "Inicia sesión para continuar",
     "cancel": "Cancelar"
   },
@@ -141,7 +141,17 @@
     "tryAgain": "Intentar de nuevo",
     "close": "Cerrar",
     "back": "Volver",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "addNew": "Agregar",
+    "addChoreography": "Agregar coreografía",
+    "addFigure": "Agregar figura"
+  },
+  "modal": {
+    "newChoreographyTitle": "Nueva coreografía",
+    "newChoreographyDescription": "Crear una nueva coreografía de baile combinando figuras y pasos",
+    "newFigureTitle": "Nueva figura",
+    "newFigureDescription": "Agregar una nueva figura de baile o paso desde YouTube",
+    "close": "Cerrar"
   },
   "newFigure": {
     "title": "Agregar nueva figura",

@@ -35,10 +35,10 @@
     "subtitle": "Choose a dance style to explore",
     "categories": {
       "salsa": {
-        "description": "Learn Cuban salsa figures and combinations"
+        "description": "Learn Salsa figures and combinations"
       },
       "bachata": {
-        "description": "Master bachata steps and sequences"
+        "description": "Master Bachata steps and sequences"
       }
     },
     "category": {
@@ -131,7 +131,7 @@
     "signIn": "Sign In",
     "signInWithGoogle": "Sign in with Google",
     "signInRequired": "Sign In Required",
-    "signInToSave": "Please sign in to save your work",
+    "signInToSave": "Please sign in to save your work and create new content",
     "signInToContinue": "Sign in to continue",
     "cancel": "Cancel"
   },
@@ -141,7 +141,17 @@
     "tryAgain": "Try Again",
     "close": "Close",
     "back": "Back",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "addNew": "Add New",
+    "addChoreography": "Add Choreography",
+    "addFigure": "Add Figure"
+  },
+  "modal": {
+    "newChoreographyTitle": "New Choreography",
+    "newChoreographyDescription": "Create a new dance choreography by combining figures and steps",
+    "newFigureTitle": "New Figure",
+    "newFigureDescription": "Add a new dance figure or step from YouTube",
+    "close": "Close"
   },
   "newFigure": {
     "title": "Add New Figure",

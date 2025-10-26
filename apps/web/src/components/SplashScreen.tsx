@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import dancingCoupleLogo from '@/components/icons/dancing-couple.png';
 
 interface SplashScreenProps {
@@ -6,6 +7,7 @@ interface SplashScreenProps {
 }
 
 export function SplashScreen({ onFinish }: SplashScreenProps) {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         className="h-32 w-32 mb-6 animate-pulse"
       />
       <h1 className="text-4xl font-bold text-white">Bailapp</h1>
-      <p className="text-white/80 mt-2">Dance. Create. Learn.</p>
+      <p className="text-white/80 mt-2">{t('app.tagline')}</p>
     </div>
   );
 }

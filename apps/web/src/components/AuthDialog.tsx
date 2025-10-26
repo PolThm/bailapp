@@ -30,7 +30,7 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="w-[90%] m-auto">
         <DialogHeader>
           <DialogTitle>{t('auth.signInRequired')}</DialogTitle>
           <DialogDescription>{t('auth.signInToSave')}</DialogDescription>
