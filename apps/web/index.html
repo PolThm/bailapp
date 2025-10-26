@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/dancing-couple.png" />
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
     
     <!-- Mobile-First Viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
@@ -19,10 +23,15 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     
     <!-- iOS Specific -->
-    <link rel="apple-touch-icon" href="/dancing-couple.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Bailapp" />
+    
+    <!-- iOS Splash Screens -->
+    <link rel="apple-touch-startup-image" href="/icons/splash-1240x600.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" />
+    <link rel="apple-touch-startup-image" href="/icons/splash-620x300.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" />
     
     <!-- Mobile Safari -->
     <meta name="format-detection" content="telephone=no" />
@@ -30,10 +39,15 @@
     <!-- Android -->
     <meta name="mobile-web-app-capable" content="yes" />
     
+    <!-- Windows -->
+    <meta name="msapplication-TileColor" content="#EF4444" />
+    <meta name="msapplication-TileImage" content="/icons/AppImages/windows11/Square150x150Logo.scale-200.png" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
     <!-- Prevent automatic zooming on input focus (better UX) -->
     <meta name="HandheldFriendly" content="true" />
     
-    <title>Bailapp - Dance Choreography & Learning</title>
+    <title>Bailapp</title>
   </head>
   <body>
     <div id="root"></div>

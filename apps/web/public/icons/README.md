@@ -1,60 +1,58 @@
-# PWA Icons
+# PWA Icons Configuration
 
-## ⚠️ Important: Replace These Files
+## Structure des icônes
 
-The current icon files (`icon-192.png` and `icon-512.png`) are SVG files, not actual PNG files. You need to replace them with proper PNG images before deploying.
+Cette configuration utilise les icônes générées avec la couleur rouge du thème (#EF4444).
 
-## Required Icon Sizes
+### Icônes principales (copiées dans /icons/)
+- `icon-192.png` - Icône PWA standard (192x192)
+- `icon-512.png` - Icône PWA large et maskable (512x512)
+- `apple-touch-icon.png` - Icône iOS (180x180)
+- `favicon-32x32.png` - Favicon standard (32x32)
+- `favicon-16x16.png` - Favicon petit (16x16)
+- `splash-1240x600.png` - Splash screen large
+- `splash-620x300.png` - Splash screen standard
 
-- **icon-192.png** - 192x192 pixels (PNG format)
-- **icon-512.png** - 512x512 pixels (PNG format)
+### Icônes par plateforme (dans AppImages/)
 
-## How to Create Icons
+#### Android (`/AppImages/android/`)
+- `android-launchericon-512-512.png` - Icône principale
+- `android-launchericon-192-192.png` - Icône standard
+- `android-launchericon-144-144.png` - Icône moyenne
+- `android-launchericon-96-96.png` - Icône petite
+- `android-launchericon-72-72.png` - Icône très petite
+- `android-launchericon-48-48.png` - Icône minimale
 
-### Option 1: Online Generator (Easiest)
-1. Go to [favicon.io](https://favicon.io/favicon-generator/)
-2. Create your icon design
-3. Download the package
-4. Replace the files here
+#### iOS (`/AppImages/ios/`)
+Icônes de 16x16 à 1024x1024 pour toutes les tailles iOS requises.
 
-### Option 2: Design Tool
-1. Create a 512x512 design in Figma, Canva, or Photoshop
-2. Export as PNG at 512x512 and 192x192
-3. Name them `icon-512.png` and `icon-192.png`
-4. Replace the files here
+#### Windows 11 (`/AppImages/windows11/`)
+- Tuiles de différentes tailles (SmallTile, Square150x150Logo, etc.)
+- Logos pour différents contextes
+- Splash screens pour Windows
 
-### Option 3: Use Existing Logo
-If you have a logo:
-1. Resize to 512x512 (square)
-2. Export as PNG
-3. Use an image editor to create 192x192 version
-4. Replace the files here
+## Configuration PWA
 
-## Design Tips
+### Manifest (`manifest.webmanifest`)
+- Icônes multiples tailles pour Android
+- Screenshots pour l'installation
+- Raccourcis vers Discover et Favorites
+- Couleur de thème : #EF4444
 
-- Use a **square canvas** (1:1 ratio)
-- Keep important elements **centered**
-- Use **high contrast** colors
-- Avoid fine details (icons are small)
-- Test on both light and dark backgrounds
-- Consider using the **"maskable" icon** approach for Android
+### HTML (`index.html`)
+- Favicons multiples tailles
+- Icônes Apple Touch
+- Splash screens iOS
+- Configuration Windows (browserconfig.xml)
+- Méta-tags pour toutes les plateformes
 
-## Recommended Colors
+### Browserconfig (`browserconfig.xml`)
+Configuration spécifique pour Windows avec tuiles colorées.
 
-Based on the Bailapp theme:
-- Primary: `#6366f1` (Indigo)
-- Background: White or the primary color
-- Icon: Dancing figure or music note
+## Couleurs utilisées
 
-## Testing Your Icons
+- **Thème principal** : #EF4444 (rouge)
+- **Thème sombre** : #DC2626 (rouge foncé)
+- **Arrière-plan** : #ffffff (blanc)
 
-After replacing:
-1. Clear browser cache
-2. Reload the app
-3. Check if PWA install prompt appears
-4. Install the app and check the icon on home screen
-
-## Current Placeholder
-
-The current SVG files show a simple dancing figure design. You can use this as inspiration for your actual PNG icons.
-
+Ces couleurs sont cohérentes avec le design system de l'application.
