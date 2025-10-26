@@ -7,7 +7,7 @@
     "home": "Inicio",
     "discover": "Descubrir",
     "favorites": "Favoritos",
-    "choreography": "Coreo",
+    "choreography": "Coreos",
     "profile": "Perfil",
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión"
@@ -22,10 +22,10 @@
       },
       "favorites": {
         "title": "Repasar tus clásicos",
-        "description": "Practicar los movimientos que te encantan"
+        "description": "Practicar tus movimientos favoritos"
       },
       "choreography": {
-        "title": "Perfeccionar tus coreografías",
+        "title": "Mejorar tus coreografías",
         "description": "Crear y refinar tus secuencias"
       }
     }
