@@ -39,7 +39,7 @@ export function Discover() {
       </>
 
       {/* Categories Grid */}
-      <div className="flex flex-col w-full flex-1 justify-around items-center">
+      <div className="flex flex-col w-full flex-1 justify-center items-center gap-16">
         {categories.map((category) => (
           <Link
             key={category.id}
