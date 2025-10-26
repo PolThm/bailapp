@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Music, Plus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { EmptyState } from '@/components/EmptyState';
-import { Button } from '@/components/ui/button';
 import { AuthDialog } from '@/components/AuthDialog';
 
 export function Choreography() {
@@ -25,22 +24,21 @@ export function Choreography() {
 
   return (
     <div className="flex flex-col space-y-6">
-      {/* Header */}
-      <div className="px-4 pt-6 flex items-center justify-between">
-        <div>
+      {/* Header with Add Button */}
+      <div className="px-4 pt-6 flex items-start justify-between">
+        <div className="flex-1 pr-4">
           <h1 className="text-3xl font-bold">{t('choreography.title')}</h1>
           <p className="text-muted-foreground mt-1">
             {t('choreography.subtitle')}
           </p>
         </div>
-        <Button
+        <button
           onClick={handleNewChoreography}
-          size="lg"
-          className="min-h-[48px]"
+          className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center flex-shrink-0"
+          aria-label={t('choreography.new')}
         >
-          <Plus className="h-5 w-5 mr-2" />
-          {t('choreography.new')}
-        </Button>
+          <Plus className="h-6 w-6" />
+        </button>
       </div>
 
       {/* Choreographies List or Empty State */}

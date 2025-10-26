@@ -43,17 +43,26 @@ export function DiscoverCategory() {
 
   return (
     <div className="flex flex-col space-y-6 pb-20">
-      {/* Header with back button */}
+      {/* Header with back button and add button */}
       <div className="px-4 pt-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/discover')}
-          className="mb-4 -ml-2"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('common.back')}
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/discover')}
+            className="-ml-2"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            {t('common.back')}
+          </Button>
+          <button
+            onClick={handleAddFigure}
+            className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center"
+            aria-label={t('discover.addFigure')}
+          >
+            <Plus className="h-6 w-6" />
+          </button>
+        </div>
         <h1 className="text-3xl font-bold capitalize">{category}</h1>
         <p className="text-muted-foreground mt-1">
           {t('discover.category.subtitle', { count: figures.length })}
@@ -76,15 +85,6 @@ export function DiscoverCategory() {
           ))}
         </div>
       )}
-
-      {/* Floating Action Button */}
-      <button
-        onClick={handleAddFigure}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all flex items-center justify-center z-40"
-        aria-label={t('discover.addFigure')}
-      >
-        <Plus className="h-6 w-6" />
-      </button>
 
       {/* Auth Dialog */}
       <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
