@@ -43,10 +43,10 @@ export function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="min-h-screen flex flex-col justify-center py-8 pb-28">
+    <>
+      <div className="flex flex-col justify-center py-8 flex-1">
         {/* Hero Section */}
-        <div className="text-center space-y-4 px-4 mb-8">
+        <div className="text-center space-y-4 mb-8">
           <div className="inline-flex items-center justify-center mb-2">
             <img
               src={dancingCoupleLogo}
@@ -66,12 +66,12 @@ export function Home() {
         </div>
 
         {/* Options Grid */}
-        <div className="flex flex-col gap-4 w-full px-4 flex-1 justify-center items-center">
+        <div className="flex flex-col w-full flex-1 justify-around items-center">
           {options.map((option, index) => (
             <Link 
               key={option.link} 
               to={option.link}
-              className="touch-manipulation active:scale-[0.97] transition-all duration-200"
+              className="touch-manipulation active:scale-[0.97] transition-all duration-200 w-full"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card/80 backdrop-blur-sm">
@@ -97,7 +97,7 @@ export function Home() {
           ))}
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

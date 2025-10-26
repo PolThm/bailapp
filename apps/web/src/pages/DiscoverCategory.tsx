@@ -41,13 +41,13 @@ export function DiscoverCategory() {
   };
 
   return (
-    <div className="flex flex-col space-y-6 pb-20">
+    <>
       {/* Header with back icon */}
-      <div className="px-4 pt-6">
+      <div className="py-6">
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate('/discover')}
-            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
+            className="h-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
             aria-label={t('common.back')}
           >
             <ArrowLeft className="h-5 w-5" />
@@ -69,7 +69,7 @@ export function DiscoverCategory() {
           onAction={handleAddFigure}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {figures.map((figure) => (
             <FigureCard key={figure.id} figure={figure} />
           ))}
@@ -85,7 +85,7 @@ export function DiscoverCategory() {
         onClose={() => setShowNewFigureModal(false)}
         onSubmit={handleSubmitFigure}
       />
-    </div>
+    </>
   );
 }
 

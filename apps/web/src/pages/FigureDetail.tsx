@@ -30,7 +30,7 @@ export function FigureDetail() {
 
   if (!figure) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <p className="text-lg text-muted-foreground">{t('figure.notFound')}</p>
         <Button onClick={() => navigate('/discover')} className="mt-4">
           {t('figure.backToDiscover')}
@@ -79,9 +79,9 @@ export function FigureDetail() {
     : figure.description?.substring(0, 150) + '...';
 
   return (
-    <div className="flex flex-col space-y-6 pb-8">
+    <>
       {/* Back Button */}
-      <div className="px-4 pt-6">
+      <div className="py-6">
         <Button
           variant="ghost"
           size="sm"
@@ -107,7 +107,7 @@ export function FigureDetail() {
       )}
 
       {/* Details Section */}
-      <div className="px-4 space-y-6">
+      <div className="space-y-6">
         {/* Title */}
         <h1 className="text-2xl font-bold leading-tight">{figure.title}</h1>
 
@@ -193,7 +193,7 @@ export function FigureDetail() {
 
       {/* Auth Dialog */}
       <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
-    </div>
+    </>
   );
 }
 

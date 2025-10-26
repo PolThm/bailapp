@@ -8,13 +8,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const isHomePage = location.pathname === '/';
+
+  const bottomNavigationHeight = 72;
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className={`min-h-[calc(100vh-${bottomNavigationHeight}px)] bg-background flex flex-col`}>
       {/* Main Content - Mobile Optimized with Bottom Padding */}
-      <main className="flex-1 pb-20 safe-top">
-        <div className="container max-w-7xl mx-auto px-0">
+      <main className={`flex-1 safe-top ${isHomePage ? 'bg-red-500' : ''} bg-gradient-to-br from-background via-background to-muted/20 flex flex-col container max-w-7xl mx-auto px-5`}>
           {children}
-        </div>
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}

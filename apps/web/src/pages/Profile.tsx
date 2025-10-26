@@ -16,14 +16,14 @@ export function Profile() {
   };
 
   return (
-    <div className="flex flex-col space-y-6 pb-8">
+    <>
       {/* Header */}
-      <div className="px-4 pt-6">
+      <div className="pt-6">
         <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
       </div>
 
       {/* Language Preferences */}
-      <Card className="mx-4">
+      <Card className="my-6">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Globe className="h-5 w-5" />
@@ -73,7 +73,7 @@ export function Profile() {
       </Card>
 
       {/* Authentication Section */}
-      <div className="px-4">
+      <>
         {user ? (
           <div className="space-y-4">
             <Card>
@@ -109,11 +109,11 @@ export function Profile() {
             {t('profile.signIn')}
           </Button>
         )}
-      </div>
+      </>
 
       {/* Auth Dialog */}
       <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
-    </div>
+    </>
   );
 }
 

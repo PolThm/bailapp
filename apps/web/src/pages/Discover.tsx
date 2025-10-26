@@ -31,15 +31,15 @@ export function Discover() {
   ];
 
   return (
-    <div className="flex flex-col space-y-6">
+    <>
       {/* Header */}
-      <div className="px-4 pt-6">
+      <div className="pt-6">
         <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
         <p className="text-muted-foreground mt-1">{t('discover.subtitle')}</p>
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 gap-4 px-4">
+      <div className="flex flex-col w-full flex-1 justify-around items-center">
         {categories.map((category) => (
           <Link
             key={category.id}
@@ -68,7 +68,7 @@ export function Discover() {
           </Link>
         ))}
       </div>
-    </div>
+    </>
   );
 }
 

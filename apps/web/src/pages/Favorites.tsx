@@ -44,9 +44,9 @@ export function Favorites() {
   };
 
   return (
-    <div className="flex flex-col space-y-6">
+    <>
       {/* Header with Add Button */}
-      <div className="px-4 pt-6 flex items-start justify-between">
+      <div className="py-6 flex items-start justify-between">
         <div className="flex-1 pr-4">
           <h1 className="text-3xl font-bold">{t('favorites.title')}</h1>
           <p className="text-muted-foreground mt-1">
@@ -72,7 +72,7 @@ export function Favorites() {
           onAction={() => navigate('/discover')}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {favoriteFigures.map((figure) => (
             <FigureCard key={figure.id} figure={figure} />
           ))}
@@ -88,7 +88,7 @@ export function Favorites() {
         onClose={() => setShowNewFigureModal(false)}
         onSubmit={handleSubmitFigure}
       />
-    </div>
+    </>
   );
 }
 
