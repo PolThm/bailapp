@@ -8,14 +8,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const isHomePage = location.pathname === '/';
-
   const mainBottomPadding = 92; // 72px for the bottom navigation + 20px for the global bottom padding
 
   return (
     <>
       {/* Main Content - Mobile Optimized with Bottom Padding */}
-      <main className={`flex-1 safe-top min-h-screen ${isHomePage ? 'bg-red-500' : ''} bg-gradient-to-br from-background via-background to-muted/20 flex flex-col container max-w-7xl mx-auto px-5 pt-5 pb-[${mainBottomPadding}px]`}>
+      <main className={`flex-1 safe-top min-h-screen flex flex-col container max-w-7xl mx-auto px-5 pt-5 pb-[${mainBottomPadding}px]`}>
           {children}
       </main>
 
