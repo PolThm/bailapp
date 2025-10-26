@@ -20,8 +20,9 @@ export function Profile() {
       {/* Header */}
       <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
 
-      {/* Language Preferences */}
-      <Card className="my-6">
+      <div className="flex-1 flex flex-col">
+        {/* Language Preferences */}
+        <Card className="my-6">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Globe className="h-5 w-5" />
@@ -70,10 +71,12 @@ export function Profile() {
         </CardContent>
       </Card>
 
-      {/* Authentication Section */}
-      <>
+        {/* Spacer to push button to bottom */}
+        <div className="flex-1" />
+
+        {/* Authentication Section */}
         {user ? (
-          <div className="space-y-4">
+          <div className="space-y-4 mt-auto pt-4">
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -101,13 +104,13 @@ export function Profile() {
         ) : (
           <Button
             onClick={() => setShowAuthDialog(true)}
-            className="w-full min-h-[48px]"
+            className="w-full min-h-[48px] mt-auto mb-6"
           >
             <LogIn className="h-5 w-5 mr-2" />
             {t('profile.signIn')}
           </Button>
         )}
-      </>
+      </div>
 
       {/* Auth Dialog */}
       <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
