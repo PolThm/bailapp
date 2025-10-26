@@ -80,22 +80,23 @@ export function FigureDetail() {
 
   return (
     <>
-      {/* Back Button */}
-      <div className="py-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(-1)}
-          className="-ml-2"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('common.back')}
-        </Button>
+      {/* Header with back icon and title */}
+      <div className="pt-6 pb-2">
+        <div className="flex items-center gap-3 mb-2">
+          <button
+            onClick={() => navigate(-1)}
+            className="h-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
+            aria-label={t('common.back')}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <h1 className="text-2xl font-bold leading-tight">{figure.title}</h1>
+        </div>
       </div>
 
       {/* Video Player */}
       {embedUrl && (
-        <div className="aspect-video w-full bg-black">
+        <div className="aspect-video w-full bg-black rounded-lg overflow-hidden mb-6">
           <iframe
             src={embedUrl}
             title={figure.title}
@@ -108,8 +109,6 @@ export function FigureDetail() {
 
       {/* Details Section */}
       <div className="space-y-6">
-        {/* Title */}
-        <h1 className="text-2xl font-bold leading-tight">{figure.title}</h1>
 
         {/* Action Buttons */}
         <div className="flex gap-2">
