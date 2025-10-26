@@ -90,7 +90,7 @@ export function FigureDetail() {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold leading-tight">{figure.title}</h1>
+          <h1 className="text-2xl font-bold leading-tight line-clamp-2">{figure.title}</h1>
         </div>
       </div>
 
@@ -146,6 +146,8 @@ export function FigureDetail() {
         {figure.description && (
           <Card>
             <CardContent className="pt-6 space-y-2">
+              <h2 className="font-semibold">{t('figure.fullTitle')}</h2>
+              <h1 className="text-sm text-muted-foreground leading-relaxed">{figure.title}</h1>
               <h2 className="font-semibold">{t('figure.description')}</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {displayDescription}
