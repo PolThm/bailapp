@@ -132,7 +132,7 @@ export function FigureDetail() {
 
         {/* Badges */}
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-4">
             <div className="flex flex-wrap gap-2">
               <DanceStyleBadge style={figure.danceStyle} />
               <FigureTypeBadge type={figure.figureType} />
@@ -145,7 +145,7 @@ export function FigureDetail() {
         {/* Description */}
         {figure.description && (
           <Card>
-            <CardContent className="pt-6 space-y-2">
+            <CardContent className="pt-4 space-y-1">
               <h2 className="font-semibold">{t('figure.fullTitle')}</h2>
               <h1 className="text-sm text-muted-foreground leading-relaxed">{figure.title}</h1>
               <h2 className="font-semibold pt-1">{t('figure.description')}</h2>
@@ -166,7 +166,7 @@ export function FigureDetail() {
 
         {/* Meta Information */}
         <Card>
-          <CardContent className="pt-6 space-y-3">
+          <CardContent className="pt-4 space-y-3">
             {figure.videoAuthor && (
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{t('figure.videoAuthor')}</span>
