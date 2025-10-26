@@ -148,7 +148,7 @@ export function FigureDetail() {
             <CardContent className="pt-6 space-y-2">
               <h2 className="font-semibold">{t('figure.fullTitle')}</h2>
               <h1 className="text-sm text-muted-foreground leading-relaxed">{figure.title}</h1>
-              <h2 className="font-semibold">{t('figure.description')}</h2>
+              <h2 className="font-semibold pt-1">{t('figure.description')}</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {displayDescription}
               </p>
