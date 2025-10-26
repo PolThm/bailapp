@@ -4,32 +4,30 @@
 
 Cette configuration utilise les icônes générées avec la couleur rouge du thème (#EF4444).
 
-### Icônes principales (copiées dans /icons/)
-- `icon-192.png` - Icône PWA standard (192x192)
+### Icônes PWA et navigateurs
 - `icon-512.png` - Icône PWA large et maskable (512x512)
-- `apple-touch-icon.png` - Icône iOS (180x180)
+- `icon-192.png` - Icône PWA standard (192x192)
+- `icon-144.png` - Icône PWA moyenne (144x144)
+- `icon-96.png` - Icône PWA petite (96x96)
+- `icon-72.png` - Icône PWA très petite (72x72)
+- `icon-48.png` - Icône PWA minimale (48x48)
+
+### Favicons
 - `favicon-32x32.png` - Favicon standard (32x32)
 - `favicon-16x16.png` - Favicon petit (16x16)
+
+### iOS
+- `apple-touch-icon.png` - Icône iOS (180x180)
+
+### Splash screens
 - `splash-1240x600.png` - Splash screen large
 - `splash-620x300.png` - Splash screen standard
 
-### Icônes par plateforme (dans AppImages/)
-
-#### Android (`/AppImages/android/`)
-- `android-launchericon-512-512.png` - Icône principale
-- `android-launchericon-192-192.png` - Icône standard
-- `android-launchericon-144-144.png` - Icône moyenne
-- `android-launchericon-96-96.png` - Icône petite
-- `android-launchericon-72-72.png` - Icône très petite
-- `android-launchericon-48-48.png` - Icône minimale
-
-#### iOS (`/AppImages/ios/`)
-Icônes de 16x16 à 1024x1024 pour toutes les tailles iOS requises.
-
-#### Windows 11 (`/AppImages/windows11/`)
-- Tuiles de différentes tailles (SmallTile, Square150x150Logo, etc.)
-- Logos pour différents contextes
-- Splash screens pour Windows
+### Windows
+- `windows-tile-150.png` - Tuile Windows standard (300x300)
+- `windows-small-tile.png` - Petite tuile Windows (142x142)
+- `windows-wide-tile.png` - Tuile Windows large (620x300)
+- `windows-large-tile.png` - Grande tuile Windows (620x620)
 
 ## Configuration PWA
 

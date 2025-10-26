@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['dancing-couple.png'],
+      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32x32.png', 'icons/favicon-16x16.png'],
       manifest: {
         name: 'Bailapp',
         short_name: 'Bailapp',
@@ -23,7 +23,13 @@ export default defineConfig({
         prefer_related_applications: false,
         icons: [
           {
-            src: '/dancing-couple.png',
+            src: '/icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',
