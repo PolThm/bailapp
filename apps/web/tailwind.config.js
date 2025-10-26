@@ -2,6 +2,11 @@
 export default {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
+  safelist: [
+    'pb-[92px]',
+    'h-[calc(100vh-5rem)]',
+    'line-clamp-2',
+  ],
   theme: {
     container: {
       center: true,
