@@ -6,7 +6,6 @@ import { useFigures } from '@/context/FiguresContext';
 import { useAuth } from '@/context/AuthContext';
 import { FigureCard } from '@/components/FigureCard';
 import { EmptyState } from '@/components/EmptyState';
-import { Button } from '@/components/ui/button';
 import { AuthDialog } from '@/components/AuthDialog';
 import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureModal';
 import type { DanceStyle, Figure } from '@/types';
@@ -43,28 +42,19 @@ export function DiscoverCategory() {
 
   return (
     <div className="flex flex-col space-y-6 pb-20">
-      {/* Header with back button and add button */}
+      {/* Header with back icon */}
       <div className="px-4 pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/discover')}
-            className="-ml-2"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            {t('common.back')}
-          </Button>
+        <div className="flex items-center gap-3 mb-2">
           <button
-            onClick={handleAddFigure}
-            className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center"
-            aria-label={t('discover.addFigure')}
+            onClick={() => navigate('/discover')}
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
+            aria-label={t('common.back')}
           >
-            <Plus className="h-6 w-6" />
+            <ArrowLeft className="h-5 w-5" />
           </button>
+          <h1 className="text-3xl font-bold capitalize">{category}</h1>
         </div>
-        <h1 className="text-3xl font-bold capitalize">{category}</h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground">
           {t('discover.category.subtitle', { count: figures.length })}
         </p>
       </div>

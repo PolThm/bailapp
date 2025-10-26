@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { getYouTubeVideoId, getYouTubeThumbnail } from '@/utils/youtube';
-import type { DanceStyle, FigureType, Complexity, VideoLanguage } from '@/types';
+import type { DanceStyle, FigureType, Complexity, VideoLanguage, Visibility } from '@/types';
 
 interface NewFigureModalProps {
   open: boolean;
@@ -34,6 +34,7 @@ export interface NewFigureFormData {
   complexity: Complexity;
   phrasesCount: number;
   videoLanguage: VideoLanguage;
+  visibility: Visibility;
 }
 
 export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps) {
@@ -41,6 +42,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   const [formData, setFormData] = useState<Partial<NewFigureFormData>>({
     phrasesCount: 4,
     videoLanguage: 'english',
+    visibility: 'public',
   });
   const [videoId, setVideoId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -93,7 +95,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   };
 
   const handleClose = () => {
-    setFormData({ phrasesCount: 4, videoLanguage: 'english' });
+    setFormData({ phrasesCount: 4, videoLanguage: 'english', visibility: 'public' });
     setVideoId(null);
     setErrors({});
     onClose();
@@ -332,6 +334,29 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
                 <SelectItem value="french">🇫🇷 {t('badges.videoLanguage.french')}</SelectItem>
                 <SelectItem value="english">🇬🇧 {t('badges.videoLanguage.english')}</SelectItem>
                 <SelectItem value="spanish">🇪🇸 {t('badges.videoLanguage.spanish')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Visibility */}
+          <div className="space-y-2">
+            <Label htmlFor="visibility">{t('newFigure.visibility')} {t('newFigure.required')}</Label>
+            <Select
+              value={formData.visibility}
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  visibility: value as Visibility,
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t('newFigure.visibilityPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public">{t('badges.visibility.public')}</SelectItem>
+                <SelectItem value="private">{t('badges.visibility.private')}</SelectItem>
+                <SelectItem value="unlisted">{t('badges.visibility.unlisted')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

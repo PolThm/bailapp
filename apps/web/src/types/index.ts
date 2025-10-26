@@ -11,6 +11,8 @@ export type Complexity =
 
 export type VideoLanguage = 'french' | 'english' | 'spanish';
 
+export type Visibility = 'public' | 'private' | 'unlisted';
+
 export interface Figure {
   id: string;
   youtubeUrl: string;
@@ -24,6 +26,7 @@ export interface Figure {
   complexity: Complexity;
   phrasesCount: number; // Number of 8-count phrases
   videoLanguage: VideoLanguage;
+  visibility: Visibility;
   importedBy: string;
   createdAt: string;
 }

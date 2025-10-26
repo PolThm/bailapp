@@ -180,6 +180,10 @@ export function FigureDetail() {
               </span>
             </div>
             <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t('figure.visibility')}</span>
+              <span className="font-medium">{t(`badges.visibility.${figure.visibility}`)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('figure.importedBy')}</span>
               <span className="font-medium">{figure.importedBy}</span>
             </div>

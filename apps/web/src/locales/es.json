@@ -65,11 +65,11 @@
   },
   "choreography": {
     "title": "Coreografías",
-    "subtitle": "Crear y gestionar tus rutinas de baile",
+    "subtitle": "Crear y gestionar tus secuencias de baile",
     "new": "Nueva",
     "empty": {
       "title": "No hay coreografías todavía",
-      "description": "¡Crea tu primera coreografía para combinar figuras y practicar rutinas!",
+      "description": "¡Crea tu primera coreografía para combinar figuras y practicar secuencias!",
       "action": "Nueva coreografía"
     }
   },
@@ -95,7 +95,8 @@
     "phrases": "{{count}} frase",
     "phrases_one": "{{count}} frase",
     "phrases_other": "{{count}} frases",
-    "importedBy": "Importado por"
+    "importedBy": "Importado por",
+    "visibility": "Visibilidad"
   },
   "badges": {
     "danceStyle": {
@@ -119,6 +120,11 @@
       "french": "Francés",
       "english": "Inglés",
       "spanish": "Español"
+    },
+    "visibility": {
+      "public": "Público",
+      "private": "Privado",
+      "unlisted": "No listado"
     }
   },
   "auth": {
@@ -160,6 +166,8 @@
     "phrasesCount": "Número de frases",
     "phrasesCountPlaceholder": "4",
     "videoLanguage": "Idioma del video",
+    "visibility": "Visibilidad",
+    "visibilityPlaceholder": "Seleccionar visibilidad",
     "addButton": "Agregar figura",
     "required": "*",
     "errors": {
