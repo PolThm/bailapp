@@ -44,9 +44,9 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="flex flex-col space-y-6 pb-20">
+      <div className="min-h-screen flex flex-col justify-center py-8 pb-28">
         {/* Hero Section */}
-        <div className="text-center space-y-4 px-4 pt-8">
+        <div className="text-center space-y-4 px-4 mb-8">
           <div className="inline-flex items-center justify-center mb-2">
             <img
               src={dancingCoupleLogo}
@@ -77,17 +77,17 @@ export function Home() {
               <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card/80 backdrop-blur-sm">
                 <div className={`absolute inset-0 opacity-5 ${option.bgGradient}`} />
                 <CardHeader className="relative p-4">
-                  <div className='flex items-center gap-3'>
-                    <div className={`w-12 h-12 rounded-xl ${option.bgGradient} flex items-center justify-center shadow-sm`}>
-                      <option.icon className={`h-6 w-6 ${option.iconColor}`} />
-                    </div>
-                    <div className="flex-1 space-y-0.5">
-                      <CardTitle className="text-lg font-semibold leading-tight">{option.title}</CardTitle>
+                  <div className='flex items-center justify-between'>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <option.icon className={`h-5 w-5 ${option.iconColor} flex-shrink-0`} />
+                        <CardTitle className="text-lg font-semibold leading-tight">{option.title}</CardTitle>
+                      </div>
                       <CardDescription className="text-sm text-muted-foreground">
                         {option.description}
                       </CardDescription>
                     </div>
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted/50">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted/50 ml-3">
                       <ArrowRight className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
