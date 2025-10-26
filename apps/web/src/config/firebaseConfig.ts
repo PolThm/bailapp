@@ -1,11 +1,11 @@
-// TODO: Replace with your Firebase project configuration
-// Get these values from Firebase Console > Project Settings > General
+// Firebase project configuration for Bailapp
 export const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_AUTH_DOMAIN',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_STORAGE_BUCKET',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId: 'YOUR_APP_ID',
+  apiKey: "AIzaSyAShykPLpD-JvDLkp_wfjdJv2_W8Q9tWbs",
+  authDomain: "bailapp-polthm.firebaseapp.com",
+  projectId: "bailapp-polthm",
+  storageBucket: "bailapp-polthm.firebasestorage.app",
+  messagingSenderId: "763402252239",
+  appId: "1:763402252239:web:8021cf6055ca02e71bacba",
+  measurementId: "G-JW2LG0K1SZ"
 };
 

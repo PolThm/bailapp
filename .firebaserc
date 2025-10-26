@@ -1,6 +1,15 @@
 {
   "projects": {
-    "default": "your-project-id"
-  }
+    "default": "bailapp-polthm"
+  },
+  "targets": {
+    "bailapp-polthm": {
+      "hosting": {
+        "bailapp": [
+          "bailapp"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
-
