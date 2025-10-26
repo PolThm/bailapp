@@ -1,115 +1,81 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { BookOpen, Plus, TrendingUp, ArrowRight, Sparkles } from 'lucide-react';
+import { Compass, Heart, Music, ArrowRight } from 'lucide-react';
 
 export function Home() {
   const { t } = useTranslation();
 
-  const features = [
+  const options = [
     {
-      icon: BookOpen,
-      title: t('home.features.learn.title'),
-      description: t('home.features.learn.description'),
-      link: '/learn',
+      icon: Compass,
+      title: t('home.options.discover.title'),
+      description: t('home.options.discover.description'),
+      link: '/discover',
       color: 'text-blue-500',
       bgColor: 'bg-blue-50 dark:bg-blue-950',
     },
     {
-      icon: Plus,
-      title: t('home.features.create.title'),
-      description: t('home.features.create.description'),
-      link: '/create',
-      color: 'text-purple-500',
-      bgColor: 'bg-purple-50 dark:bg-purple-950',
+      icon: Heart,
+      title: t('home.options.favorites.title'),
+      description: t('home.options.favorites.description'),
+      link: '/favorites',
+      color: 'text-red-500',
+      bgColor: 'bg-red-50 dark:bg-red-950',
     },
     {
-      icon: TrendingUp,
-      title: t('home.features.progress.title'),
-      description: t('home.features.progress.description'),
-      link: '/progress',
-      color: 'text-green-500',
-      bgColor: 'bg-green-50 dark:bg-green-950',
+      icon: Music,
+      title: t('home.options.choreography.title'),
+      description: t('home.options.choreography.description'),
+      link: '/choreography',
+      color: 'text-purple-500',
+      bgColor: 'bg-purple-50 dark:bg-purple-950',
     },
   ];
 
   return (
-    <div className="flex flex-col space-y-8 md:space-y-12">
-      {/* Hero Section - Mobile First */}
-      <div className="text-center space-y-4 px-4 pt-4 md:pt-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
-          <Sparkles className="h-4 w-4" />
-          <span>{t('app.tagline')}</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+    <div className="flex flex-col space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-2 px-4 pt-6">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           {t('home.welcome')}
         </h1>
-        <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg text-muted-foreground">
           {t('home.subtitle')}
         </p>
-        <div className="pt-2">
-          <Link to="/learn">
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto min-h-[48px] text-base font-semibold active:scale-95 transition-transform touch-manipulation"
-            >
-              {t('home.cta')}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-        </div>
       </div>
 
-      {/* Features Grid - Mobile Optimized */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-        {features.map((feature) => (
+      {/* Options Grid */}
+      <div className="grid grid-cols-1 gap-4 w-full px-4">
+        {options.map((option) => (
           <Link 
-            key={feature.link} 
-            to={feature.link}
+            key={option.link} 
+            to={option.link}
             className="touch-manipulation active:scale-[0.98] transition-transform"
           >
-            <Card className="h-full transition-shadow hover:shadow-lg border-2 hover:border-primary/50">
+            <Card className="transition-shadow hover:shadow-lg border-2 hover:border-primary/50">
               <CardHeader className="pb-4">
                 <div className='flex items-center gap-3'>
-                  <div className={`w-8 h-8 rounded-2xl ${feature.bgColor} flex items-center justify-center`}>
-                    <feature.icon className={`h-4 w-4 ${feature.color}`} />
+                  <div className={`w-12 h-12 rounded-2xl ${option.bgColor} flex items-center justify-center`}>
+                    <option.icon className={`h-6 w-6 ${option.color}`} />
                   </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  <div className="flex-1">
+                    <CardTitle className="text-xl">{option.title}</CardTitle>
+                    <CardDescription className="text-sm mt-1">
+                      {option.description}
+                    </CardDescription>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <CardDescription className="text-sm leading-relaxed">
-                  {feature.description}
-                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <Button 
-                  variant="outline" 
-                  className="w-full min-h-[44px] justify-between group"
-                >
-                  <span>{t('nav.' + feature.link.slice(1))}</span>
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </CardContent>
             </Card>
           </Link>
         ))}
-      </div>
-
-      {/* Additional Info - Mobile Optimized */}
-      <div className="text-center text-sm text-muted-foreground px-4 pb-4">
-        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
-          <span>✨ 100% Free</span>
-          <span>•</span>
-          <span>📱 Offline Ready</span>
-          <span>•</span>
-          <span>🌍 Multi-language</span>
-        </div>
       </div>
     </div>
   );

@@ -5,50 +5,121 @@
   },
   "nav": {
     "home": "Home",
-    "learn": "Learn",
-    "create": "Create",
-    "progress": "Progress",
+    "discover": "Discover",
+    "favorites": "Favorites",
+    "choreography": "Choreo",
+    "profile": "Profile",
     "signIn": "Sign In",
     "signOut": "Sign Out"
   },
   "home": {
     "welcome": "Welcome to Bailapp",
-    "subtitle": "Your personal dance companion for creating choreographies, learning new moves, and tracking your progress",
-    "cta": "Get Started",
-    "features": {
-      "learn": {
-        "title": "Learn",
-        "description": "Discover and master new dance moves with step-by-step guidance"
+    "subtitle": "What's on the agenda today?",
+    "options": {
+      "discover": {
+        "title": "Discover new steps",
+        "description": "Explore salsa and bachata figures"
       },
-      "create": {
-        "title": "Create",
-        "description": "Design your own choreographies and save them for later"
+      "favorites": {
+        "title": "Review your favorites",
+        "description": "Practice the moves you love"
       },
-      "progress": {
-        "title": "Progress",
-        "description": "Track your improvement and celebrate your achievements"
+      "choreography": {
+        "title": "Polish your choreographies",
+        "description": "Create and refine your sequences"
       }
     }
   },
-  "learn": {
-    "title": "Learn Dance Moves",
-    "subtitle": "Browse our collection of dance moves and tutorials",
-    "comingSoon": "Dance move library coming soon!",
-    "description": "Soon you'll be able to explore hundreds of dance moves across different styles."
+  "discover": {
+    "title": "Discover",
+    "subtitle": "Choose a dance style to explore",
+    "categories": {
+      "salsa": {
+        "description": "Learn Cuban salsa figures and combinations"
+      },
+      "bachata": {
+        "description": "Master bachata steps and sequences"
+      }
+    },
+    "category": {
+      "subtitle_one": "{{count}} figure available",
+      "subtitle_other": "{{count}} figures available"
+    },
+    "empty": {
+      "title": "No figures yet",
+      "description": "Be the first to add a figure to this category!",
+      "action": "Add Figure"
+    },
+    "addFigure": "Add new figure"
   },
-  "create": {
-    "title": "Create Choreography",
-    "subtitle": "Design your own unique dance routines",
-    "comingSoon": "Choreography builder coming soon!",
-    "description": "Soon you'll be able to create and save your own choreographies.",
-    "requiresAuth": "Sign in to save your choreographies"
+  "favorites": {
+    "title": "Favorites",
+    "subtitle_zero": "No favorites yet",
+    "subtitle_one": "{{count}} favorite figure",
+    "subtitle_other": "{{count}} favorite figures",
+    "empty": {
+      "title": "No favorites yet",
+      "description": "Start adding figures to your favorites to find them here later!",
+      "action": "Discover Figures"
+    }
   },
-  "progress": {
-    "title": "Your Dance Progress",
-    "subtitle": "Track your journey and celebrate milestones",
-    "comingSoon": "Progress tracking coming soon!",
-    "description": "Soon you'll be able to track your practice time, moves learned, and achievements.",
-    "requiresAuth": "Sign in to track your progress"
+  "choreography": {
+    "title": "Choreographies",
+    "subtitle": "Create and manage your dance routines",
+    "new": "New",
+    "empty": {
+      "title": "No choreographies yet",
+      "description": "Create your first choreography to combine figures and practice routines!",
+      "action": "New Choreography"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "signIn": "Sign In",
+    "signInRequired": "Sign in to view your profile",
+    "signInDescription": "Access your profile, preferences, and settings",
+    "languagePreferences": "Language Preferences",
+    "selectLanguage": "Choose your preferred language",
+    "signOut": "Sign Out"
+  },
+  "figure": {
+    "notFound": "Figure not found",
+    "backToDiscover": "Back to Discover",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites",
+    "description": "Description",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "videoAuthor": "Author",
+    "duration": "Duration",
+    "phrases": "{{count}} phrase",
+    "phrases_one": "{{count}} phrase",
+    "phrases_other": "{{count}} phrases",
+    "importedBy": "Imported by"
+  },
+  "badges": {
+    "danceStyle": {
+      "salsa": "Salsa",
+      "bachata": "Bachata"
+    },
+    "figureType": {
+      "figure": "Figure",
+      "basicStep": "Basic Step",
+      "complexStep": "Complex Step",
+      "combination": "Combination"
+    },
+    "complexity": {
+      "basic": "Basic",
+      "basicIntermediate": "Basic / Intermediate",
+      "intermediate": "Intermediate",
+      "intermediateAdvanced": "Intermediate / Advanced",
+      "advanced": "Advanced"
+    },
+    "videoLanguage": {
+      "french": "French",
+      "english": "English",
+      "spanish": "Spanish"
+    }
   },
   "auth": {
     "signIn": "Sign In",
@@ -62,7 +133,43 @@
     "loading": "Loading...",
     "error": "An error occurred",
     "tryAgain": "Try Again",
-    "close": "Close"
+    "close": "Close",
+    "back": "Back",
+    "cancel": "Cancel"
+  },
+  "newFigure": {
+    "title": "Add New Figure",
+    "youtubeUrl": "YouTube URL",
+    "youtubeUrlPlaceholder": "https://www.youtube.com/watch?v=...",
+    "thumbnail": "Thumbnail",
+    "figureTitle": "Title",
+    "titlePlaceholder": "Figure name or description",
+    "description": "Description (optional)",
+    "descriptionPlaceholder": "Additional details about this figure...",
+    "videoAuthor": "Video Author (optional)",
+    "videoAuthorPlaceholder": "Channel or creator name",
+    "startTime": "Start Time (optional)",
+    "endTime": "End Time (optional)",
+    "timePlaceholder": "MM:SS or HH:MM:SS",
+    "danceStyle": "Dance Style",
+    "danceStylePlaceholder": "Select dance style",
+    "figureType": "Figure Type",
+    "figureTypePlaceholder": "Select figure type",
+    "complexity": "Complexity",
+    "complexityPlaceholder": "Select complexity",
+    "phrasesCount": "Phrases Count",
+    "phrasesCountPlaceholder": "4",
+    "videoLanguage": "Video Language",
+    "addButton": "Add Figure",
+    "required": "*",
+    "errors": {
+      "youtubeUrlRequired": "YouTube URL is required",
+      "titleRequired": "Title is required",
+      "danceStyleRequired": "Dance style is required",
+      "figureTypeRequired": "Figure type is required",
+      "complexityRequired": "Complexity is required",
+      "phrasesCountMin": "Phrases count must be at least 1"
+    }
   }
 }
 
