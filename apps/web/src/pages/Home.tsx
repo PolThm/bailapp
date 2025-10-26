@@ -66,7 +66,7 @@ export function Home() {
         </div>
 
         {/* Options Grid */}
-        <div className="grid grid-cols-1 gap-4 w-full px-4">
+        <div className="flex flex-col gap-4 w-full px-4 flex-1 justify-center items-center">
           {options.map((option, index) => (
             <Link 
               key={option.link} 
