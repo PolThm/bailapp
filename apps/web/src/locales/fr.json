@@ -54,6 +54,7 @@
   },
   "favorites": {
     "title": "Favoris",
+    "subtitle": "Tes figures de danse favorites",
     "subtitle_zero": "Aucun favori pour l'instant",
     "subtitle_one": "{{count}} figure favorite",
     "subtitle_other": "{{count}} figures favorites",
@@ -65,7 +66,7 @@
   },
   "choreography": {
     "title": "Chorégraphies",
-    "subtitle": "Créer et gérer tes séquences de danse",
+    "subtitle": "Créer et gérer tes séquences",
     "new": "Nouvelle",
     "empty": {
       "title": "Aucune chorégraphie pour l'instant",

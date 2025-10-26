@@ -50,7 +50,7 @@ export function Favorites() {
         <div className="flex-1 pr-4">
           <h1 className="text-3xl font-bold">{t('favorites.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            {t('favorites.subtitle', { count: favoriteFigures.length })}
+            {t('favorites.subtitle')}
           </p>
         </div>
         <button
