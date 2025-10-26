@@ -46,7 +46,7 @@ export function Favorites() {
   return (
     <>
       {/* Header with Add Button */}
-      <div className="pb-6 flex items-start justify-between">
+      <div className="flex items-start justify-between">
         <div className="flex-1 pr-4">
           <h1 className="text-3xl font-bold">{t('favorites.title')}</h1>
           <p className="text-muted-foreground mt-1">
