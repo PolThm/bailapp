@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthDialog } from '@/components/AuthDialog';
 
-// Get version from package.json
-const APP_VERSION = '0.0.3';
+// Get version from package.json, do not remove!
+const APP_VERSION = '0.0.4';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
