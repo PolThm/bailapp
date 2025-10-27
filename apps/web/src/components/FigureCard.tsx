@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/badge';
 import { getYouTubeVideoId, getYouTubeThumbnail } from '@/utils/youtube';
 import type { Figure } from '@/types';
+import { Clock } from 'lucide-react';
 
 interface FigureCardProps {
   figure: Figure;
@@ -62,7 +63,10 @@ export function FigureCard({ figure }: FigureCardProps) {
 
           {/* Meta info */}
           <div className="text-xs text-muted-foreground">
-            {t('figure.phrases', { count: figure.phrasesCount })} • {figure.importedBy}
+          <span className="font-medium flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                {figure.phrasesCount} • {figure.videoAuthor}
+              </span>
           </div>
         </CardContent>
       </Card>
