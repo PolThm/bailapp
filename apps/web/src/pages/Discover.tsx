@@ -91,14 +91,14 @@ export function Discover() {
   return (
     <>
       {/* Header */}
-      <div className="pb-4">
+      <div className="pb-3">
         <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
         {/* <p className="text-muted-foreground mt-1">{t('discover.subtitle')}</p> */}
       </div>
 
       {/* Filters */}
-      <div className="space-y-4 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="space-y-4 mb-5">
+        <div className="flex flex-col sm:flex-row gap-3">
           {/* Search Input */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
