@@ -57,7 +57,7 @@
     "advancedFilters": {
       "button": "Más filtros",
       "title": "Filtros Avanzados",
-      "figureType": "Tipo de Figura",
+      "figureType": "Tipo de Movimiento",
       "selectFigureType": "Seleccionar tipo",
       "allTypes": "Todos los tipos",
       "complexity": "Complejidad",
@@ -142,13 +142,15 @@
       "figure": "Figura",
       "basicstep": "Paso básico",
       "complexstep": "Paso complejo",
-      "combination": "Combinación"
+      "mix": "Mixto"
     },
     "complexity": {
       "basic": "Básico",
       "basicintermediate": "Básico/Inter",
+      "basicIntermediate": "Básico/Inter",
       "intermediate": "Intermedio",
       "intermediateadvanced": "Inter/Avanzado",
+      "intermediateAdvanced": "Inter/Avanzado",
       "advanced": "Avanzado"
     },
     "videoLanguage": {
@@ -225,7 +227,7 @@
     "shortTitlePlaceholder": "Nombre corto de la figura",
     "fullTitle": "Título completo",
     "fullTitlePlaceholder": "Nombre completo de la figura",
-    "figureType": "Tipo de figura",
+    "figureType": "Tipo de movimiento",
     "figureTypePlaceholder": "Seleccionar tipo",
     "complexity": "Complejidad",
     "complexityPlaceholder": "Seleccionar complejidad",
@@ -240,7 +242,7 @@
       "youtubeUrlRequired": "La URL de YouTube es requerida",
       "titleRequired": "El título es requerido",
       "danceStyleRequired": "El estilo de baile es requerido",
-      "figureTypeRequired": "El tipo de figura es requerido",
+      "figureTypeRequired": "El tipo de movimiento es requerido",
       "complexityRequired": "La complejidad es requerida",
       "phrasesCountMin": "El número de frases debe ser al menos 1"
     }

@@ -1,6 +1,6 @@
 export type DanceStyle = 'salsa' | 'bachata';
 
-export type FigureType = 'figure' | 'basic-step' | 'complex-step' | 'combination';
+export type FigureType = 'figure' | 'basic-step' | 'complex-step' | 'mix';
 
 export type Complexity =
   | 'basic'

@@ -54,7 +54,7 @@ export function AdvancedFiltersModal({
 
   const hasActiveFilters = Object.values(filters).some(value => value !== undefined);
 
-  const figureTypes: FigureType[] = ['figure', 'basic-step', 'complex-step', 'combination'];
+  const figureTypes: FigureType[] = ['figure', 'basic-step', 'complex-step', 'mix'];
   const complexities: Complexity[] = ['basic', 'basic-intermediate', 'intermediate', 'intermediate-advanced', 'advanced'];
   const videoLanguages: VideoLanguage[] = ['french', 'english', 'spanish'];
   const danceSubStyles: DanceSubStyle[] = [

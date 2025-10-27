@@ -319,7 +319,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
                 <SelectItem value="figure">{t('badges.figureType.figure')}</SelectItem>
                 <SelectItem value="basic-step">{t('badges.figureType.basicStep')}</SelectItem>
                 <SelectItem value="complex-step">{t('badges.figureType.complexStep')}</SelectItem>
-                <SelectItem value="combination">{t('badges.figureType.combination')}</SelectItem>
+                <SelectItem value="mix">{t('badges.figureType.mix')}</SelectItem>
               </SelectContent>
             </Select>
             {errors.figureType && (

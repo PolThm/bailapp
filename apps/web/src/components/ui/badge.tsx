@@ -25,7 +25,7 @@ const badgeVariants = cva(
         figure: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100',
         'basic-step': 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100',
         'complex-step': 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-100',
-        combination: 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-100',
+        mix: 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-100',
         
         // Complexity
         basic: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-100',
