@@ -32,7 +32,7 @@
   },
   "discover": {
     "title": "Découvrir",
-    "subtitle": "Choisis un style de danse à explorer",
+    "subtitle": "Explorer les figures et pas de danse",
     "categories": {
       "salsa": {
         "description": "Apprendre les figures et combinaisons de Salsa"
@@ -41,14 +41,18 @@
         "description": "Maîtriser les pas et séquences de Bachata"
       }
     },
-    "category": {
-      "subtitle_one": "{{count}} figure disponible",
-      "subtitle_other": "{{count}} figures disponibles"
+    "filter": {
+      "placeholder": "Filtrer par style",
+      "all": "Tous les styles"
     },
     "empty": {
       "title": "Aucune figure pour l'instant",
       "description": "Sois le premier à ajouter une figure à cette catégorie !",
-      "action": "Ajouter une figure"
+      "action": "Ajouter une figure",
+      "filtered": {
+        "title": "Aucune figure {{style}} pour l'instant",
+        "description": "Sois le premier à ajouter une figure {{style}} !"
+      }
     },
     "addFigure": "Ajouter une nouvelle figure"
   },

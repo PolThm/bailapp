@@ -32,7 +32,7 @@
   },
   "discover": {
     "title": "Discover",
-    "subtitle": "Choose a dance style to explore",
+    "subtitle": "Explore dance figures and steps",
     "categories": {
       "salsa": {
         "description": "Learn Salsa figures and combinations"
@@ -41,14 +41,18 @@
         "description": "Master Bachata steps and sequences"
       }
     },
-    "category": {
-      "subtitle_one": "{{count}} figure available",
-      "subtitle_other": "{{count}} figures available"
+    "filter": {
+      "placeholder": "Filter by style",
+      "all": "All styles"
     },
     "empty": {
       "title": "No figures yet",
       "description": "Be the first to add a figure to this category!",
-      "action": "Add Figure"
+      "action": "Add Figure",
+      "filtered": {
+        "title": "No {{style}} figures yet",
+        "description": "Be the first to add a {{style}} figure!"
+      }
     },
     "addFigure": "Add new figure"
   },

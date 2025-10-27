@@ -32,7 +32,7 @@
   },
   "discover": {
     "title": "Descubrir",
-    "subtitle": "Elige un estilo de baile para explorar",
+    "subtitle": "Explorar figuras y pasos de baile",
     "categories": {
       "salsa": {
         "description": "Aprender figuras y combinaciones de Salsa"
@@ -41,14 +41,18 @@
         "description": "Dominar pasos y secuencias de Bachata"
       }
     },
-    "category": {
-      "subtitle_one": "{{count}} figura disponible",
-      "subtitle_other": "{{count}} figuras disponibles"
+    "filter": {
+      "placeholder": "Filtrar por estilo",
+      "all": "Todos los estilos"
     },
     "empty": {
       "title": "No hay figuras todavía",
       "description": "¡Sé el primero en agregar una figura a esta categoría!",
-      "action": "Agregar figura"
+      "action": "Agregar figura",
+      "filtered": {
+        "title": "No hay figuras de {{style}} todavía",
+        "description": "¡Sé el primero en agregar una figura de {{style}}!"
+      }
     },
     "addFigure": "Agregar nueva figura"
   },

@@ -6,7 +6,6 @@ import { FiguresProvider } from '@/context/FiguresContext';
 import { Layout } from '@/components/Layout';
 import { Home } from '@/pages/Home';
 import { Discover } from '@/pages/Discover';
-import { DiscoverCategory } from '@/pages/DiscoverCategory';
 import { Favorites } from '@/pages/Favorites';
 import { Choreography } from '@/pages/Choreography';
 import { Profile } from '@/pages/Profile';
@@ -32,7 +31,6 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/discover" element={<Discover />} />
-                  <Route path="/discover/:category" element={<DiscoverCategory />} />
                   <Route path="/favorites" element={<Favorites />} />
                   <Route path="/choreography" element={<Choreography />} />
                   <Route path="/profile" element={<Profile />} />
