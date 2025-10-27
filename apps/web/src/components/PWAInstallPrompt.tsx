@@ -1,4 +1,4 @@
-import { Download, X, Smartphone, Share } from 'lucide-react';
+import { Download, X, Smartphone, Share, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 
@@ -21,7 +21,7 @@ export function PWAInstallPrompt() {
   return (
     <>
       {/* Install Prompt Snackbar */}
-      <div className="fixed bottom-24 left-4 right-4 z-50 flex justify-center">
+      <div className="fixed bottom-28 left-4 right-4 z-50 flex justify-center">
         <div className="bg-primary border border-border rounded-lg shadow-lg p-4 max-w-sm w-full">
           <div className="flex items-center justify-between gap-3">
             {/* Download Button */}
@@ -51,7 +51,7 @@ export function PWAInstallPrompt() {
       {/* Manual Installation Instructions Dialog */}
       {showManualInstructions && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-          <div className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
+          <div className="fixed left-[50%] top-[50%] z-50 grid max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg w-[90vw]">
             <div className="flex flex-col space-y-1.5 text-center sm:text-left">
               <h2 className="text-lg font-semibold leading-none tracking-tight">
                 {t('pwa.install.instructions.title')}
@@ -83,7 +83,7 @@ export function PWAInstallPrompt() {
 
               {/* Other browsers */}
               <div className="flex items-start gap-3">
-                <Share className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <Share2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-sm">{t('pwa.install.instructions.otherLabel')}</p>
                   <p className="text-sm text-muted-foreground">
