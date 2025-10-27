@@ -19,12 +19,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       {/* Main Content - Mobile Optimized with Bottom Padding (pb-[92px] = 72px for the bottom navigation + 20px for the global bottom padding) */}
-      <main className={`flex flex-col min-h-screen pb-[92px] px-5 pt-5`}>
+      <main className="flex flex-col min-h-screen pb-[92px] px-5 pt-5 container max-w-7xl mx-auto">
           {children}
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur safe-bottom">
         <div className="grid grid-cols-5 gap-1 p-2">
           <Link
             to="/"

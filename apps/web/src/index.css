@@ -64,11 +64,6 @@
     overflow-x: hidden;
     /* Better touch scrolling */
     -webkit-overflow-scrolling: touch;
-    /* Safe area support for PWA and notched devices */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
   }
 
   /* Safe area support for notched devices (iPhone X+) */
