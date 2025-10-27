@@ -24,8 +24,8 @@ export function PWAInstallPrompt() {
   return (
     <>
       {/* Install Prompt Snackbar */}
-      <div className="fixed bottom-28 left-4 right-4 z-50 flex justify-center">
-        <Card className="bg-primary border-primary max-w-sm w-full">
+      <div className="fixed bottom-28 left-4 right-4 z-50 flex justify-center animate-in slide-in-from-bottom duration-500 fade-in">
+        <Card className="bg-primary border-primary max-w-sm w-full shadow-xl">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               {/* Download Button */}
