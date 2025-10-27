@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { FavoritesProvider } from '@/context/FavoritesContext';
 import { FiguresProvider } from '@/context/FiguresContext';
 import { Layout } from '@/components/Layout';
+import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
 import { Home } from '@/pages/Home';
 import { Discover } from '@/pages/Discover';
 import { Favorites } from '@/pages/Favorites';
@@ -27,6 +28,7 @@ function App() {
         <FiguresProvider>
           <FavoritesProvider>
             <BrowserRouter>
+              <PWAUpdateNotification />
               <Layout>
                 <Routes>
                   <Route path="/" element={<Home />} />

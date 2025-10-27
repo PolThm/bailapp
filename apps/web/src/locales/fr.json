@@ -252,6 +252,13 @@
       "complexityRequired": "La complexité est requise",
       "phrasesCountMin": "Le nombre de phrases doit être au moins 1"
     }
+  },
+  "pwa": {
+    "update": {
+      "title": "Nouvelle version disponible",
+      "message": "Mise à jour en cours...",
+      "close": "Fermer"
+    }
   }
 }
 
