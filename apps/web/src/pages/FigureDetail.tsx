@@ -169,6 +169,13 @@ export function FigureDetail() {
         {/* Meta Information */}
         <Card>
           <CardContent className="pt-4 space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t('figure.duration')}</span>
+              <span className="font-medium flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                {t('figure.phrases', { count: figure.phrasesCount })}
+              </span>
+            </div>
             {figure.videoAuthor && (
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{t('figure.videoAuthor')}</span>
@@ -178,13 +185,6 @@ export function FigureDetail() {
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('figure.videoLanguage')}</span>
               <span className="font-medium">{t(`badges.videoLanguage.${figure.videoLanguage}`)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('figure.duration')}</span>
-              <span className="font-medium flex items-center gap-1">
-                <Clock className="h-4 w-4" />
-                {t('figure.phrases', { count: figure.phrasesCount })}
-              </span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('figure.visibility')}</span>
