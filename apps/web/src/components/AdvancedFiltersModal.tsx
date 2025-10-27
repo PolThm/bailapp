@@ -63,7 +63,7 @@ export function AdvancedFiltersModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] w-[90vw] mb-4">
+      <DialogContent className="sm:max-w-[500px] w-[90vw] mb-12">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>{t('discover.advancedFilters.title')}</DialogTitle>
@@ -76,7 +76,7 @@ export function AdvancedFiltersModal({
           </div>
         </DialogHeader>
 
-        <div className="space-y-2 py-3">
+        <div className="space-y-2 py-4">
           {/* Figure Type Filter */}
           <div className="space-y-1">
             <label className="text-sm font-medium">{t('discover.advancedFilters.figureType')}</label>
@@ -99,7 +99,7 @@ export function AdvancedFiltersModal({
           </div>
 
           {/* Complexity Filter */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             <label className="text-sm font-medium">{t('discover.advancedFilters.complexity')}</label>
             <Select
               value={filters.complexity || 'all'}
@@ -120,7 +120,7 @@ export function AdvancedFiltersModal({
           </div>
 
           {/* Video Language Filter */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             <label className="text-sm font-medium">{t('discover.advancedFilters.videoLanguage')}</label>
             <Select
               value={filters.videoLanguage || 'all'}
@@ -141,7 +141,7 @@ export function AdvancedFiltersModal({
           </div>
 
           {/* Dance Sub-Style Filter */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             <label className="text-sm font-medium">{t('discover.advancedFilters.danceSubStyle')}</label>
             <Select
               value={filters.danceSubStyle || 'all'}
@@ -176,11 +176,16 @@ export function AdvancedFiltersModal({
                 )}
               </SelectContent>
             </Select>
+            {(!filters.danceStyle && selectedStyle === 'all') && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {t('discover.advancedFilters.subStyleHint')}
+              </p>
+            )}
           </div>
 
           {/* Active Filters Summary */}
           {hasActiveFilters && (
-            <div className="space-y-1">
+            <div className="space-y-2">
               <label className="text-sm font-medium">{t('discover.advancedFilters.activeFilters')}</label>
               <div className="flex flex-wrap gap-2">
                 {filters.figureType && (
