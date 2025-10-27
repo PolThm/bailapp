@@ -64,7 +64,7 @@ export function AdvancedFiltersModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] w-[90vw]">
+      <DialogContent className="sm:max-w-[500px] w-[90vw] mb-4">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>{t('discover.advancedFilters.title')}</DialogTitle>
@@ -77,9 +77,9 @@ export function AdvancedFiltersModal({
           </div>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-2 py-3">
           {/* Figure Type Filter */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <label className="text-sm font-medium">{t('discover.advancedFilters.figureType')}</label>
             <Select
               value={filters.figureType || 'all'}
@@ -100,7 +100,7 @@ export function AdvancedFiltersModal({
           </div>
 
           {/* Complexity Filter */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <label className="text-sm font-medium">{t('discover.advancedFilters.complexity')}</label>
             <Select
               value={filters.complexity || 'all'}
@@ -121,7 +121,7 @@ export function AdvancedFiltersModal({
           </div>
 
           {/* Video Language Filter */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <label className="text-sm font-medium">{t('discover.advancedFilters.videoLanguage')}</label>
             <Select
               value={filters.videoLanguage || 'all'}
@@ -142,7 +142,7 @@ export function AdvancedFiltersModal({
           </div>
 
           {/* Dance Sub-Style Filter */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <label className="text-sm font-medium">{t('discover.advancedFilters.danceSubStyle')}</label>
             <Select
               value={filters.danceSubStyle || 'all'}
@@ -164,7 +164,7 @@ export function AdvancedFiltersModal({
 
           {/* Active Filters Summary */}
           {hasActiveFilters && (
-            <div className="space-y-2">
+            <div className="space-y-1">
               <label className="text-sm font-medium">{t('discover.advancedFilters.activeFilters')}</label>
               <div className="flex flex-wrap gap-2">
                 {filters.figureType && (
@@ -193,8 +193,7 @@ export function AdvancedFiltersModal({
         </div>
 
         {/* Actions */}
-    
-          <div className="flex gap-2 pt-4">
+          <div className="flex gap-2 pt-2">
             <Button
                 variant="outline"
                 onClick={handleReset}
