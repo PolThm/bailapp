@@ -168,7 +168,7 @@ export function FigureDetail() {
           <CardContent className="pt-4 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('figure.duration')}</span>
-              <span className="font-medium flex items-center gap-1">
+              <span className="font-medium flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
                 {t('figure.phrases', { count: figure.phrasesCount })}
               </span>
