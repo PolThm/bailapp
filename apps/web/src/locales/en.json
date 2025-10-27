@@ -69,6 +69,7 @@
       "danceSubStyle": "Dance Sub-Style",
       "selectSubStyle": "Select sub-style",
       "allSubStyles": "All sub-styles",
+      "subStyleHint": "Select a main style to unlock this filter",
       "activeFilters": "Active Filters",
       "reset": "Reset",
       "apply": "Apply"

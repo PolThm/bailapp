@@ -69,6 +69,7 @@
       "danceSubStyle": "Sub-estilo de Baile",
       "selectSubStyle": "Seleccionar sub-estilo",
       "allSubStyles": "Todos los sub-estilos",
+      "subStyleHint": "Selecciona un estilo principal para desbloquear este filtro",
       "activeFilters": "Filtros Activos",
       "reset": "Reiniciar",
       "apply": "Aplicar"

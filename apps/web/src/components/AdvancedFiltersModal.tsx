@@ -177,7 +177,7 @@ export function AdvancedFiltersModal({
               </SelectContent>
             </Select>
             {(!filters.danceStyle && selectedStyle === 'all') && (
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[10px] text-muted-foreground">
                 {t('discover.advancedFilters.subStyleHint')}
               </p>
             )}
