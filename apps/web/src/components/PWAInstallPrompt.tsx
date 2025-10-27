@@ -21,26 +21,26 @@ export function PWAInstallPrompt() {
   return (
     <>
       {/* Install Prompt Snackbar */}
-      <div className="fixed bottom-4 left-4 right-4 z-50 flex justify-center">
-        <div className="bg-secondary border border-border rounded-lg shadow-lg p-4 max-w-sm w-full">
+      <div className="fixed bottom-24 left-4 right-4 z-50 flex justify-center">
+        <div className="bg-primary border border-border rounded-lg shadow-lg p-4 max-w-sm w-full">
           <div className="flex items-center justify-between gap-3">
             {/* Download Button */}
             <button
               onClick={handleInstallClick}
-              className="flex-shrink-0 bg-foreground text-background p-2 rounded hover:bg-foreground/90 transition-colors"
+              className="flex-shrink-0 bg-primary-foreground text-primary p-2 rounded hover:bg-primary-foreground/90 transition-colors"
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-4 w-4 text-foreground" />
             </button>
 
             {/* Text */}
-            <p className="text-sm font-medium text-foreground flex-1">
+            <p className="text-sm font-medium text-primary-foreground flex-1">
               {t('pwa.install.title')}
             </p>
 
             {/* Close Button */}
             <button
               onClick={handleDismiss}
-              className="flex-shrink-0 text-muted-foreground hover:text-foreground p-1 rounded hover:bg-muted transition-colors"
+              className="flex-shrink-0 text-primary-foreground hover:text-foreground p-1 rounded hover:bg-muted transition-colors"
             >
               <X className="h-4 w-4" />
             </button>

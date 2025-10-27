@@ -261,7 +261,7 @@
       "close": "Fermer"
     },
     "install": {
-      "title": "Installer Bailapp sur votre appareil",
+      "title": "Installer Bailapp sur ton appareil",
       "instructions": {
         "title": "Instructions d'installation",
         "android": "Appuyez sur le menu (⋮) puis 'Installer l'application' ou 'Ajouter à l'écran d'accueil'",
