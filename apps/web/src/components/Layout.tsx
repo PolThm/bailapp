@@ -17,14 +17,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen flex-1">
-      {/* Main Content - Mobile Optimized with Bottom Padding (92px = 72px for the bottom navigation + 20px for the global bottom padding) */}
-      <main className={`flex-1 min-h-screen flex flex-col container max-w-7xl mx-auto px-5 pt-5 pb-[92px]`}>
+    <div className="flex min-h-screen pb-[72px]">
+      {/* Main Content - Mobile Optimized with Bottom Padding (72px for the bottom navigation) */}
+      <main className={`flex flex-col flex-1 p-5`}>
           {children}
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur safe-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur">
         <div className="grid grid-cols-5 gap-1 p-2">
           <Link
             to="/"
