@@ -1,6 +1,6 @@
 {
   "name": "bailapp",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "private": true,
   "description": "Bailapp - A PWA app for creating choreographies and learning dance moves",
   "workspaces": [
@@ -16,7 +16,8 @@
     "emu": "firebase emulators:start",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-    "type-check": "bun --cwd apps/web run type-check && bun --cwd apps/functions run type-check"
+    "type-check": "bun --cwd apps/web run type-check && bun --cwd apps/functions run type-check",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.11.0",
@@ -25,8 +26,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.37.1",
     "eslint-plugin-react-hooks": "^5.0.0",
+    "husky": "^9.1.7",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3"
   }
 }
-

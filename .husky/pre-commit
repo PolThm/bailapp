@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Bump version and add changes
+node scripts/bump-version.js
+git add package.json apps/web/package.json apps/web/src/pages/Profile.tsx
