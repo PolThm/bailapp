@@ -109,13 +109,13 @@
       "figure": "Figure",
       "basicStep": "Basic Step",
       "complexStep": "Complex Step",
-      "combination": "Combination"
+      "mix": "Mix"
     },
     "complexity": {
       "basic": "Basic",
-      "basicIntermediate": "Basic / Intermediate",
+      "basicIntermediate": "Basic/Inter",
       "intermediate": "Intermediate",
-      "intermediateAdvanced": "Intermediate / Advanced",
+      "intermediateAdvanced": "Inter/Advanced",
       "advanced": "Advanced"
     },
     "videoLanguage": {
