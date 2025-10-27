@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
-import { Heart, Search, SlidersHorizontal } from 'lucide-react';
+import { Heart, Search, SlidersHorizontal, Plus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useFigures } from '@/context/FiguresContext';
@@ -109,12 +109,19 @@ export function Favorites() {
       {/* Header */}
       <div className="pb-3">
         <div className="flex items-start justify-between">
-          <div className="flex-1">
+          <div className="flex-1 pr-4">
             <h1 className="text-3xl font-bold">{t('favorites.title')}</h1>
             <p className="text-muted-foreground mt-1">
               {t('favorites.subtitle')}
             </p>
           </div>
+          <button
+            onClick={handleAddFigure}
+            className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center flex-shrink-0"
+            aria-label={t('common.addFigure')}
+          >
+            <Plus className="h-6 w-6" />
+          </button>
         </div>
       </div>
 

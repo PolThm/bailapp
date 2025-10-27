@@ -87,7 +87,7 @@
   },
   "favorites": {
     "title": "Favoritos",
-    "subtitle": "Tus movimientos favoritos",
+    "subtitle": "Tu colección personal",
     "subtitle_zero": "No hay favoritos todavía",
     "subtitle_one": "{{count}} movimiento favorito",
     "subtitle_other": "{{count}} movimientos favoritos",
