@@ -1,15 +1,23 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, Compass, Heart, Music, User } from 'lucide-react';
+import { SplashScreen } from './SplashScreen';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
+  const [showSplash, setShowSplash] = useState(true);
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
 
+
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  }
+
   return (
-    <>
+    <div className="flex flex-col min-h-screen flex-1">
       {/* Main Content - Mobile Optimized with Bottom Padding (92px = 72px for the bottom navigation + 20px for the global bottom padding) */}
       <main className={`flex-1 min-h-screen flex flex-col container max-w-7xl mx-auto px-5 pt-5 pb-[92px]`}>
           {children}
@@ -65,7 +73,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
       </nav>
-    </>
+    </div>
   );
 }
 
