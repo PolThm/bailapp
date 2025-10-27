@@ -74,9 +74,6 @@ export function FigureDetail() {
 
   // Check if description is long (> 3 lines, ~150 chars)
   const isDescriptionLong = (figure.description?.length || 0) > 150;
-  const displayDescription = showFullDescription || !isDescriptionLong
-    ? figure.description
-    : figure.description?.substring(0, 150) + '...';
 
   return (
     <>
@@ -151,8 +148,8 @@ export function FigureDetail() {
               <h2 className="font-semibold">{t('figure.fullTitle')}</h2>
               <h1 className="text-sm text-muted-foreground leading-relaxed">{figure.fullTitle}</h1>
               <h2 className="font-semibold pt-1">{t('figure.description')}</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {displayDescription}
+              <p className={`text-sm text-muted-foreground leading-relaxed ${!showFullDescription ? 'line-clamp-3' : ''}`}>
+                {figure.description}
               </p>
               {isDescriptionLong && (
                 <button
