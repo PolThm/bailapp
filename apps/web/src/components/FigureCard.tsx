@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   DanceStyleBadge,
+  DanceSubStyleBadge,
   FigureTypeBadge,
   ComplexityBadge,
 } from '@/components/ui/badge';
@@ -52,6 +53,9 @@ export function FigureCard({ figure }: FigureCardProps) {
           {/* Badges */}
           <div className="flex flex-wrap gap-1.5">
             <DanceStyleBadge style={figure.danceStyle} />
+            {figure.danceSubStyle && (
+              <DanceSubStyleBadge style={figure.danceStyle} subStyle={figure.danceSubStyle} />
+            )}
             <FigureTypeBadge type={figure.figureType} />
             <ComplexityBadge complexity={figure.complexity} />
           </div>

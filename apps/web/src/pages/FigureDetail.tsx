@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DanceStyleBadge,
+  DanceSubStyleBadge,
   FigureTypeBadge,
   ComplexityBadge,
   LanguageBadge,
@@ -135,6 +136,9 @@ export function FigureDetail() {
           <CardContent className="pt-4">
             <div className="flex flex-wrap gap-2">
               <DanceStyleBadge style={figure.danceStyle} />
+              {figure.danceSubStyle && (
+                <DanceSubStyleBadge style={figure.danceStyle} subStyle={figure.danceSubStyle} />
+              )}
               <FigureTypeBadge type={figure.figureType} />
               <ComplexityBadge complexity={figure.complexity} />
               <LanguageBadge language={figure.videoLanguage} />

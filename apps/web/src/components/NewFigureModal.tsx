@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { getYouTubeVideoId, getYouTubeThumbnail } from '@/utils/youtube';
-import type { DanceStyle, FigureType, Complexity, VideoLanguage, Visibility } from '@/types';
+import type { DanceStyle, DanceSubStyle, FigureType, Complexity, VideoLanguage, Visibility } from '@/types';
 
 interface NewFigureModalProps {
   open: boolean;
@@ -24,12 +24,14 @@ interface NewFigureModalProps {
 
 export interface NewFigureFormData {
   youtubeUrl: string;
-  title: string;
+  shortTitle: string;
+  fullTitle: string;
   description?: string;
   videoAuthor?: string;
   startTime?: string;
   endTime?: string;
   danceStyle: DanceStyle;
+  danceSubStyle?: DanceSubStyle;
   figureType: FigureType;
   complexity: Complexity;
   phrasesCount: number;
@@ -53,16 +55,17 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
       const id = getYouTubeVideoId(formData.youtubeUrl);
       setVideoId(id);
       // Auto-generate title from video ID (in real app, would fetch from YouTube API)
-      if (id && !formData.title) {
+      if (id && !formData.shortTitle) {
         setFormData((prev) => ({
           ...prev,
-          title: `Video ${id}`,
+          shortTitle: `Video ${id}`,
+          fullTitle: `Video ${id} - Full Title`,
         }));
       }
     } else {
       setVideoId(null);
     }
-  }, [formData.youtubeUrl, formData.title]);
+  }, [formData.youtubeUrl, formData.shortTitle]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +73,8 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
     // Validation
     const newErrors: Record<string, string> = {};
     if (!formData.youtubeUrl) newErrors.youtubeUrl = t('newFigure.errors.youtubeUrlRequired');
-    if (!formData.title) newErrors.title = t('newFigure.errors.titleRequired');
+    if (!formData.shortTitle) newErrors.shortTitle = t('newFigure.errors.titleRequired');
+    if (!formData.fullTitle) newErrors.fullTitle = t('newFigure.errors.titleRequired');
     if (!formData.danceStyle) newErrors.danceStyle = t('newFigure.errors.danceStyleRequired');
     if (!formData.figureType) newErrors.figureType = t('newFigure.errors.figureTypeRequired');
     if (!formData.complexity) newErrors.complexity = t('newFigure.errors.complexityRequired');
@@ -146,20 +150,37 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
             </div>
           )}
 
-          {/* Title */}
+          {/* Short Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">{t('newFigure.figureTitle')} {t('newFigure.required')}</Label>
+            <Label htmlFor="shortTitle">{t('newFigure.shortTitle')} {t('newFigure.required')}</Label>
             <Input
-              id="title"
-              placeholder={t('newFigure.titlePlaceholder')}
-              value={formData.title || ''}
+              id="shortTitle"
+              placeholder={t('newFigure.shortTitlePlaceholder')}
+              value={formData.shortTitle || ''}
               onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
+                setFormData({ ...formData, shortTitle: e.target.value })
               }
-              className={errors.title ? 'border-destructive' : ''}
+              className={errors.shortTitle ? 'border-destructive' : ''}
             />
-            {errors.title && (
-              <p className="text-sm text-destructive">{errors.title}</p>
+            {errors.shortTitle && (
+              <p className="text-sm text-destructive">{errors.shortTitle}</p>
+            )}
+          </div>
+
+          {/* Full Title */}
+          <div className="space-y-2">
+            <Label htmlFor="fullTitle">{t('newFigure.fullTitle')} {t('newFigure.required')}</Label>
+            <Input
+              id="fullTitle"
+              placeholder={t('newFigure.fullTitlePlaceholder')}
+              value={formData.fullTitle || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, fullTitle: e.target.value })
+              }
+              className={errors.fullTitle ? 'border-destructive' : ''}
+            />
+            {errors.fullTitle && (
+              <p className="text-sm text-destructive">{errors.fullTitle}</p>
             )}
           </div>
 
@@ -222,7 +243,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
             <Select
               value={formData.danceStyle}
               onValueChange={(value) =>
-                setFormData({ ...formData, danceStyle: value as DanceStyle })
+                setFormData({ ...formData, danceStyle: value as DanceStyle, danceSubStyle: undefined })
               }
             >
               <SelectTrigger
@@ -239,6 +260,46 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
               <p className="text-sm text-destructive">{errors.danceStyle}</p>
             )}
           </div>
+
+          {/* Dance Sub-Style */}
+          {formData.danceStyle && (
+            <div className="space-y-2">
+              <Label htmlFor="danceSubStyle">{t('newFigure.danceSubStyle')}</Label>
+              <Select
+                value={formData.danceSubStyle}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, danceSubStyle: value as DanceSubStyle })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('newFigure.danceSubStylePlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {formData.danceStyle === 'salsa' && (
+                    <>
+                      <SelectItem value="cuban">{t('badges.danceSubStyle.cuban')}</SelectItem>
+                      <SelectItem value="la-style">{t('badges.danceSubStyle.la-style')}</SelectItem>
+                      <SelectItem value="ny-style">{t('badges.danceSubStyle.ny-style')}</SelectItem>
+                      <SelectItem value="puerto-rican">{t('badges.danceSubStyle.puerto-rican')}</SelectItem>
+                      <SelectItem value="colombian">{t('badges.danceSubStyle.colombian')}</SelectItem>
+                      <SelectItem value="rueda-de-casino">{t('badges.danceSubStyle.rueda-de-casino')}</SelectItem>
+                      <SelectItem value="romantica">{t('badges.danceSubStyle.romantica')}</SelectItem>
+                    </>
+                  )}
+                  {formData.danceStyle === 'bachata' && (
+                    <>
+                      <SelectItem value="dominican">{t('badges.danceSubStyle.dominican')}</SelectItem>
+                      <SelectItem value="modern">{t('badges.danceSubStyle.modern')}</SelectItem>
+                      <SelectItem value="sensual">{t('badges.danceSubStyle.sensual')}</SelectItem>
+                      <SelectItem value="urban">{t('badges.danceSubStyle.urban')}</SelectItem>
+                      <SelectItem value="fusion">{t('badges.danceSubStyle.fusion')}</SelectItem>
+                      <SelectItem value="ballroom">{t('badges.danceSubStyle.ballroom')}</SelectItem>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Figure Type */}
           <div className="space-y-2">

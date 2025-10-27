@@ -13,6 +13,12 @@ export type VideoLanguage = 'french' | 'english' | 'spanish';
 
 export type Visibility = 'public' | 'private' | 'unlisted';
 
+export type DanceSubStyle = 
+  // Salsa
+  | 'cuban' | 'la-style' | 'ny-style' | 'puerto-rican' | 'colombian' | 'rueda-de-casino' | 'romantica'
+  // Bachata
+  | 'dominican' | 'modern' | 'sensual' | 'urban' | 'fusion' | 'ballroom';
+
 export interface Figure {
   id: string;
   youtubeUrl: string;
@@ -23,6 +29,7 @@ export interface Figure {
   startTime?: string; // Format: HH:MM:SS or MM:SS
   endTime?: string; // Format: HH:MM:SS or MM:SS
   danceStyle: DanceStyle;
+  danceSubStyle?: DanceSubStyle;
   figureType: FigureType;
   complexity: Complexity;
   phrasesCount: number; // Number of 8-count phrases

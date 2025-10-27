@@ -127,6 +127,21 @@
       "public": "Public",
       "private": "Private",
       "unlisted": "Unlisted"
+    },
+    "danceSubStyle": {
+      "cuban": "Cuban",
+      "la-style": "LA Style",
+      "ny-style": "NY Style",
+      "puerto-rican": "Puerto Rican",
+      "calena": "Caleña",
+      "rueda": "Rueda",
+      "romantic": "Romantic",
+      "dominican": "Dominican",
+      "modern": "Modern",
+      "sensual": "Sensual",
+      "urban": "Urban",
+      "fusion": "Fusion",
+      "ballroom": "Ballroom"
     }
   },
   "auth": {
@@ -171,6 +186,12 @@
     "timePlaceholder": "MM:SS or HH:MM:SS",
     "danceStyle": "Dance Style",
     "danceStylePlaceholder": "Select dance style",
+    "danceSubStyle": "Dance Sub-Style (optional)",
+    "danceSubStylePlaceholder": "Select dance sub-style",
+    "shortTitle": "Short Title",
+    "shortTitlePlaceholder": "Brief figure name",
+    "fullTitle": "Full Title",
+    "fullTitlePlaceholder": "Complete figure name",
     "figureType": "Figure Type",
     "figureTypePlaceholder": "Select figure type",
     "complexity": "Complexity",

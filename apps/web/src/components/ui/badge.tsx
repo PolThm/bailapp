@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import type { DanceStyle, FigureType, Complexity, VideoLanguage } from '@/types';
+import type { DanceStyle, DanceSubStyle, FigureType, Complexity, VideoLanguage } from '@/types';
 
 const badgeVariants = cva(
   'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
@@ -38,6 +38,23 @@ const badgeVariants = cva(
         french: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100',
         english: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-100',
         spanish: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-100',
+        
+        // Dance substyles - Salsa
+        'salsa-cuban': 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-100',
+        'salsa-la-style': 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-100',
+        'salsa-ny-style': 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100',
+        'salsa-puerto-rican': 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100',
+        'salsa-colombian': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-100',
+        'salsa-rueda-de-casino': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-100',
+        'salsa-romantica': 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-100',
+        
+        // Dance substyles - Bachata
+        'bachata-dominican': 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-100',
+        'bachata-modern': 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-100',
+        'bachata-sensual': 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100',
+        'bachata-urban': 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-100',
+        'bachata-fusion': 'bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-100',
+        'bachata-ballroom': 'bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-100',
       },
     },
     defaultVariants: {
@@ -82,6 +99,18 @@ export function LanguageBadge({ language }: { language: VideoLanguage }) {
     spanish: '🇪🇸',
   };
   return <Badge variant={language}>{flags[language]} {t(`badges.videoLanguage.${language}`)}</Badge>;
+}
+
+export function DanceSubStyleBadge({ 
+  style, 
+  subStyle 
+}: { 
+  style: DanceStyle; 
+  subStyle: DanceSubStyle;
+}) {
+  const { t } = useTranslation();
+  const variantKey = `${style}-${subStyle}` as const;
+  return <Badge variant={variantKey}>{t(`badges.danceSubStyle.${subStyle}`)}</Badge>;
 }
 
 export { Badge, badgeVariants };
