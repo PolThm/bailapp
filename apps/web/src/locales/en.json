@@ -87,7 +87,7 @@
   },
   "favorites": {
     "title": "Favorites",
-    "subtitle": "Your favorite dance movements",
+    "subtitle": "Your favorite movements",
     "subtitle_zero": "No favorites yet",
     "subtitle_one": "{{count}} favorite movement",
     "subtitle_other": "{{count}} favorite movements",
