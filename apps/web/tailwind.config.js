@@ -3,7 +3,7 @@ export default {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
   safelist: [
-    'pb-[72px]',
+    'pb-[92px]',
     'line-clamp-2',
   ],
   theme: {

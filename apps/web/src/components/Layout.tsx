@@ -18,8 +18,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* Main Content - Mobile Optimized with Bottom Padding (72px for the bottom navigation) */}
-      <main className={`flex flex-col min-h-screen pb-[72px] px-5 pt-5`}>
+      {/* Main Content - Mobile Optimized with Bottom Padding (pb-[92px] = 72px for the bottom navigation + 20px for the global bottom padding) */}
+      <main className={`flex flex-col min-h-screen pb-[92px] px-5 pt-5`}>
           {children}
       </main>
 
