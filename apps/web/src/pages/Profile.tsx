@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthDialog } from '@/components/AuthDialog';
 
+// Get version from package.json
+const APP_VERSION = '1.0.0';
+
 export function Profile() {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
@@ -110,6 +113,11 @@ export function Profile() {
             {t('profile.signIn')}
           </Button>
         )}
+        
+        {/* About text at the bottom */}
+        <p className="text-xs text-muted-foreground text-center mt-4 -mb-1">
+          {t('profile.about.version', { version: APP_VERSION })} • {t('profile.about.developed')} <a href="https://github.com/PolThm" target="_blank" rel="noopener noreferrer" className="underline">Pol Thomas</a>
+        </p>
       </div>
 
       {/* Auth Dialog */}

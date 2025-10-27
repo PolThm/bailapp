@@ -114,7 +114,12 @@
     "signInDescription": "Accéder à ton profil, préférences et paramètres",
     "languagePreferences": "Préférences linguistiques",
     "selectLanguage": "Choisis ta langue préférée",
-    "signOut": "Se déconnecter"
+    "signOut": "Se déconnecter",
+    "about": {
+      "title": "À propos",
+      "version": "V{{version}}",
+      "developed": "Développé avec ❤️ par"
+    }
   },
   "figure": {
     "notFound": "Figure non trouvée",

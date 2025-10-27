@@ -114,7 +114,12 @@
     "signInDescription": "Access your profile, preferences, and settings",
     "languagePreferences": "Language Preferences",
     "selectLanguage": "Choose your preferred language",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "about": {
+      "title": "About",
+      "version": "V{{version}}",
+      "developed": "Developed with ❤️ by"
+    }
   },
   "figure": {
     "notFound": "Figure not found",
