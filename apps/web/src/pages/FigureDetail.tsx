@@ -30,7 +30,7 @@ export function FigureDetail() {
 
   if (!figure) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center justify-center flex-1">
         <p className="text-lg text-muted-foreground">{t('figure.notFound')}</p>
         <Button onClick={() => navigate('/discover')} className="mt-4">
           {t('figure.backToDiscover')}

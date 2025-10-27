@@ -43,7 +43,7 @@ export function DiscoverCategory() {
   return (
     <>
       {/* Header with back icon */}
-      <div className="pb-6">
+      <div className="pb-4">
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate('/discover')}
@@ -69,7 +69,7 @@ export function DiscoverCategory() {
           onAction={handleAddFigure}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {figures.map((figure) => (
             <FigureCard key={figure.id} figure={figure} />
           ))}
