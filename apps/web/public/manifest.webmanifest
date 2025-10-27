@@ -8,6 +8,7 @@
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
+  "capture_links": "existing-client-navigate",
   "icons": [
     {
       "src": "/icons/icon-192.png",
