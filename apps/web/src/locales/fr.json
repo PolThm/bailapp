@@ -87,14 +87,14 @@
   },
   "favorites": {
     "title": "Favoris",
-    "subtitle": "Tes figures de danse favorites",
+    "subtitle": "Tes mouvements de danse favoris",
     "subtitle_zero": "Aucun favori pour l'instant",
-    "subtitle_one": "{{count}} figure favorite",
-    "subtitle_other": "{{count}} figures favorites",
+    "subtitle_one": "{{count}} mouvement favori",
+    "subtitle_other": "{{count}} mouvements favoris",
     "empty": {
       "title": "Aucun favori pour l'instant",
-      "description": "Commence à ajouter des figures à tes favoris pour les retrouver ici plus tard !",
-      "action": "Découvrir des figures"
+      "description": "Commence à ajouter des mouvements à tes favoris pour les retrouver ici plus tard !",
+      "action": "Découvrir des mouvements"
     }
   },
   "choreography": {

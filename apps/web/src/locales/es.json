@@ -87,14 +87,14 @@
   },
   "favorites": {
     "title": "Favoritos",
-    "subtitle": "Tus figuras de baile favoritas",
+    "subtitle": "Tus movimientos de baile favoritos",
     "subtitle_zero": "No hay favoritos todavía",
-    "subtitle_one": "{{count}} figura favorita",
-    "subtitle_other": "{{count}} figuras favoritas",
+    "subtitle_one": "{{count}} movimiento favorito",
+    "subtitle_other": "{{count}} movimientos favoritos",
     "empty": {
       "title": "No hay favoritos todavía",
-      "description": "¡Comienza a agregar figuras a tus favoritos para encontrarlas aquí más tarde!",
-      "action": "Descubrir figuras"
+      "description": "¡Comienza a agregar movimientos a tus favoritos para encontrarlas aquí más tarde!",
+      "action": "Descubrir movimientos"
     }
   },
   "choreography": {

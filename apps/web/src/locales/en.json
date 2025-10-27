@@ -87,14 +87,14 @@
   },
   "favorites": {
     "title": "Favorites",
-    "subtitle": "Your favorite dance figures",
+    "subtitle": "Your favorite dance movements",
     "subtitle_zero": "No favorites yet",
-    "subtitle_one": "{{count}} favorite figure",
-    "subtitle_other": "{{count}} favorite figures",
+    "subtitle_one": "{{count}} favorite movement",
+    "subtitle_other": "{{count}} favorite movements",
     "empty": {
       "title": "No favorites yet",
-      "description": "Start adding figures to your favorites to find them here later!",
-      "action": "Discover Figures"
+      "description": "Start adding movements to your favorites to find them here later!",
+      "action": "Discover movements"
     }
   },
   "choreography": {

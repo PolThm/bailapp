@@ -47,11 +47,14 @@ export function FigureDetail() {
   const isFav = isFavorite(figure.id);
 
   const handleToggleFavorite = () => {
-    if (!user) {
-      setShowAuthDialog(true);
-    } else {
-      toggleFavorite(figure.id);
-    }
+    // For now, allow adding to favorites without authentication
+    // When backend is plugged, add the auth check back:
+    // if (!user) {
+    //   setShowAuthDialog(true);
+    // } else {
+    //   toggleFavorite(figure.id);
+    // }
+    toggleFavorite(figure.id);
   };
 
   const handleShare = async () => {
