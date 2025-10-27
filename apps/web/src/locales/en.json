@@ -259,6 +259,17 @@
       "title": "New version available",
       "message": "Update in progress...",
       "close": "Close"
+    },
+    "install": {
+      "title": "Install Bailapp on your device",
+      "instructions": {
+        "title": "Installation Instructions",
+        "android": "Tap the menu (⋮) then 'Install app' or 'Add to home screen'",
+        "ios": "Tap the share button (⬆) then 'Add to Home Screen'",
+        "otherLabel": "Other browsers",
+        "other": "Look for 'Install' or 'Add to home screen' option in the browser menu",
+        "close": "Close"
+      }
     }
   }
 }

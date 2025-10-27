@@ -259,6 +259,17 @@
       "title": "Nouvelle version disponible",
       "message": "Mise à jour en cours...",
       "close": "Fermer"
+    },
+    "install": {
+      "title": "Installer Bailapp sur votre appareil",
+      "instructions": {
+        "title": "Instructions d'installation",
+        "android": "Appuyez sur le menu (⋮) puis 'Installer l'application' ou 'Ajouter à l'écran d'accueil'",
+        "ios": "Appuyez sur le bouton de partage (⬆) puis 'Sur l'écran d'accueil'",
+        "otherLabel": "Autres navigateurs",
+        "other": "Recherchez l'option 'Installer' ou 'Ajouter à l'écran d'accueil' dans le menu du navigateur",
+        "close": "Fermer"
+      }
     }
   }
 }
