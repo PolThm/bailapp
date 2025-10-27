@@ -54,6 +54,25 @@
       "showing_other": "{{count}} results found",
       "clear": "Clear filters"
     },
+    "advancedFilters": {
+      "button": "More filters",
+      "title": "Advanced Filters",
+      "figureType": "Figure Type",
+      "selectFigureType": "Select a type",
+      "allTypes": "All types",
+      "complexity": "Complexity",
+      "selectComplexity": "Select complexity",
+      "allComplexities": "All complexities",
+      "videoLanguage": "Video Language",
+      "selectLanguage": "Select language",
+      "allLanguages": "All languages",
+      "danceSubStyle": "Dance Sub-Style",
+      "selectSubStyle": "Select sub-style",
+      "allSubStyles": "All sub-styles",
+      "activeFilters": "Active Filters",
+      "reset": "Reset",
+      "apply": "Apply"
+    },
     "empty": {
       "title": "No figures yet",
       "description": "Be the first to add a figure to this category!",
@@ -121,15 +140,15 @@
     },
     "figureType": {
       "figure": "Figure",
-      "basicStep": "Basic Step",
-      "complexStep": "Complex Step",
-      "mix": "Mix"
+      "basicstep": "Basic Step",
+      "complexstep": "Complex Step",
+      "combination": "Combination"
     },
     "complexity": {
       "basic": "Basic",
-      "basicIntermediate": "Basic/Inter",
+      "basicintermediate": "Basic/Inter",
       "intermediate": "Intermediate",
-      "intermediateAdvanced": "Inter/Advanced",
+      "intermediateadvanced": "Inter/Advanced",
       "advanced": "Advanced"
     },
     "videoLanguage": {
@@ -144,12 +163,12 @@
     },
     "danceSubStyle": {
       "cuban": "Cuban",
-      "la-style": "LA Style",
-      "ny-style": "NY Style",
-      "puerto-rican": "Puerto Rican",
-      "calena": "Caleña",
-      "rueda": "Rueda",
-      "romantic": "Romantic",
+      "lastyle": "LA Style",
+      "nystyle": "NY Style",
+      "puertorican": "Puerto Rican",
+      "colombian": "Colombian",
+      "ruedadecasino": "Rueda de Casino",
+      "romantica": "Romantica",
       "dominican": "Dominican",
       "modern": "Modern",
       "sensual": "Sensual",

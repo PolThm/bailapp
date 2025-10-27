@@ -54,6 +54,25 @@
       "showing_other": "{{count}} résultats trouvés",
       "clear": "Effacer les filtres"
     },
+    "advancedFilters": {
+      "button": "Autres filtres",
+      "title": "Filtres avancés",
+      "figureType": "Type de figure",
+      "selectFigureType": "Sélectionner un type",
+      "allTypes": "Tous les types",
+      "complexity": "Complexité",
+      "selectComplexity": "Sélectionner une complexité",
+      "allComplexities": "Toutes les complexités",
+      "videoLanguage": "Langue de la vidéo",
+      "selectLanguage": "Sélectionner une langue",
+      "allLanguages": "Toutes les langues",
+      "danceSubStyle": "Sous-style de danse",
+      "selectSubStyle": "Sélectionner un sous-style",
+      "allSubStyles": "Tous les sous-styles",
+      "activeFilters": "Filtres actifs",
+      "reset": "Réinitialiser",
+      "apply": "Appliquer"
+    },
     "empty": {
       "title": "Aucune figure pour l'instant",
       "description": "Sois le premier à ajouter une figure à cette catégorie !",
@@ -121,15 +140,15 @@
     },
     "figureType": {
       "figure": "Figure",
-      "basicStep": "Pas de base",
-      "complexStep": "Pas complexe",
-      "mix": "Mixte"
+      "basicstep": "Pas de base",
+      "complexstep": "Pas complexe",
+      "combination": "Combinaison"
     },
     "complexity": {
       "basic": "Basique",
-      "basicIntermediate": "Basique/Inter",
+      "basicintermediate": "Basique/Inter",
       "intermediate": "Intermédiaire",
-      "intermediateAdvanced": "Inter/Avancé",
+      "intermediateadvanced": "Inter/Avancé",
       "advanced": "Avancé"
     },
     "videoLanguage": {
@@ -144,12 +163,12 @@
     },
     "danceSubStyle": {
       "cuban": "Cubaine",
-      "la-style": "LA Style",
-      "ny-style": "NY Style",
-      "puerto-rican": "Porto-Ricaine",
-      "calena": "Caleña",
-      "rueda": "Rueda",
-      "romantic": "Romantique",
+      "lastyle": "LA Style",
+      "nystyle": "NY Style",
+      "puertorican": "Porto-Ricaine",
+      "colombian": "Colombienne",
+      "ruedadecasino": "Rueda de Casino",
+      "romantica": "Romantique",
       "dominican": "Dominicaine",
       "modern": "Moderne",
       "sensual": "Sensuel",

@@ -282,7 +282,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
                       <SelectItem value="ny-style">{t('badges.danceSubStyle.ny-style')}</SelectItem>
                       <SelectItem value="puerto-rican">{t('badges.danceSubStyle.puerto-rican')}</SelectItem>
                       <SelectItem value="colombian">{t('badges.danceSubStyle.colombian')}</SelectItem>
-                      <SelectItem value="rueda-de-casino">{t('badges.danceSubStyle.rueda-de-casino')}</SelectItem>
+                      <SelectItem value="rueda-de-casino">{t('badges.danceSubStyle.ruedadecasino')}</SelectItem>
                       <SelectItem value="romantica">{t('badges.danceSubStyle.romantica')}</SelectItem>
                     </>
                   )}

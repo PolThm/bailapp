@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, SlidersHorizontal } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useAuth } from '@/context/AuthContext';
 import { FigureCard } from '@/components/FigureCard';
 import { EmptyState } from '@/components/EmptyState';
 import { AuthDialog } from '@/components/AuthDialog';
 import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureModal';
+import { AdvancedFiltersModal, type AdvancedFilters } from '@/components/AdvancedFiltersModal';
 import {
   Select,
   SelectContent,
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import type { DanceStyle, Figure } from '@/types';
 
 export function Discover() {
@@ -24,8 +26,10 @@ export function Discover() {
   const { user } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState<DanceStyle | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
 
   const filteredFigures = useMemo(() => {
     let filtered = figures;
@@ -45,8 +49,25 @@ export function Discover() {
       );
     }
     
+    // Apply advanced filters
+    if (advancedFilters.figureType) {
+      filtered = filtered.filter((figure) => figure.figureType === advancedFilters.figureType);
+    }
+    
+    if (advancedFilters.complexity) {
+      filtered = filtered.filter((figure) => figure.complexity === advancedFilters.complexity);
+    }
+    
+    if (advancedFilters.videoLanguage) {
+      filtered = filtered.filter((figure) => figure.videoLanguage === advancedFilters.videoLanguage);
+    }
+    
+    if (advancedFilters.danceSubStyle) {
+      filtered = filtered.filter((figure) => figure.danceSubStyle === advancedFilters.danceSubStyle);
+    }
+    
     return filtered;
-  }, [figures, selectedStyle, searchQuery]);
+  }, [figures, selectedStyle, searchQuery, advancedFilters]);
 
   const handleAddFigure = () => {
     if (!user) {
@@ -98,51 +119,69 @@ export function Discover() {
             />
           </div>
           
-          {/* Style Filter */}
-          <Select value={selectedStyle} onValueChange={(value: DanceStyle | 'all') => setSelectedStyle(value)}>
-            <SelectTrigger className="w-full sm:w-[200px] h-11">
-              <SelectValue placeholder={t('discover.filter.placeholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                <div className="flex items-center gap-2">
-                  <span>{t('discover.filter.all')}</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {figures.length}
-                  </Badge>
-                </div>
-              </SelectItem>
-              <SelectItem value="salsa">
-                <div className="flex items-center gap-2">
-                  <span>Salsa</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {styleCounts.salsa}
-                  </Badge>
-                </div>
-              </SelectItem>
-              <SelectItem value="bachata">
-                <div className="flex items-center gap-2">
-                  <span>Bachata</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {styleCounts.bachata}
-                  </Badge>
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-row gap-2">
+            {/* Style Filter */}
+            <Select value={selectedStyle} onValueChange={(value: DanceStyle | 'all') => setSelectedStyle(value)}>
+              <SelectTrigger className="w-[200px] h-11">
+                <SelectValue placeholder={t('discover.filter.placeholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <div className="flex items-center gap-2">
+                    <span>{t('discover.filter.all')}</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {figures.length}
+                    </Badge>
+                  </div>
+                </SelectItem>
+                <SelectItem value="salsa">
+                  <div className="flex items-center gap-2">
+                    <span>Salsa</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {styleCounts.salsa}
+                    </Badge>
+                  </div>
+                </SelectItem>
+                <SelectItem value="bachata">
+                  <div className="flex items-center gap-2">
+                    <span>Bachata</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {styleCounts.bachata}
+                    </Badge>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            
+            {/* Advanced Filters Button */}
+            <Button
+              variant="outline"
+              onClick={() => setShowAdvancedFilters(true)}
+              className="h-11 flex items-center gap-2"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {t('discover.advancedFilters.button')}
+              {Object.values(advancedFilters).some(value => value !== undefined) && (
+                <Badge variant="secondary" className="text-xs ml-1">
+                  {Object.values(advancedFilters).filter(value => value !== undefined).length}
+                </Badge>
+              )}
+            </Button>
+          </div>
         </div>
         
         {/* Results Summary */}
-        {(searchQuery.trim() || selectedStyle !== 'all') && (
+        {(searchQuery.trim() || selectedStyle !== 'all' || Object.values(advancedFilters).some(value => value !== undefined)) && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>
               {t('discover.results.showing', { count: filteredFigures.length })}
             </span>
-            {(searchQuery.trim() || selectedStyle !== 'all') && (
+            {(searchQuery.trim() || selectedStyle !== 'all' || Object.values(advancedFilters).some(value => value !== undefined)) && (
               <button
                 onClick={() => {
                   setSearchQuery('');
                   setSelectedStyle('all');
+                  setAdvancedFilters({});
                 }}
                 className="text-primary hover:text-primary/80 text-xs underline"
               >
@@ -178,6 +217,15 @@ export function Discover() {
         open={showNewFigureModal}
         onClose={() => setShowNewFigureModal(false)}
         onSubmit={handleSubmitFigure}
+      />
+
+      {/* Advanced Filters Modal */}
+      <AdvancedFiltersModal
+        open={showAdvancedFilters}
+        onClose={() => setShowAdvancedFilters(false)}
+        filters={advancedFilters}
+        onFiltersChange={setAdvancedFilters}
+        onApply={() => setShowAdvancedFilters(false)}
       />
     </>
   );

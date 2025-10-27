@@ -54,6 +54,25 @@
       "showing_other": "{{count}} resultados encontrados",
       "clear": "Limpiar filtros"
     },
+    "advancedFilters": {
+      "button": "Más filtros",
+      "title": "Filtros Avanzados",
+      "figureType": "Tipo de Figura",
+      "selectFigureType": "Seleccionar tipo",
+      "allTypes": "Todos los tipos",
+      "complexity": "Complejidad",
+      "selectComplexity": "Seleccionar complejidad",
+      "allComplexities": "Todas las complejidades",
+      "videoLanguage": "Idioma del Video",
+      "selectLanguage": "Seleccionar idioma",
+      "allLanguages": "Todos los idiomas",
+      "danceSubStyle": "Sub-estilo de Baile",
+      "selectSubStyle": "Seleccionar sub-estilo",
+      "allSubStyles": "Todos los sub-estilos",
+      "activeFilters": "Filtros Activos",
+      "reset": "Reiniciar",
+      "apply": "Aplicar"
+    },
     "empty": {
       "title": "No hay figuras todavía",
       "description": "¡Sé el primero en agregar una figura a esta categoría!",
@@ -121,15 +140,15 @@
     },
     "figureType": {
       "figure": "Figura",
-      "basicStep": "Paso básico",
-      "complexStep": "Paso complejo",
-      "mix": "Mixto"
+      "basicstep": "Paso básico",
+      "complexstep": "Paso complejo",
+      "combination": "Combinación"
     },
     "complexity": {
       "basic": "Básico",
-      "basicIntermediate": "Básico/Inter",
+      "basicintermediate": "Básico/Inter",
       "intermediate": "Intermedio",
-      "intermediateAdvanced": "Inter/Avanzado",
+      "intermediateadvanced": "Inter/Avanzado",
       "advanced": "Avanzado"
     },
     "videoLanguage": {
@@ -144,12 +163,12 @@
     },
     "danceSubStyle": {
       "cuban": "Cubana",
-      "la-style": "LA Style",
-      "ny-style": "NY Style",
-      "puerto-rican": "Puertorriqueña",
-      "calena": "Caleña",
-      "rueda": "Rueda",
-      "romantic": "Romántico",
+      "lastyle": "LA Style",
+      "nystyle": "NY Style",
+      "puertorican": "Puertorriqueña",
+      "colombian": "Colombiana",
+      "ruedadecasino": "Rueda de Casino",
+      "romantica": "Romántica",
       "dominican": "Dominicana",
       "modern": "Moderno",
       "sensual": "Sensual",
