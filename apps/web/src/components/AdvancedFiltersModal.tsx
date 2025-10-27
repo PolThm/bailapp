@@ -193,26 +193,21 @@ export function AdvancedFiltersModal({
         </div>
 
         {/* Actions */}
-        <div className="flex justify-between pt-4">
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            disabled={!hasActiveFilters}
-            className="flex items-center gap-2"
-          >
-            <RotateCcw className="h-4 w-4" />
-            {t('discover.advancedFilters.reset')}
-          </Button>
-          
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose}>
-              {t('common.cancel')}
+    
+          <div className="flex gap-2 pt-4">
+            <Button
+                variant="outline"
+                onClick={handleReset}
+                disabled={!hasActiveFilters}
+                className="flex items-center gap-2"
+            >
+                <RotateCcw className="h-4 w-4" />
+                {t('discover.advancedFilters.reset')}
             </Button>
-            <Button onClick={onApply}>
+            <Button onClick={onApply} className="flex-1">
               {t('discover.advancedFilters.apply')}
             </Button>
           </div>
-        </div>
       </DialogContent>
     </Dialog>
   );
