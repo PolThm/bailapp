@@ -89,7 +89,7 @@
   /* Combined safe area + fixed padding */
   .p-safe-nave {
     padding-top: calc(1.25rem + env(safe-area-inset-top));
-    padding-bottom: calc(92px - env(safe-area-inset-top));
+    padding-bottom: 92px;
   }
 }
 
