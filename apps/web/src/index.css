@@ -64,6 +64,9 @@
     overflow-x: hidden;
     /* Better touch scrolling */
     -webkit-overflow-scrolling: touch;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
   }
 
   /* Safe area support for notched devices (iPhone X+) */
@@ -81,6 +84,12 @@
 
   .safe-right {
     padding-right: env(safe-area-inset-right);
+  }
+
+  /* Combined safe area + fixed padding */
+  .p-safe-nave {
+    padding-top: calc(1.25rem + env(safe-area-inset-top));
+    padding-bottom: calc(92px - env(safe-area-inset-top));
   }
 }
 
