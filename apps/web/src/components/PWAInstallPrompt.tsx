@@ -18,19 +18,24 @@ export function PWAInstallPrompt() {
   } = usePWAInstall();
 
   const [isExiting, setIsExiting] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
-    if (!showInstallPrompt && !isInstalled) {
+    if (showInstallPrompt && !isInstalled) {
+      setShouldRender(true);
+      setIsExiting(false);
+    } else if (!showInstallPrompt && shouldRender) {
       setIsExiting(true);
       const timer = setTimeout(() => {
+        setShouldRender(false);
         setIsExiting(false);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [showInstallPrompt, isInstalled]);
+  }, [showInstallPrompt, isInstalled, shouldRender]);
 
-  // Don't show if already installed or not showing
-  if ((isInstalled || !showInstallPrompt) && !isExiting) {
+  // Don't show if we shouldn't render
+  if ((isInstalled || !shouldRender) && !isExiting) {
     return null;
   }
 
