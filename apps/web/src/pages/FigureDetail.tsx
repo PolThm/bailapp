@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowLeft, Heart, Share2, Clock } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useFavorites } from '@/context/FavoritesContext';
-import { useAuth } from '@/context/AuthContext';
+// import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -22,7 +22,7 @@ export function FigureDetail() {
   const navigate = useNavigate();
   const { getFigure } = useFigures();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
