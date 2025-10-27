@@ -92,7 +92,7 @@ export function AdvancedFiltersModal({
                 <SelectItem value="all">{t('discover.advancedFilters.allTypes')}</SelectItem>
                 {figureTypes.map((type) => (
                   <SelectItem key={type} value={type}>
-                    {t(`badges.figureType.${type.replace('-', '')}`)}
+                    {t(`badges.figureType.${type.replace(/-/g, '')}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -113,7 +113,7 @@ export function AdvancedFiltersModal({
                 <SelectItem value="all">{t('discover.advancedFilters.allComplexities')}</SelectItem>
                 {complexities.map((complexity) => (
                   <SelectItem key={complexity} value={complexity}>
-                    {t(`badges.complexity.${complexity.replace('-', '')}`)}
+                    {t(`badges.complexity.${complexity.replace(/-/g, '')}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -155,7 +155,7 @@ export function AdvancedFiltersModal({
                 <SelectItem value="all">{t('discover.advancedFilters.allSubStyles')}</SelectItem>
                 {danceSubStyles.map((subStyle) => (
                   <SelectItem key={subStyle} value={subStyle}>
-                    {t(`badges.danceSubStyle.${subStyle.replace('-', '')}`)}
+                    {t(`badges.danceSubStyle.${subStyle.replace(/-/g, '')}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -169,12 +169,12 @@ export function AdvancedFiltersModal({
               <div className="flex flex-wrap gap-2">
                 {filters.figureType && (
                   <Badge variant="secondary" className="text-xs">
-                    {t(`badges.figureType.${filters.figureType.replace('-', '')}`)}
+                    {t(`badges.figureType.${filters.figureType.replace(/-/g, '')}`)}
                   </Badge>
                 )}
                 {filters.complexity && (
                   <Badge variant="secondary" className="text-xs">
-                    {t(`badges.complexity.${filters.complexity.replace('-', '')}`)}
+                    {t(`badges.complexity.${filters.complexity.replace(/-/g, '')}`)}
                   </Badge>
                 )}
                 {filters.videoLanguage && (
@@ -184,7 +184,7 @@ export function AdvancedFiltersModal({
                 )}
                 {filters.danceSubStyle && (
                   <Badge variant="secondary" className="text-xs">
-                    {t(`badges.danceSubStyle.${filters.danceSubStyle.replace('-', '')}`)}
+                    {t(`badges.danceSubStyle.${filters.danceSubStyle.replace(/-/g, '')}`)}
                   </Badge>
                 )}
               </div>
