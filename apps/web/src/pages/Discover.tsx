@@ -88,14 +88,6 @@ export function Discover() {
     setShowNewFigureModal(false);
   };
 
-  const getStyleCounts = () => {
-    const salsaCount = figures.filter(f => f.danceStyle === 'salsa').length;
-    const bachataCount = figures.filter(f => f.danceStyle === 'bachata').length;
-    return { salsa: salsaCount, bachata: bachataCount };
-  };
-
-  const styleCounts = getStyleCounts();
-
   return (
     <>
       {/* Header */}
@@ -129,25 +121,16 @@ export function Discover() {
                 <SelectItem value="all">
                   <div className="flex items-center gap-2">
                     <span>{t('discover.filter.all')}</span>
-                    {/* <Badge variant="secondary" className="text-xs">
-                      {figures.length}
-                    </Badge> */}
                   </div>
                 </SelectItem>
                 <SelectItem value="salsa">
                   <div className="flex items-center gap-2">
                     <span>Salsa</span>
-                    {/* <Badge variant="secondary" className="text-xs">
-                      {styleCounts.salsa}
-                    </Badge> */}
                   </div>
                 </SelectItem>
                 <SelectItem value="bachata">
                   <div className="flex items-center gap-2">
                     <span>Bachata</span>
-                    {/* <Badge variant="secondary" className="text-xs">
-                      {styleCounts.bachata}
-                    </Badge> */}
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -226,6 +209,7 @@ export function Discover() {
         filters={advancedFilters}
         onFiltersChange={setAdvancedFilters}
         onApply={() => setShowAdvancedFilters(false)}
+        selectedStyle={selectedStyle}
       />
     </>
   );

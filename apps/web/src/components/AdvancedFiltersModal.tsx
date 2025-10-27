@@ -22,6 +22,7 @@ export interface AdvancedFilters {
   complexity?: Complexity;
   videoLanguage?: VideoLanguage;
   danceSubStyle?: DanceSubStyle;
+  danceStyle?: 'salsa' | 'bachata';
 }
 
 interface AdvancedFiltersModalProps {
@@ -30,6 +31,7 @@ interface AdvancedFiltersModalProps {
   filters: AdvancedFilters;
   onFiltersChange: (filters: AdvancedFilters) => void;
   onApply: () => void;
+  selectedStyle: 'all' | 'salsa' | 'bachata';
 }
 
 export function AdvancedFiltersModal({
@@ -38,6 +40,7 @@ export function AdvancedFiltersModal({
   filters,
   onFiltersChange,
   onApply,
+  selectedStyle,
 }: AdvancedFiltersModalProps) {
   const { t } = useTranslation();
 
@@ -57,10 +60,6 @@ export function AdvancedFiltersModal({
   const figureTypes: FigureType[] = ['figure', 'basic-step', 'complex-step', 'mix'];
   const complexities: Complexity[] = ['basic', 'basic-intermediate', 'intermediate', 'intermediate-advanced', 'advanced'];
   const videoLanguages: VideoLanguage[] = ['french', 'english', 'spanish'];
-  const danceSubStyles: DanceSubStyle[] = [
-    'cuban', 'la-style', 'ny-style', 'puerto-rican', 'colombian', 'rueda-de-casino', 'romantica',
-    'dominican', 'modern', 'sensual', 'urban', 'fusion', 'ballroom'
-  ];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -147,17 +146,34 @@ export function AdvancedFiltersModal({
             <Select
               value={filters.danceSubStyle || 'all'}
               onValueChange={(value) => handleFilterChange('danceSubStyle', value)}
+              disabled={!filters.danceStyle && selectedStyle === 'all'}
             >
               <SelectTrigger>
                 <SelectValue placeholder={t('discover.advancedFilters.selectSubStyle')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('discover.advancedFilters.allSubStyles')}</SelectItem>
-                {danceSubStyles.map((subStyle) => (
-                  <SelectItem key={subStyle} value={subStyle}>
-                    {t(`badges.danceSubStyle.${subStyle.replace(/-/g, '')}`)}
-                  </SelectItem>
-                ))}
+                {(filters.danceStyle === 'salsa' || selectedStyle === 'salsa') && (
+                  <>
+                    <SelectItem value="cuban">{t('badges.danceSubStyle.cuban')}</SelectItem>
+                    <SelectItem value="la-style">{t('badges.danceSubStyle.lastyle')}</SelectItem>
+                    <SelectItem value="ny-style">{t('badges.danceSubStyle.nystyle')}</SelectItem>
+                    <SelectItem value="puerto-rican">{t('badges.danceSubStyle.puertorican')}</SelectItem>
+                    <SelectItem value="colombian">{t('badges.danceSubStyle.colombian')}</SelectItem>
+                    <SelectItem value="rueda-de-casino">{t('badges.danceSubStyle.ruedadecasino')}</SelectItem>
+                    <SelectItem value="romantica">{t('badges.danceSubStyle.romantica')}</SelectItem>
+                  </>
+                )}
+                {(filters.danceStyle === 'bachata' || selectedStyle === 'bachata') && (
+                  <>
+                    <SelectItem value="dominican">{t('badges.danceSubStyle.dominican')}</SelectItem>
+                    <SelectItem value="modern">{t('badges.danceSubStyle.modern')}</SelectItem>
+                    <SelectItem value="sensual">{t('badges.danceSubStyle.sensual')}</SelectItem>
+                    <SelectItem value="urban">{t('badges.danceSubStyle.urban')}</SelectItem>
+                    <SelectItem value="fusion">{t('badges.danceSubStyle.fusion')}</SelectItem>
+                    <SelectItem value="ballroom">{t('badges.danceSubStyle.ballroom')}</SelectItem>
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>
