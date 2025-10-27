@@ -122,32 +122,32 @@ export function Discover() {
           <div className="flex flex-row gap-2">
             {/* Style Filter */}
             <Select value={selectedStyle} onValueChange={(value: DanceStyle | 'all') => setSelectedStyle(value)}>
-              <SelectTrigger className="w-[200px] h-11">
+              <SelectTrigger className="flex-1 h-11">
                 <SelectValue placeholder={t('discover.filter.placeholder')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">
                   <div className="flex items-center gap-2">
                     <span>{t('discover.filter.all')}</span>
-                    <Badge variant="secondary" className="text-xs">
+                    {/* <Badge variant="secondary" className="text-xs">
                       {figures.length}
-                    </Badge>
+                    </Badge> */}
                   </div>
                 </SelectItem>
                 <SelectItem value="salsa">
                   <div className="flex items-center gap-2">
                     <span>Salsa</span>
-                    <Badge variant="secondary" className="text-xs">
+                    {/* <Badge variant="secondary" className="text-xs">
                       {styleCounts.salsa}
-                    </Badge>
+                    </Badge> */}
                   </div>
                 </SelectItem>
                 <SelectItem value="bachata">
                   <div className="flex items-center gap-2">
                     <span>Bachata</span>
-                    <Badge variant="secondary" className="text-xs">
+                    {/* <Badge variant="secondary" className="text-xs">
                       {styleCounts.bachata}
-                    </Badge>
+                    </Badge> */}
                   </div>
                 </SelectItem>
               </SelectContent>
