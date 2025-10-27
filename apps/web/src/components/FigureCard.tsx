@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   DanceStyleBadge,
@@ -16,7 +15,6 @@ interface FigureCardProps {
 }
 
 export function FigureCard({ figure }: FigureCardProps) {
-  const { t } = useTranslation();
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId
     ? getYouTubeThumbnail(videoId, 'medium')

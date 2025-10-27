@@ -109,8 +109,10 @@ export function DanceSubStyleBadge({
   subStyle: DanceSubStyle;
 }) {
   const { t } = useTranslation();
-  const variantKey = `${style}-${subStyle}` as const;
-  return <Badge variant={variantKey}>{t(`badges.danceSubStyle.${subStyle}`)}</Badge>;
+  const variantKey = `${style}-${subStyle}` as any;
+  const validVariants = ['salsa-cuban', 'salsa-la-style', 'salsa-ny-style', 'salsa-puerto-rican', 'salsa-colombian', 'salsa-rueda-de-casino', 'salsa-romantica', 'bachata-dominican', 'bachata-modern', 'bachata-sensual', 'bachata-urban', 'bachata-fusion', 'bachata-ballroom'];
+  const variant = validVariants.includes(variantKey) ? variantKey : 'default';
+  return <Badge variant={variant as any}>{t(`badges.danceSubStyle.${subStyle}`)}</Badge>;
 }
 
 export { Badge, badgeVariants };
