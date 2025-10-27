@@ -66,7 +66,7 @@ export function Home() {
         </div>
 
         {/* Options Grid */}
-        <div className="flex flex-col w-full flex-1 justify-around items-center py-8">
+        <div className="flex flex-col w-full flex-1 justify-center items-center gap-6">
           {options.map((option, index) => (
             <Link 
               key={option.link} 
