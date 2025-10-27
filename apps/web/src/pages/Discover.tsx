@@ -137,16 +137,6 @@ export function Discover() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>
               {t('discover.results.showing', { count: filteredFigures.length })}
-              {searchQuery.trim() && (
-                <span className="ml-1">
-                  {t('discover.results.for')} "<span className="font-medium text-foreground">{searchQuery}</span>"
-                </span>
-              )}
-              {selectedStyle !== 'all' && (
-                <span className="ml-1">
-                  {t('discover.results.in')} <span className="font-medium text-foreground capitalize">{selectedStyle}</span>
-                </span>
-              )}
             </span>
             {(searchQuery.trim() || selectedStyle !== 'all') && (
               <button

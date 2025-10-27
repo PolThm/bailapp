@@ -49,9 +49,9 @@
       "placeholder": "Buscar un paso o una figura..."
     },
     "results": {
-      "showing": "{{count}} resultados",
-      "for": "para",
-      "in": "en",
+      "showing_zero": "Sin resultados",
+      "showing_one": "{{count}} resultado encontrado",
+      "showing_other": "{{count}} resultados encontrados",
       "clear": "Limpiar filtros"
     },
     "empty": {

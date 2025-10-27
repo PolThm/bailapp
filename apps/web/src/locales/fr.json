@@ -49,9 +49,9 @@
       "placeholder": "Chercher un pas ou une figure..."
     },
     "results": {
-      "showing": "{{count}} résultats",
-      "for": "pour",
-      "in": "dans",
+      "showing_zero": "Aucun résultat",
+      "showing_one": "{{count}} résultat trouvé",
+      "showing_other": "{{count}} résultats trouvés",
       "clear": "Effacer les filtres"
     },
     "empty": {
