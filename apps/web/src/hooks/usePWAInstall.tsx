@@ -24,6 +24,7 @@ export function usePWAInstall(): PWAInstallState {
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [showManualInstructions, setShowManualInstructions] = useState(false);
+  const [hasBeenDismissed, setHasBeenDismissed] = useState(false);
   const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -57,9 +58,9 @@ export function usePWAInstall(): PWAInstallState {
       setDeferredPrompt(null);
     };
 
-    // Show install prompt after 2 seconds for both Android and iOS
+    // Show install prompt after 3 seconds for both Android and iOS (only if not dismissed)
     const timeoutId = setTimeout(() => {
-      if (!isInstalled) {
+      if (!isInstalled && !hasBeenDismissed) {
         setShowInstallPrompt(true);
       }
     }, 3000);
@@ -72,7 +73,7 @@ export function usePWAInstall(): PWAInstallState {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, [isInstalled, deferredPrompt]);
+  }, [isInstalled, deferredPrompt, hasBeenDismissed]);
 
   const handleDismiss = useCallback(() => {
     // Clear auto-close timer
@@ -83,6 +84,7 @@ export function usePWAInstall(): PWAInstallState {
 
     setShowInstallPrompt(false);
     setDeferredPrompt(null);
+    setHasBeenDismissed(true);
   }, []);
 
   // Auto-close timer effect

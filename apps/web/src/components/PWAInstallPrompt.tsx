@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Download, X, Smartphone, Share, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../hooks/usePWAInstall';
@@ -16,15 +17,31 @@ export function PWAInstallPrompt() {
     handleDismiss,
   } = usePWAInstall();
 
-  // Don't show if already installed
-  if (isInstalled || !showInstallPrompt) {
+  const [isExiting, setIsExiting] = useState(false);
+
+  useEffect(() => {
+    if (!showInstallPrompt && !isInstalled) {
+      setIsExiting(true);
+      const timer = setTimeout(() => {
+        setIsExiting(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [showInstallPrompt, isInstalled]);
+
+  // Don't show if already installed or not showing
+  if ((isInstalled || !showInstallPrompt) && !isExiting) {
     return null;
   }
 
   return (
     <>
       {/* Install Prompt Snackbar */}
-      <div className="fixed bottom-28 left-4 right-4 z-50 flex justify-center animate-in slide-in-from-bottom duration-500 fade-in">
+      <div className={`fixed bottom-24 left-4 right-4 z-50 flex justify-center transition-all duration-500 ${
+        isExiting 
+          ? 'animate-out slide-out-to-bottom fade-out' 
+          : 'animate-in slide-in-from-bottom fade-in'
+      }`}>
         <Card className="bg-primary border-primary max-w-sm w-full shadow-xl">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
