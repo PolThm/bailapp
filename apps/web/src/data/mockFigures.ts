@@ -6,7 +6,7 @@ export const mockFigures: Figure[] = [
     youtubeUrl: 'https://www.youtube.com/watch?v=eXU2o27ozso',
     shortTitle: 'Setenta',
     fullTitle: 'Salsa Cubaine Setenta',
-    description: 'La fameuse figure "Setenta" de la salsa cubaine',
+    description: 'La Setenta est une figure classique de salsa cubaine où, à partir d’une prise croisée, le danseur guide la danseuse dans une succession fluide de tours et d’entrelacements de bras, créant un effet dynamique et élégant.',
     videoAuthor: 'Bachata Mastery',
     startTime: undefined,
     endTime: undefined,

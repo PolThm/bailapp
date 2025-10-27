@@ -12,7 +12,6 @@ import {
   DanceSubStyleBadge,
   FigureTypeBadge,
   ComplexityBadge,
-  LanguageBadge,
 } from '@/components/ui/badge';
 import { AuthDialog } from '@/components/AuthDialog';
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
@@ -141,7 +140,6 @@ export function FigureDetail() {
               )}
               <FigureTypeBadge type={figure.figureType} />
               <ComplexityBadge complexity={figure.complexity} />
-              <LanguageBadge language={figure.videoLanguage} />
             </div>
           </CardContent>
         </Card>
@@ -177,6 +175,10 @@ export function FigureDetail() {
                 <span className="font-medium">{figure.videoAuthor}</span>
               </div>
             )}
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t('figure.videoLanguage')}</span>
+              <span className="font-medium">{t(`badges.videoLanguage.${figure.videoLanguage}`)}</span>
+            </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('figure.duration')}</span>
               <span className="font-medium flex items-center gap-1">
