@@ -7,18 +7,28 @@ import {
   ComplexityBadge,
 } from '@/components/ui/badge';
 import { getYouTubeVideoId, getYouTubeThumbnail } from '@/utils/youtube';
+import { useFavorites } from '@/context/FavoritesContext';
 import type { Figure } from '@/types';
-import { Clock } from 'lucide-react';
+import { Clock, Heart } from 'lucide-react';
 
 interface FigureCardProps {
   figure: Figure;
 }
 
 export function FigureCard({ figure }: FigureCardProps) {
+  const { isFavorite, toggleFavorite } = useFavorites();
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId
     ? getYouTubeThumbnail(videoId, 'medium')
     : '/placeholder-video.jpg';
+  
+  const isFav = isFavorite(figure.id);
+  
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite(figure.id);
+  };
 
   return (
     <Link
@@ -34,9 +44,20 @@ export function FigureCard({ figure }: FigureCardProps) {
             className="w-full h-full object-cover"
             loading="lazy"
           />
+          {/* Favorite button */}
+          <button
+            onClick={handleFavoriteClick}
+            className="absolute bottom-2 right-2 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background transition-colors z-10"
+            aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Heart 
+              className={`h-4 w-4 ${isFav ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} 
+            />
+          </button>
+          
           {/* Duration badge if time range specified */}
           {figure.startTime && figure.endTime && (
-            <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
               {figure.startTime} - {figure.endTime}
             </div>
           )}
