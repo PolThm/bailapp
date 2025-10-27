@@ -58,7 +58,7 @@ export function FigureDetail() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: figure.title,
+          title: figure.shortTitle,
           text: figure.description || '',
           url: window.location.href,
         });
@@ -90,7 +90,7 @@ export function FigureDetail() {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold leading-tight line-clamp-2">{figure.title}</h1>
+          <h1 className="text-2xl font-bold leading-tight line-clamp-2">{figure.shortTitle}</h1>
         </div>
       </div>
 
@@ -99,7 +99,7 @@ export function FigureDetail() {
         <div className="aspect-video w-full bg-black rounded-lg overflow-hidden mb-6">
           <iframe
             src={embedUrl}
-            title={figure.title}
+            title={figure.fullTitle}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             className="w-full h-full"
@@ -147,7 +147,7 @@ export function FigureDetail() {
           <Card>
             <CardContent className="pt-4 space-y-1">
               <h2 className="font-semibold">{t('figure.fullTitle')}</h2>
-              <h1 className="text-sm text-muted-foreground leading-relaxed">{figure.title}</h1>
+              <h1 className="text-sm text-muted-foreground leading-relaxed">{figure.fullTitle}</h1>
               <h2 className="font-semibold pt-1">{t('figure.description')}</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {displayDescription}

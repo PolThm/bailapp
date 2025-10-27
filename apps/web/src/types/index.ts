@@ -16,7 +16,8 @@ export type Visibility = 'public' | 'private' | 'unlisted';
 export interface Figure {
   id: string;
   youtubeUrl: string;
-  title: string;
+  shortTitle: string;
+  fullTitle: string;
   description?: string;
   videoAuthor?: string;
   startTime?: string; // Format: HH:MM:SS or MM:SS

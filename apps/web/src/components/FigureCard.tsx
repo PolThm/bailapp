@@ -30,7 +30,7 @@ export function FigureCard({ figure }: FigureCardProps) {
         <div className="relative w-full aspect-video bg-muted">
           <img
             src={thumbnail}
-            alt={figure.title}
+            alt={figure.shortTitle}
             className="w-full h-full object-cover"
             loading="lazy"
           />
@@ -44,7 +44,7 @@ export function FigureCard({ figure }: FigureCardProps) {
 
         <CardHeader className="pb-3">
           <h3 className="font-semibold line-clamp-2 text-base leading-tight">
-            {figure.title}
+            {figure.shortTitle}
           </h3>
         </CardHeader>
 
