@@ -59,8 +59,8 @@
       "description": "¡Sé el primero en agregar una figura a esta categoría!",
       "action": "Agregar figura",
       "filtered": {
-        "title": "No hay figuras de {{style}} todavía",
-        "description": "¡Sé el primero en agregar una figura de {{style}}!"
+        "title": "No hay figura de este estilo todavía",
+        "description": "¡Sé el primero en agregarla!"
       }
     },
     "addFigure": "Agregar nueva figura"

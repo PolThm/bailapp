@@ -59,8 +59,8 @@
       "description": "Sois le premier à ajouter une figure à cette catégorie !",
       "action": "Ajouter une figure",
       "filtered": {
-        "title": "Aucune figure {{style}} pour l'instant",
-        "description": "Sois le premier à ajouter une figure {{style}} !"
+        "title": "Aucune figure de ce style pour l'instant",
+        "description": "Sois le premier à l'ajouter !"
       }
     },
     "addFigure": "Ajouter une nouvelle figure"

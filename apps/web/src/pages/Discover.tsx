@@ -167,8 +167,8 @@ export function Discover() {
       {filteredFigures.length === 0 ? (
         <EmptyState
           icon={Plus}
-          title={selectedStyle === 'all' ? t('discover.empty.title') : t('discover.empty.filtered.title')}
-          description={selectedStyle === 'all' ? t('discover.empty.description') : t('discover.empty.filtered.description', { style: selectedStyle === 'salsa' ? 'Salsa' : 'Bachata' })}
+          title={(selectedStyle === 'all' && !searchQuery.trim()) ? t('discover.empty.title') : t('discover.empty.filtered.title')}
+          description={(selectedStyle === 'all' && !searchQuery.trim()) ? t('discover.empty.description') : t('discover.empty.filtered.description')}
           actionLabel={t('discover.empty.action')}
           onAction={handleAddFigure}
         />
