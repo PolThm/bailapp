@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, Compass, Heart, Music, User } from 'lucide-react';
@@ -9,9 +9,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [showSplash, setShowSplash] = useState(true);
   const location = useLocation();
 
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const isActive = (path: string) => location.pathname === path;
 
-  if (showSplash) return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  // if (showSplash) return <SplashScreen onFinish={() => setShowSplash(false)} />;
 
   return (
     <div className="flex flex-col min-h-screen">
