@@ -96,14 +96,6 @@ export function Favorites() {
     setShowNewFigureModal(false);
   };
 
-  const getStyleCounts = () => {
-    const salsaCount = favoriteFiguresData.filter(f => f.danceStyle === 'salsa').length;
-    const bachataCount = favoriteFiguresData.filter(f => f.danceStyle === 'bachata').length;
-    return { salsa: salsaCount, bachata: bachataCount };
-  };
-
-  const styleCounts = getStyleCounts();
-
   return (
     <>
       {/* Header */}

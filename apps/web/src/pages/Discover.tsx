@@ -93,7 +93,7 @@ export function Discover() {
       {/* Header */}
       <div className="pb-3">
         <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
-        {/* <p className="text-muted-foreground mt-1">{t('discover.subtitle')}</p> */}
+        <p className="text-muted-foreground mt-1">{t('discover.subtitle')}</p>
       </div>
 
       {/* Filters */}
