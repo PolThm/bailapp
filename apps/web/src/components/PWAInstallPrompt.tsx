@@ -27,7 +27,7 @@ export function PWAInstallPrompt() {
       <div className="fixed bottom-28 left-4 right-4 z-50 flex justify-center">
         <Card className="bg-primary border-primary max-w-sm w-full">
           <CardContent className="p-4">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between">
               {/* Download Button */}
               <Button
                 onClick={handleInstallClick}
@@ -39,7 +39,7 @@ export function PWAInstallPrompt() {
               </Button>
 
               {/* Text */}
-              <p className="text-sm font-medium text-primary-foreground flex-1">
+              <p className="text-sm font-medium text-primary-foreground flex-1 ml-3">
                 {t('pwa.install.title')}
               </p>
 
@@ -50,7 +50,7 @@ export function PWAInstallPrompt() {
                 size="icon"
                 className="flex-shrink-0 text-primary-foreground hover:text-foreground hover:bg-white/20"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4" />
               </Button>
             </div>
           </CardContent>

@@ -47,7 +47,7 @@ export function usePWAInstall(): PWAInstallState {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setShowInstallPrompt(true);
+      // Don't show immediately, wait for the timeout
     };
 
     // Listen to the appinstalled event
@@ -57,12 +57,12 @@ export function usePWAInstall(): PWAInstallState {
       setDeferredPrompt(null);
     };
 
-    // Add a timeout to show manual install option for iOS/Safari
+    // Show install prompt after 2 seconds for both Android and iOS
     const timeoutId = setTimeout(() => {
-      if (!isInstalled && !deferredPrompt) {
+      if (!isInstalled) {
         setShowInstallPrompt(true);
       }
-    }, 2000);
+    }, 3000);
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
