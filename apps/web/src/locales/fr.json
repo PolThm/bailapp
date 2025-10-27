@@ -45,6 +45,15 @@
       "placeholder": "Filtrer par style",
       "all": "Tous les styles"
     },
+    "search": {
+      "placeholder": "Chercher un pas ou une figure..."
+    },
+    "results": {
+      "showing": "{{count}} résultats",
+      "for": "pour",
+      "in": "dans",
+      "clear": "Effacer les filtres"
+    },
     "empty": {
       "title": "Aucune figure pour l'instant",
       "description": "Sois le premier à ajouter une figure à cette catégorie !",

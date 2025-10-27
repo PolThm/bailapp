@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useAuth } from '@/context/AuthContext';
 import { FigureCard } from '@/components/FigureCard';
@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import type { DanceStyle, Figure } from '@/types';
 
 export function Discover() {
@@ -24,13 +25,28 @@ export function Discover() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState<DanceStyle | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredFigures = useMemo(() => {
-    if (selectedStyle === 'all') {
-      return figures;
+    let filtered = figures;
+    
+    // Filter by dance style
+    if (selectedStyle !== 'all') {
+      filtered = filtered.filter((figure) => figure.danceStyle === selectedStyle);
     }
-    return figures.filter((figure) => figure.danceStyle === selectedStyle);
-  }, [figures, selectedStyle]);
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((figure) => 
+        figure.shortTitle.toLowerCase().includes(query) ||
+        figure.fullTitle.toLowerCase().includes(query) ||
+        (figure.description && figure.description.toLowerCase().includes(query))
+      );
+    }
+    
+    return filtered;
+  }, [figures, selectedStyle, searchQuery]);
 
   const handleAddFigure = () => {
     if (!user) {
@@ -64,15 +80,27 @@ export function Discover() {
       {/* Header */}
       <div className="pb-4">
         <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
-        <p className="text-muted-foreground mt-1">{t('discover.subtitle')}</p>
+        {/* <p className="text-muted-foreground mt-1">{t('discover.subtitle')}</p> */}
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          {/* <Filter className="h-4 w-4 text-muted-foreground" /> */}
+      <div className="space-y-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder={t('discover.search.placeholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-11"
+            />
+          </div>
+          
+          {/* Style Filter */}
           <Select value={selectedStyle} onValueChange={(value: DanceStyle | 'all') => setSelectedStyle(value)}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-full sm:w-[200px] h-11">
               <SelectValue placeholder={t('discover.filter.placeholder')} />
             </SelectTrigger>
             <SelectContent>
@@ -103,6 +131,36 @@ export function Discover() {
             </SelectContent>
           </Select>
         </div>
+        
+        {/* Results Summary */}
+        {(searchQuery.trim() || selectedStyle !== 'all') && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>
+              {t('discover.results.showing', { count: filteredFigures.length })}
+              {searchQuery.trim() && (
+                <span className="ml-1">
+                  {t('discover.results.for')} "<span className="font-medium text-foreground">{searchQuery}</span>"
+                </span>
+              )}
+              {selectedStyle !== 'all' && (
+                <span className="ml-1">
+                  {t('discover.results.in')} <span className="font-medium text-foreground capitalize">{selectedStyle}</span>
+                </span>
+              )}
+            </span>
+            {(searchQuery.trim() || selectedStyle !== 'all') && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedStyle('all');
+                }}
+                className="text-primary hover:text-primary/80 text-xs underline"
+              >
+                {t('discover.results.clear')}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Figures Grid */}

@@ -11,10 +11,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const isActive = (path: string) => location.pathname === path;
 
-
-  if (showSplash) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
-  }
+  // TODO: Put back
+  // if (showSplash) return <SplashScreen onFinish={() => setShowSplash(false)} />;
 
   return (
     <div className="flex flex-col min-h-screen">

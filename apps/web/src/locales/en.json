@@ -45,6 +45,15 @@
       "placeholder": "Filter by style",
       "all": "All styles"
     },
+    "search": {
+      "placeholder": "Search a step or a figure..."
+    },
+    "results": {
+      "showing": "{{count}} results",
+      "for": "for",
+      "in": "in",
+      "clear": "Clear filters"
+    },
     "empty": {
       "title": "No figures yet",
       "description": "Be the first to add a figure to this category!",
