@@ -62,7 +62,10 @@ export function FigureDetail() {
       try {
         await navigator.share({
           title: figure.shortTitle,
-          text: figure.description || '',
+          text: t('figure.shareText', { 
+            title: figure.shortTitle, 
+            style: t(`badges.danceStyle.${figure.danceStyle}`)
+          }),
           url: window.location.href,
         });
       } catch (err) {

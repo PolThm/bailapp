@@ -69,6 +69,22 @@
     padding: 0;
   }
 
+  /* Prevent automatic zoom on iOS when focusing inputs */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  /* On tablets and larger screens, allow smaller font sizes */
+  @media (min-width: 768px) {
+    input,
+    textarea,
+    select {
+      font-size: 14px !important;
+    }
+  }
+
   /* Safe area support for notched devices (iPhone X+) */
   .safe-top {
     padding-top: env(safe-area-inset-top);

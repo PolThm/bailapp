@@ -137,7 +137,8 @@
     "phrases_one": "{{count}} phrase",
     "phrases_other": "{{count}} phrases",
     "importedBy": "Importé par",
-    "visibility": "Visibilité"
+    "visibility": "Visibilité",
+    "shareText": "Découvre vite ce super mouvement de {{style}} sur Bailapp : {{title}}"
   },
   "badges": {
     "danceStyle": {
