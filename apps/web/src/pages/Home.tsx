@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { usePostHog } from 'posthog-js/react';
 import {
   Card,
   CardDescription,
@@ -8,9 +9,11 @@ import {
 } from '@/components/ui/card';
 import { Compass, Heart, Music, ArrowRight } from 'lucide-react';
 import dancingCoupleLogo from '@/images/dancing-couple-transparent.png';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 export function Home() {
   const { t } = useTranslation();
+  const posthog = usePostHog();
 
   const options = [
     {
@@ -73,6 +76,12 @@ export function Home() {
               to={option.link}
               className="touch-manipulation active:scale-[0.97] transition-all duration-200 w-full"
               style={{ animationDelay: `${index * 100}ms` }}
+              onClick={() => {
+                trackEvent(posthog, AnalyticsEvents.HOME_CARD_CLICKED, {
+                  card_title: option.title,
+                  destination: option.link,
+                });
+              }}
             >
               <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card/80 backdrop-blur-sm">
                 <div className={`absolute inset-0 opacity-5 ${option.bgGradient}`} />
