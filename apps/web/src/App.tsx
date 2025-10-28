@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/context/AuthContext';
@@ -6,6 +7,7 @@ import { FiguresProvider } from '@/context/FiguresContext';
 import { Layout } from '@/components/Layout';
 import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
+import { SplashScreen } from '@/components/SplashScreen';
 import { Home } from '@/pages/Home';
 import { Discover } from '@/pages/Discover';
 import { Favorites } from '@/pages/Favorites';
@@ -22,7 +24,16 @@ const queryClient = new QueryClient({
   },
 });
 
+// Désactiver SplashScreen et PWA Install Prompt en mode développement
+const isProduction = import.meta.env.PROD;
+
 function App() {
+  const [showSplash, setShowSplash] = useState(isProduction);
+
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -30,7 +41,7 @@ function App() {
           <FavoritesProvider>
             <BrowserRouter>
               <PWAUpdateNotification />
-              <PWAInstallPrompt />
+              {isProduction && <PWAInstallPrompt />}
               <Layout>
                 <Routes>
                   <Route path="/" element={<Home />} />
