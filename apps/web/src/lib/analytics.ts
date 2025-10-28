@@ -35,16 +35,15 @@ export function trackEvent(
   eventName: AnalyticsEventName,
   properties?: Record<string, any>
 ) {
+  if (import.meta.env.DEV) {
+    return;
+  }
+
   if (!posthog) {
-    console.warn('[Analytics] PostHog not initialized, skipping event:', eventName);
     return;
   }
 
   posthog.capture(eventName, properties);
-  
-  if (import.meta.env.DEV) {
-    console.log('[Analytics] Event tracked:', eventName, properties);
-  }
 }
 
 /**
@@ -55,31 +54,29 @@ export function identifyUser(
   userId: string,
   properties?: Record<string, any>
 ) {
+  if (import.meta.env.DEV) {
+    return;
+  }
+
   if (!posthog) {
-    console.warn('[Analytics] PostHog not initialized, skipping identify');
     return;
   }
 
   posthog.identify(userId, properties);
-  
-  if (import.meta.env.DEV) {
-    console.log('[Analytics] User identified:', userId, properties);
-  }
 }
 
 /**
  * Reset PostHog (useful on logout)
  */
 export function resetAnalytics(posthog: PostHog | null | undefined) {
+  if (import.meta.env.DEV) {
+    return;
+  }
+
   if (!posthog) {
-    console.warn('[Analytics] PostHog not initialized, skipping reset');
     return;
   }
 
   posthog.reset();
-  
-  if (import.meta.env.DEV) {
-    console.log('[Analytics] Analytics reset');
-  }
 }
 
