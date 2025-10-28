@@ -25,7 +25,7 @@ export function usePWAInstall(): PWAInstallState {
   const [isInstalled, setIsInstalled] = useState(false);
   const [showManualInstructions, setShowManualInstructions] = useState(false);
   const [hasBeenDismissed, setHasBeenDismissed] = useState(false);
-  const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Check if the app is already installed
