@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import dancingCoupleLogo from '../../public/images/dancing-couple-transparent.png';
+import dancingCoupleLogo from '@/images/dancing-couple-transparent.png';
 
 interface SplashScreenProps {
   onFinish: () => void;
