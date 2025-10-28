@@ -104,8 +104,8 @@
 
   /* Combined safe area + fixed padding */
   .p-safe-nave {
-    /* padding-top: calc(1.25rem + env(safe-area-inset-top)); TODO: Put back if it's the hardcoded value is not working on notched devices */
-    padding-top: 2.25rem;
+    padding-top: calc(1.25rem + env(safe-area-inset-top));
+    /* padding-top: 2.25rem; // TODO: Put back if it's the safe-area-inset-top is not working well */
     padding-bottom: 5.75rem;
   }
 }
