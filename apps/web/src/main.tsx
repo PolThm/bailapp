@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import './i18n';
+import { PostHogProvider } from 'posthog-js/react';
 
 function Root() {
   return <App />;
@@ -10,7 +11,16 @@ function Root() {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Root />
+    <PostHogProvider
+      apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+      options={{
+        api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+        defaults: '2025-05-24',
+        capture_exceptions: true, // This enables capturing exceptions using Error Tracking
+        debug: import.meta.env.MODE === 'development',
+      }}
+    >
+      <Root />
+    </PostHogProvider>
   </React.StrictMode>
 );
-
