@@ -147,5 +147,12 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Prevent landscape rotation on mobile */
+  @media (orientation: landscape) and (max-width: 767px) {
+    body {
+      overflow: hidden;
+    }
+  }
 }
 

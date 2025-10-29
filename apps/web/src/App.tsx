@@ -7,6 +7,7 @@ import { FiguresProvider } from '@/context/FiguresContext';
 import { Layout } from '@/components/Layout';
 import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
+import { PortraitLock } from '@/components/PortraitLock';
 import { SplashScreen } from '@/components/SplashScreen';
 import { Home } from '@/pages/Home';
 import { Discover } from '@/pages/Discover';
@@ -40,6 +41,7 @@ function App() {
         <FiguresProvider>
           <FavoritesProvider>
             <BrowserRouter>
+              <PortraitLock />
               <PWAUpdateNotification />
               {isProduction && <PWAInstallPrompt />}
               <Layout>

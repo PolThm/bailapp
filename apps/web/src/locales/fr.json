@@ -278,6 +278,10 @@
         "close": "Fermer"
       }
     }
+  },
+  "orientation": {
+    "title": "Rotation requise",
+    "message": "Veuillez faire pivoter votre appareil en mode portrait pour utiliser l'application"
   }
 }
 
