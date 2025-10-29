@@ -39,7 +39,7 @@ export function SearchAndFilters({
   const activeFiltersCount = Object.values(advancedFilters).filter(value => value !== undefined).length;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3">
+    <div className="flex flex-col gap-3">
       {/* Search Input with Toggle Button */}
       <div className="flex flex-1 gap-2">
         <div className="relative flex-1">

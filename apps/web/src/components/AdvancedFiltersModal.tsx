@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { X, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -63,17 +63,9 @@ export function AdvancedFiltersModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] w-[90vw] mb-12">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle>{t('discover.advancedFilters.title')}</DialogTitle>
-            <button
-              onClick={onClose}
-              className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
+      <DialogContent>
+        <DialogHeader onClose={onClose}>
+          <DialogTitle>{t('discover.advancedFilters.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-2 py-4">

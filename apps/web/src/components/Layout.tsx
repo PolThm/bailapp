@@ -15,14 +15,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen max-w-sm mx-auto sm:border">
       {/* Main Content - Mobile Optimized with Padding */}
-      <main className="flex flex-col flex-1 min-h-screen px-5 p-safe-nave container max-w-7xl mx-auto">
+      <main className="flex flex-col flex-1 min-h-screen px-5 p-safe-nave container mx-auto">
           {children}
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur safe-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur safe-bottom max-w-sm mx-auto sm:border">
         <div className="grid grid-cols-5 gap-1 p-2">
           <Link
             to="/"

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -107,17 +106,9 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>{t('newFigure.title')}</span>
-            <button
-              onClick={handleClose}
-              className="rounded-full p-1 hover:bg-accent"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </DialogTitle>
+      <DialogContent>
+        <DialogHeader onClose={handleClose}>
+          <DialogTitle>{t('newFigure.title')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">

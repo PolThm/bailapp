@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
 
 interface AuthModalProps {
@@ -30,11 +30,11 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[90%] m-auto">
-        <DialogHeader>
+      <DialogContent>
+        <DialogHeader onClose={onClose}>
           <DialogTitle>{t('auth.signInRequired')}</DialogTitle>
-          <DialogDescription>{t('auth.signInToSave')}</DialogDescription>
         </DialogHeader>
+        <DialogDescription className="mt-2">{t('auth.signInToSave')}</DialogDescription>
         <div className="flex flex-col gap-4 py-4">
           <Button onClick={handleSignIn} className="w-full">
             {t('auth.signInWithGoogle')}

@@ -95,7 +95,7 @@ export function Discover() {
           onAction={handleAddFigure}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5">
           {filteredFigures.map((figure) => (
             <FigureCard key={figure.id} figure={figure} showImage={showImages} />
           ))}

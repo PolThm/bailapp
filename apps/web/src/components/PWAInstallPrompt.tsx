@@ -81,11 +81,9 @@ export function PWAInstallPrompt() {
 
       {/* Manual Installation Instructions Dialog */}
       <Dialog open={showManualInstructions} onOpenChange={setShowManualInstructions}>
-        <DialogContent className="w-[90vw] max-w-lg space-y-4">
-          <DialogHeader>
-            <DialogTitle>
-              {t('pwa.install.instructions.title')}
-            </DialogTitle>
+        <DialogContent className="space-y-4">
+          <DialogHeader onClose={() => setShowManualInstructions(false)}>
+            <DialogTitle>{t('pwa.install.instructions.title')}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">

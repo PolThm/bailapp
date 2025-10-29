@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DialogProps {
@@ -22,13 +23,18 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <>
+      {/* Overlay - positioned below navbar (z-50) */}
       <div
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange?.(false)}
+        style={{ zIndex: 60 }}
       />
-      <div className="relative z-50">{children}</div>
-    </div>
+      {/* Dialog content - positioned above navbar (z-50) */}
+      <div className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none">
+        <div className="relative pointer-events-auto">{children}</div>
+      </div>
+    </>
   );
 };
 
@@ -39,7 +45,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg',
+      'relative rounded-lg border bg-background p-6 shadow-lg w-[90vw] sm:max-w-md max-h-[90vh] overflow-y-auto',
       className
     )}
     {...props}
@@ -49,18 +55,43 @@ const DialogContent = React.forwardRef<
 ));
 DialogContent.displayName = 'DialogContent';
 
+interface DialogHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  onClose?: () => void;
+  showCloseButton?: boolean;
+}
+
 const DialogHeader = ({
   className,
+  onClose,
+  showCloseButton,
+  children,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      'flex flex-col space-y-1.5 text-center sm:text-left',
-      className
-    )}
-    {...props}
-  />
-);
+}: DialogHeaderProps) => {
+  const hasCloseButton = showCloseButton !== false && onClose !== undefined;
+  
+  return (
+    <div
+      className={cn(
+        hasCloseButton
+          ? 'flex flex-row items-center justify-between space-y-0 text-left'
+          : 'flex flex-col space-y-1.5 text-center sm:text-left',
+        className
+      )}
+      {...props}
+    >
+      <div className={hasCloseButton ? 'flex-1' : undefined}>{children}</div>
+      {hasCloseButton && (
+        <button
+          onClick={onClose}
+          className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+          aria-label="Close"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      )}
+    </div>
+  );
+};
 DialogHeader.displayName = 'DialogHeader';
 
 const DialogFooter = ({

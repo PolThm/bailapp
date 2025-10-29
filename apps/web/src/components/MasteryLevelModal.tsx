@@ -64,11 +64,9 @@ export function MasteryLevelModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[90vw] sm:max-w-md space-y-1">
-        <DialogHeader>
-          <DialogTitle className="text-center">
-            {t('figure.mastery.updateTitle')}
-          </DialogTitle>
+      <DialogContent className="space-y-1">
+        <DialogHeader onClose={onClose}>
+          <DialogTitle className="text-center">{t('figure.mastery.updateTitle')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
