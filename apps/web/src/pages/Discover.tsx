@@ -11,7 +11,7 @@ import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
 import { ResultsSummary } from '@/components/ResultsSummary';
 import { useFigureFilters } from '@/hooks/useFigureFilters';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import type { Figure } from '@/types';
 
@@ -22,7 +22,7 @@ export function Discover() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [showImages, setShowImages] = useLocalStorage(getStorageKey(StorageKey.DISCOVER_SHOW_IMAGES), true);
+  const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.DISCOVER_SHOW_IMAGES), true);
   
   const {
     selectedStyle,

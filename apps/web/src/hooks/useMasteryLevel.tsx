@@ -1,8 +1,8 @@
-import { useLocalStorage } from './useLocalStorage';
+import { useIndexedDB } from './useIndexedDB';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 
 export function useMasteryLevel(figureId: string | undefined) {
-  const [masteryLevels, setMasteryLevels] = useLocalStorage<Record<string, number>>(
+  const [masteryLevels, setMasteryLevels] = useIndexedDB<Record<string, number>>(
     getStorageKey(StorageKey.MASTERY_LEVELS),
     {}
   );

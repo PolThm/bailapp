@@ -12,7 +12,7 @@ import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
 import { ResultsSummary } from '@/components/ResultsSummary';
 import { useFigureFilters } from '@/hooks/useFigureFilters';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import type { Figure } from '@/types';
 
@@ -24,10 +24,13 @@ export function Favorites() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [showImages, setShowImages] = useLocalStorage(getStorageKey(StorageKey.FAVORITES_SHOW_IMAGES), false);
+  const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.FAVORITES_SHOW_IMAGES), false);
 
-  // Get favorite figures
+  // Get favorite figures - ensure favorites is always an array
   const favoriteFiguresData = useMemo(() => {
+    if (!favorites || !Array.isArray(favorites)) {
+      return [];
+    }
     return figures.filter((figure) => favorites.includes(figure.id));
   }, [figures, favorites]);
 

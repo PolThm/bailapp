@@ -9,7 +9,7 @@ export enum StorageKey {
 }
 
 /**
- * Get the full localStorage key with prefix
+ * Get the full storage key with prefix (used with IndexedDB)
  */
 export function getStorageKey(key: StorageKey): string {
   return `${STORAGE_PREFIX}${key}`;

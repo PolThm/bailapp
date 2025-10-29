@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
+import { getItem, setItem } from '@/lib/indexedDB';
 
 interface FavoritesContextType {
   favorites: string[];
@@ -16,24 +17,45 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(
 const STORAGE_KEY = getStorageKey(StorageKey.FAVORITES);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    // Load from localStorage on init
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Persist to localStorage whenever favorites change
+  // Load from IndexedDB on mount
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
-    } catch (error) {
-      console.error('Failed to save favorites:', error);
+    let cancelled = false;
+
+    async function loadFavorites() {
+      try {
+        const stored = await getItem(STORAGE_KEY);
+        if (!cancelled) {
+          const parsedFavorites = stored ? JSON.parse(stored) : [];
+          setFavorites(parsedFavorites);
+          setIsLoaded(true);
+        }
+      } catch (error) {
+        console.error('Failed to load favorites:', error);
+        if (!cancelled) {
+          setFavorites([]);
+          setIsLoaded(true);
+        }
+      }
     }
-  }, [favorites]);
+
+    loadFavorites();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Persist to IndexedDB whenever favorites change
+  useEffect(() => {
+    if (isLoaded && typeof window !== 'undefined') {
+      setItem(STORAGE_KEY, JSON.stringify(favorites)).catch((error) => {
+        console.error('Failed to save favorites:', error);
+      });
+    }
+  }, [favorites, isLoaded]);
 
   const addToFavorites = (id: string) => {
     setFavorites((prev) => {
