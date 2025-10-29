@@ -19,8 +19,6 @@ export function usePWAUpdate(): PWAUpdateState {
 
       // Listen for SW registration and updates
       navigator.serviceWorker.ready.then((registration) => {
-        console.log('SW Ready:', registration);
-
         // Check for updates every 60 seconds
         const interval = setInterval(() => {
           registration.update();
