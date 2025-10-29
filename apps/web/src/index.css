@@ -106,7 +106,7 @@
   .p-safe-nave {
     padding-top: calc(1.25rem + env(safe-area-inset-top));
     /* Mobile: padding-bottom with safe area */
-    padding-bottom: calc(4.5rem + env(safe-area-inset-top));
+    padding-bottom: calc(5rem + env(safe-area-inset-top));
   }
 
   /* Desktop: padding-bottom without safe area */
@@ -146,6 +146,13 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Prevent landscape rotation on mobile */
+  @media (orientation: landscape) and (max-width: 767px) {
+    body {
+      overflow: hidden;
+    }
   }
 }
 
