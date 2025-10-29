@@ -3,8 +3,9 @@ import { initReactI18next } from 'react-i18next';
 import en from './locales/en.json';
 import fr from './locales/fr.json';
 import es from './locales/es.json';
+import { getStorageKey, StorageKey } from './lib/storageKeys';
 
-const LANGUAGE_KEY = 'bailapp_language';
+const LANGUAGE_KEY = getStorageKey(StorageKey.LANGUAGE);
 
 // Detect browser language
 const getBrowserLanguage = (): string => {

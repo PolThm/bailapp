@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 
 interface FavoritesContextType {
   favorites: string[];
@@ -12,7 +13,7 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(
   undefined
 );
 
-const STORAGE_KEY = 'bailapp_favorites';
+const STORAGE_KEY = getStorageKey(StorageKey.FAVORITES);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>(() => {

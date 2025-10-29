@@ -11,6 +11,8 @@ import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
 import { ResultsSummary } from '@/components/ResultsSummary';
 import { useFigureFilters } from '@/hooks/useFigureFilters';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import type { Figure } from '@/types';
 
 export function Discover() {
@@ -20,6 +22,7 @@ export function Discover() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showImages, setShowImages] = useLocalStorage(getStorageKey(StorageKey.DISCOVER_SHOW_IMAGES), true);
   
   const {
     selectedStyle,
@@ -69,6 +72,8 @@ export function Discover() {
           onStyleChange={setSelectedStyle}
           advancedFilters={advancedFilters}
           onAdvancedFiltersClick={() => setShowAdvancedFilters(true)}
+          showImages={showImages}
+          onShowImagesChange={setShowImages}
         />
         
         {/* Results Summary */}
@@ -92,7 +97,7 @@ export function Discover() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredFigures.map((figure) => (
-            <FigureCard key={figure.id} figure={figure} />
+            <FigureCard key={figure.id} figure={figure} showImage={showImages} />
           ))}
         </div>
       )}

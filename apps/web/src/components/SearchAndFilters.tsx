@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, Image, ImageOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,8 @@ interface SearchAndFiltersProps {
   onStyleChange: (value: DanceStyle | 'all') => void;
   advancedFilters: AdvancedFilters;
   onAdvancedFiltersClick: () => void;
+  showImages: boolean;
+  onShowImagesChange: (value: boolean) => void;
 }
 
 export function SearchAndFilters({
@@ -29,6 +31,8 @@ export function SearchAndFilters({
   onStyleChange,
   advancedFilters,
   onAdvancedFiltersClick,
+  showImages,
+  onShowImagesChange,
 }: SearchAndFiltersProps) {
   const { t } = useTranslation();
 
@@ -36,16 +40,33 @@ export function SearchAndFilters({
 
   return (
     <div className="flex flex-col sm:flex-row gap-3">
-      {/* Search Input */}
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="text"
-          placeholder={t('discover.search.placeholder')}
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 h-11"
-        />
+      {/* Search Input with Toggle Button */}
+      <div className="flex flex-1 gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder={t('discover.search.placeholder')}
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10 h-11"
+          />
+        </div>
+        
+        {/* Images Toggle Button */}
+        <Button
+          variant="outline"
+          onClick={() => onShowImagesChange(!showImages)}
+          className="h-11 w-11 p-0 flex items-center justify-center flex-shrink-0"
+          aria-label={showImages ? 'Hide images' : 'Show images'}
+          title={showImages ? 'Hide images' : 'Show images'}
+        >
+          {showImages ? (
+            <Image className="h-4 w-4" />
+          ) : (
+            <ImageOff className="h-4 w-4" />
+          )}
+        </Button>
       </div>
       
       <div className="flex flex-row gap-2">
