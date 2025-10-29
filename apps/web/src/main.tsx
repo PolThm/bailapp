@@ -9,18 +9,32 @@ function Root() {
   return <App />;
 }
 
+// Disable PostHog in development to avoid polluting analytics
+const isProduction = import.meta.env.PROD;
+
+const AppWithProviders = () => {
+  if (isProduction) {
+    return (
+      <PostHogProvider
+        apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+        options={{
+          api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+          defaults: '2025-05-24',
+          capture_exceptions: true, // This enables capturing exceptions using Error Tracking
+          debug: false,
+        }}
+      >
+        <Root />
+      </PostHogProvider>
+    );
+  }
+
+  // In development, return children without PostHog
+  return <Root />;
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <PostHogProvider
-      apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
-      options={{
-        api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-        defaults: '2025-05-24',
-        capture_exceptions: true, // This enables capturing exceptions using Error Tracking
-        debug: false,
-      }}
-    >
-      <Root />
-    </PostHogProvider>
+    <AppWithProviders />
   </React.StrictMode>
 );
