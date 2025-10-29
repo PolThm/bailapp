@@ -138,7 +138,12 @@
     "phrases_other": "{{count}} phrases",
     "importedBy": "Importé par",
     "visibility": "Visibilité",
-    "shareText": "Découvre vite ce super mouvement de {{style}} sur Bailapp : {{title}}"
+    "shareText": "Découvre vite ce super mouvement de {{style}} sur Bailapp : {{title}}",
+    "mastery": {
+      "title": "Maîtrise du mouvement",
+      "enter": "Entrer mon niveau de maîtrise",
+      "updateTitle": "Niveau de maîtrise"
+    }
   },
   "badges": {
     "danceStyle": {
@@ -201,9 +206,11 @@
     "close": "Fermer",
     "back": "Retour",
     "cancel": "Annuler",
+    "save": "Enregistrer",
     "addNew": "Ajouter",
     "addChoreography": "Ajouter une chorégraphie",
-    "addFigure": "Ajouter une figure"
+    "addFigure": "Ajouter une figure",
+    "update": "Mettre à jour"
   },
   "modal": {
     "newChoreographyTitle": "Nouvelle chorégraphie",

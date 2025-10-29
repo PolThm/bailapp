@@ -14,6 +14,8 @@ import {
   ComplexityBadge,
 } from '@/components/ui/badge';
 import { AuthDialog } from '@/components/AuthDialog';
+import { MasteryLevelModal } from '@/components/MasteryLevelModal';
+import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
 
 export function FigureDetail() {
@@ -25,8 +27,10 @@ export function FigureDetail() {
   // const { user } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showMasteryModal, setShowMasteryModal] = useState(false);
 
   const figure = id ? getFigure(id) : undefined;
+  const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
 
   if (!figure) {
     return (
@@ -81,6 +85,19 @@ export function FigureDetail() {
   // Check if description is long (> 3 lines, ~150 chars)
   const isDescriptionLong = (figure.description?.length || 0) > 150;
 
+  // Get mastery level color based on percentage
+  const getMasteryColor = (level: number): string => {
+    if (level <= 30) {
+      return 'text-red-600 dark:text-red-400';
+    } else if (level >= 40 && level < 70) {
+      return 'text-amber-500 dark:text-amber-400';
+    } else if (level >= 70) {
+      return 'text-green-600 dark:text-green-400';
+    }
+    // For 31-39, use orange as transition
+    return 'text-orange-500 dark:text-orange-400';
+  };
+
   return (
     <>
       {/* Header with back icon and title */}
@@ -116,11 +133,11 @@ export function FigureDetail() {
         {/* Action Buttons */}
         <div className="flex gap-2">
           <Button
-            variant={isFav ? 'default' : 'outline'}
+            variant="outline"
             onClick={handleToggleFavorite}
             className="flex-1 min-h-[48px]"
           >
-            <Heart className={`h-5 w-5 mr-2 ${isFav ? 'fill-current' : ''}`} />
+            <Heart className={`h-5 w-5 mr-2 ${isFav ? 'fill-current text-red-500' : ''}`} />
             {isFav ? t('figure.removeFromFavorites') : t('figure.addToFavorites')}
           </Button>
           <Button
@@ -146,6 +163,42 @@ export function FigureDetail() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Mastery Level Section - Only show if figure is favorited */}
+        {isFav && (
+          <>
+            {hasMasteryLevel ? (
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="space-y-2">
+                    <h2 className="font-semibold">{t('figure.mastery.title')}</h2>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-2xl font-bold ${getMasteryColor(masteryLevel!)}`}>
+                        {masteryLevel}%
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowMasteryModal(true)}
+                        className="ml-auto"
+                      >
+                        {t('common.update')}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Button
+                variant="default"
+                className="w-full"
+                onClick={() => setShowMasteryModal(true)}
+              >
+                {t('figure.mastery.enter')}
+              </Button>
+            )}
+          </>
+        )}
 
         {/* Description */}
         {figure.description && (
@@ -203,6 +256,14 @@ export function FigureDetail() {
 
       {/* Auth Dialog */}
       <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+
+      {/* Mastery Level Modal */}
+      <MasteryLevelModal
+        open={showMasteryModal}
+        onClose={() => setShowMasteryModal(false)}
+        currentLevel={masteryLevel}
+        onSave={setMasteryLevel}
+      />
     </>
   );
 }

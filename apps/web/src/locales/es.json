@@ -138,7 +138,12 @@
     "phrases_other": "{{count}} frases",
     "importedBy": "Importado por",
     "visibility": "Visibilidad",
-    "shareText": "Descubre este increíble movimiento de {{style}} en Bailapp: {{title}}"
+    "shareText": "Descubre este increíble movimiento de {{style}} en Bailapp: {{title}}",
+    "mastery": {
+      "title": "Dominio del movimiento",
+      "enter": "Ingresar mi nivel de dominio",
+      "updateTitle": "Nivel de dominio"
+    }
   },
   "badges": {
     "danceStyle": {
@@ -201,6 +206,8 @@
     "close": "Cerrar",
     "back": "Volver",
     "cancel": "Cancelar",
+    "save": "Guardar",
+    "update": "Actualizar",
     "addNew": "Agregar",
     "addChoreography": "Agregar coreografía",
     "addFigure": "Agregar figura"

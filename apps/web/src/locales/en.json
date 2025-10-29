@@ -138,7 +138,12 @@
     "phrases_other": "{{count}} phrases",
     "importedBy": "Imported by",
     "visibility": "Visibility",
-    "shareText": "Check out this awesome {{style}} move on Bailapp: {{title}}"
+    "shareText": "Check out this awesome {{style}} move on Bailapp: {{title}}",
+    "mastery": {
+      "title": "Movement Mastery",
+      "enter": "Enter my mastery level",
+      "updateTitle": "Mastery Level"
+    }
   },
   "badges": {
     "danceStyle": {
@@ -201,6 +206,8 @@
     "close": "Close",
     "back": "Back",
     "cancel": "Cancel",
+    "save": "Save",
+    "update": "Update",
     "addNew": "Add New",
     "addChoreography": "Add Choreography",
     "addFigure": "Add Figure"

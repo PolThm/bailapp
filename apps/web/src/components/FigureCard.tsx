@@ -8,16 +8,19 @@ import {
 } from '@/components/ui/badge';
 import { getYouTubeVideoId, getYouTubeThumbnail } from '@/utils/youtube';
 import { useFavorites } from '@/context/FavoritesContext';
+import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import type { Figure } from '@/types';
-import { Clock, Heart } from 'lucide-react';
+import { Clock, Heart, BicepsFlexed } from 'lucide-react';
 
 interface FigureCardProps {
   figure: Figure;
   showImage?: boolean;
+  showMastery?: boolean;
 }
 
-export function FigureCard({ figure, showImage = true }: FigureCardProps) {
+export function FigureCard({ figure, showImage = true, showMastery = false }: FigureCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { masteryLevel, hasMasteryLevel } = useMasteryLevel(figure.id);
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId
     ? getYouTubeThumbnail(videoId, 'medium')
@@ -29,6 +32,19 @@ export function FigureCard({ figure, showImage = true }: FigureCardProps) {
     e.preventDefault();
     e.stopPropagation();
     toggleFavorite(figure.id);
+  };
+
+  // Get mastery level color based on percentage
+  const getMasteryColor = (level: number): string => {
+    if (level <= 30) {
+      return 'text-red-600 dark:text-red-400';
+    } else if (level >= 40 && level < 70) {
+      return 'text-amber-500 dark:text-amber-400';
+    } else if (level >= 70) {
+      return 'text-green-600 dark:text-green-400';
+    }
+    // For 31-39, use orange as transition
+    return 'text-orange-500 dark:text-orange-400';
   };
 
   return (
@@ -61,7 +77,7 @@ export function FigureCard({ figure, showImage = true }: FigureCardProps) {
           </h3>
         </CardHeader>
 
-        <CardContent className="pt-0 space-y-2">
+        <CardContent className="pt-0 space-y-3">
           {/* Badges */}
           <div className="flex flex-wrap gap-1.5">
             <DanceStyleBadge style={figure.danceStyle} />
@@ -80,16 +96,25 @@ export function FigureCard({ figure, showImage = true }: FigureCardProps) {
                 {figure.phrasesCount} • {figure.videoAuthor}
               </span>
             </div>
-            {/* Favorite button */}
-            <button
-              onClick={handleFavoriteClick}
-              className="p-1.5 hover:bg-muted rounded-full transition-colors"
-              aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <Heart 
-                className={`h-4 w-4 ${isFav ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} 
-              />
-            </button>
+            {/* Mastery level (only in Favorites page) or Favorite button */}
+            {showMastery && hasMasteryLevel ? (
+              <div className="flex items-center gap-1.5">
+                <BicepsFlexed className={`h-4 w-4 ${getMasteryColor(masteryLevel!)}`} />
+                <span className={`text-sm font-bold ${getMasteryColor(masteryLevel!)}`}>
+                  {masteryLevel}%
+                </span>
+              </div>
+            ) : !showMastery ? (
+              <button
+                onClick={handleFavoriteClick}
+                className="p-1.5 hover:bg-muted rounded-full transition-colors"
+                aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                <Heart 
+                  className={`h-4 w-4 ${isFav ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} 
+                />
+              </button>
+            ) : null}
           </div>
         </CardContent>
       </Card>
