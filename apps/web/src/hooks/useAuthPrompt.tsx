@@ -3,12 +3,12 @@ import { useAuth } from '@/context/AuthContext';
 
 export function useAuthPrompt() {
   const { user } = useAuth();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const requireAuth = useCallback(
     async (action: () => void | Promise<void>) => {
       if (!user) {
-        setShowAuthDialog(true);
+        setShowAuthModal(true);
         return false;
       }
       await action();
@@ -17,14 +17,14 @@ export function useAuthPrompt() {
     [user]
   );
 
-  const closeAuthDialog = useCallback(() => {
-    setShowAuthDialog(false);
+  const closeAuthModal = useCallback(() => {
+    setShowAuthModal(false);
   }, []);
 
   return {
     requireAuth,
-    showAuthDialog,
-    closeAuthDialog,
+    showAuthModal,
+    closeAuthModal,
   };
 }
 

@@ -3,19 +3,19 @@ import { useState } from 'react';
 import { Music, Plus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { EmptyState } from '@/components/EmptyState';
-import { AuthDialog } from '@/components/AuthDialog';
+import { AuthModal } from '@/components/AuthModal';
 
 export function Choreography() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Mock empty choreographies list
   const choreographies: never[] = [];
 
   const handleNewChoreography = () => {
     if (!user) {
-      setShowAuthDialog(true);
+      setShowAuthModal(true);
     } else {
       // TODO: Open new choreography modal/page
       console.log('Create new choreography');
@@ -57,7 +57,7 @@ export function Choreography() {
       )}
 
       {/* Auth Dialog */}
-      <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   );
 }

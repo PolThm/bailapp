@@ -4,15 +4,15 @@ import { LogIn, Globe, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AuthDialog } from '@/components/AuthDialog';
+import { AuthModal } from '@/components/AuthModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.0.46';
+const APP_VERSION = '0.0.47';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -106,7 +106,7 @@ export function Profile() {
           </div>
         ) : (
           <Button
-            onClick={() => setShowAuthDialog(true)}
+            onClick={() => setShowAuthModal(true)}
             className="w-full min-h-[48px] mt-auto"
           >
             <LogIn className="h-5 w-5 mr-2" />
@@ -121,7 +121,7 @@ export function Profile() {
       </div>
 
       {/* Auth Dialog */}
-      <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   );
 }

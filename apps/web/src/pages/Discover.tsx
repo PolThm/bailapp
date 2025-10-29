@@ -5,7 +5,7 @@ import { useFigures } from '@/context/FiguresContext';
 import { useAuth } from '@/context/AuthContext';
 import { FigureCard } from '@/components/FigureCard';
 import { EmptyState } from '@/components/EmptyState';
-import { AuthDialog } from '@/components/AuthDialog';
+import { AuthModal } from '@/components/AuthModal';
 import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureModal';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
@@ -19,7 +19,7 @@ export function Discover() {
   const { t } = useTranslation();
   const { figures, addFigure } = useFigures();
   const { user } = useAuth();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.DISCOVER_SHOW_IMAGES), true);
@@ -38,7 +38,7 @@ export function Discover() {
 
   const handleAddFigure = () => {
     if (!user) {
-      setShowAuthDialog(true);
+      setShowAuthModal(true);
     } else {
       setShowNewFigureModal(true);
     }
@@ -103,7 +103,7 @@ export function Discover() {
       )}
 
       {/* Auth Dialog */}
-      <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       {/* New Figure Modal */}
       <NewFigureModal

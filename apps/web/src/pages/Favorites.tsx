@@ -6,7 +6,7 @@ import { useFavorites } from '@/context/FavoritesContext';
 import { useFigures } from '@/context/FiguresContext';
 import { FigureCard } from '@/components/FigureCard';
 import { EmptyState } from '@/components/EmptyState';
-import { AuthDialog } from '@/components/AuthDialog';
+import { AuthModal } from '@/components/AuthModal';
 import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureModal';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
@@ -21,7 +21,7 @@ export function Favorites() {
   const { favorites } = useFavorites();
   const { figures, addFigure } = useFigures();
   const { user } = useAuth();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.FAVORITES_SHOW_IMAGES), false);
@@ -49,7 +49,7 @@ export function Favorites() {
 
   const handleAddFigure = () => {
     if (!user) {
-      setShowAuthDialog(true);
+      setShowAuthModal(true);
     } else {
       setShowNewFigureModal(true);
     }
@@ -129,7 +129,7 @@ export function Favorites() {
       )}
 
       {/* Auth Dialog */}
-      <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       {/* New Figure Modal */}
       <NewFigureModal

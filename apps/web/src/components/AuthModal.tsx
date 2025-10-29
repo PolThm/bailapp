@@ -10,12 +10,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-interface AuthDialogProps {
+interface AuthModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-export function AuthDialog({ open, onClose }: AuthDialogProps) {
+export function AuthModal({ open, onClose }: AuthModalProps) {
   const { t } = useTranslation();
   const { signInWithGoogle } = useAuth();
 

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { ArrowLeft, Heart, Share2, Clock } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useFavorites } from '@/context/FavoritesContext';
-// import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -13,7 +12,7 @@ import {
   FigureTypeBadge,
   ComplexityBadge,
 } from '@/components/ui/badge';
-import { AuthDialog } from '@/components/AuthDialog';
+import { AuthModal } from '@/components/AuthModal';
 import { MasteryLevelModal } from '@/components/MasteryLevelModal';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
@@ -24,8 +23,7 @@ export function FigureDetail() {
   const navigate = useNavigate();
   const { getFigure } = useFigures();
   const { isFavorite, toggleFavorite } = useFavorites();
-  // const { user } = useAuth();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMasteryModal, setShowMasteryModal] = useState(false);
 
@@ -54,7 +52,7 @@ export function FigureDetail() {
     // For now, allow adding to favorites without authentication
     // When backend is plugged, add the auth check back:
     // if (!user) {
-    //   setShowAuthDialog(true);
+    //   setShowAuthModal(true);
     // } else {
     //   toggleFavorite(figure.id);
     // }
@@ -255,7 +253,7 @@ export function FigureDetail() {
       </div>
 
       {/* Auth Dialog */}
-      <AuthDialog open={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       {/* Mastery Level Modal */}
       <MasteryLevelModal
