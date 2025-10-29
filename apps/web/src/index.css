@@ -104,7 +104,7 @@
 
   /* Combined safe area + fixed padding */
   .p-safe-nave {
-    padding-top: calc(0.75rem + env(safe-area-inset-top));
+    padding-top: calc(1rem + env(safe-area-inset-top));
     /* Mobile: padding-bottom with safe area */
     padding-bottom: calc(4.5rem + env(safe-area-inset-top));
   }
