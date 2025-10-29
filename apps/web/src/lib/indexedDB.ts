@@ -98,14 +98,4 @@ export async function removeItem(key: string): Promise<void> {
   }
 }
 
-/**
- * Synchronous getItem that returns a promise (for compatibility)
- * This is used when you need immediate access but IndexedDB is async
- */
-export function getItemSync(key: string): string | null {
-  // IndexedDB is async, so we return null and expect the caller to use async methods
-  // This is mainly for compatibility with existing code that expects sync behavior
-  console.warn('getItemSync called - IndexedDB requires async operations. Use getItem instead.');
-  return null;
-}
 
