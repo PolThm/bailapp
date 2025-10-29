@@ -24,13 +24,13 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
 
   return (
     <>
-      {/* Overlay - positioned below navbar (z-50) */}
+      {/* Modal positioned above navbar (z-50) */}
       <div
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange?.(false)}
-        style={{ zIndex: 60 }}
+        style={{ zIndex: 55 }}
       />
-      {/* Dialog content - positioned above navbar (z-50) */}
+      {/* Dialog content - positioned above overlay (z-55) */}
       <div className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none">
         <div className="relative pointer-events-auto">{children}</div>
       </div>
@@ -45,7 +45,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative rounded-lg border bg-background p-6 shadow-lg w-[90vw] sm:max-w-md max-h-[90vh] overflow-y-auto',
+      'relative rounded-lg border bg-background p-6 shadow-lg w-[90vw] max-w-xs max-h-[90vh] overflow-y-auto',
       className
     )}
     {...props}
@@ -74,7 +74,7 @@ const DialogHeader = ({
       className={cn(
         hasCloseButton
           ? 'flex flex-row items-center justify-between space-y-0 text-left'
-          : 'flex flex-col space-y-1.5 text-center sm:text-left',
+          : 'flex flex-col space-y-1.5 text-center',
         className
       )}
       {...props}
@@ -100,7 +100,7 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
+      'flex flex-col-reverse',
       className
     )}
     {...props}
