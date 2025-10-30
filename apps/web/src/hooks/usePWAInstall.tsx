@@ -98,7 +98,7 @@ export function usePWAInstall(): PWAInstallState {
       // Set new timer for 30 seconds
       const timer = setTimeout(() => {
         handleDismiss();
-      }, 30000);
+      }, 10000);
 
       autoCloseTimerRef.current = timer;
     } else {
