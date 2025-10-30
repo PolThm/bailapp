@@ -271,10 +271,12 @@
       "title": "Instalar Bailapp en tu dispositivo",
       "instructions": {
         "title": "Instrucciones de instalación",
-        "android": "Toca el menú (⋮), luego 'Instalar aplicación' o 'Añadir a pantalla de inicio'",
-        "ios": "Toca el botón de compartir, luego 'Añadir a pantalla de inicio'",
+        "android1": "Toca el botón de menú:",
+        "android2": "Luego \"<b>Instalar aplicación</b>\", o \"<b>Añadir a pantalla de inicio</b>\".",
+        "ios1": "Toca el botón de compartir:",
+        "ios2": "Luego \"<b>Añadir a pantalla de inicio</b>\".",
         "otherLabel": "Otros navegadores",
-        "other": "Busca la opción 'Instalar' o 'Añadir a pantalla de inicio' en el menú del navegador",
+        "other": "Busca la opción \"<b>Instalar</b>\" o \"<b>Añadir a pantalla de inicio</b>\" en el menú del navegador.",
         "close": "Cerrar"
       }
     }
