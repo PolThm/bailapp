@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Download, X, Smartphone, Share, Share2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Download, X, Smartphone, Share, Share2, Apple } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -85,6 +85,26 @@ export function PWAInstallPrompt() {
           <DialogHeader onClose={() => setShowManualInstructions(false)}>
             <DialogTitle>{t('pwa.install.instructions.title')}</DialogTitle>
           </DialogHeader>
+
+          {/* iOS / Safari / Chrome */}
+          <div className="flex items-start gap-3">
+              <Apple className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-sm">iOS / Safari / Chrome</p>
+                <div className="flex items-start gap-1 text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
+                    {t('pwa.install.instructions.ios1')}
+                  </p>
+                  <Share className="text-foreground h-4 w-4 mt-0.5 flex-shrink-0" />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  <Trans
+                    i18nKey="pwa.install.instructions.ios2"
+                    components={{ b: <strong className="font-bold" /> }}
+                  />
+                </p>
+              </div>
+            </div>
           
           <div className="space-y-4">
             {/* Android / Chrome */}
@@ -92,19 +112,17 @@ export function PWAInstallPrompt() {
               <Smartphone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
               <div>
                 <p className="font-medium text-sm">Android / Chrome</p>
+                <div className="flex items-start gap-1 text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
+                    {t('pwa.install.instructions.android1')}
+                  </p>
+                  (<p className="font-extrabold text-foreground text-md flex-shrink-0 text-md">⋮</p>)
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  {t('pwa.install.instructions.android')}
-                </p>
-              </div>
-            </div>
-
-            {/* iOS / Safari */}
-            <div className="flex items-start gap-3">
-              <Share className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">iOS / Safari / Chrome</p>
-                <p className="text-sm text-muted-foreground">
-                  {t('pwa.install.instructions.ios')}
+                  <Trans
+                    i18nKey="pwa.install.instructions.android2"
+                    components={{ b: <strong className="font-bold" /> }}
+                  />
                 </p>
               </div>
             </div>
@@ -115,7 +133,10 @@ export function PWAInstallPrompt() {
               <div>
                 <p className="font-medium text-sm">{t('pwa.install.instructions.otherLabel')}</p>
                 <p className="text-sm text-muted-foreground">
-                  {t('pwa.install.instructions.other')}
+                  <Trans
+                    i18nKey="pwa.install.instructions.other"
+                    components={{ b: <strong className="font-semibold" /> }}
+                  />
                 </p>
               </div>
             </div>
