@@ -17,7 +17,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen max-w-sm mx-auto sm:border">
       {/* Main Content - Mobile Optimized with Padding */}
-      <main className="flex flex-col flex-1 min-h-screen px-5 p-safe-nave container mx-auto">
+      <main className="flex flex-col flex-1 min-h-screen px-4 p-safe-nave container mx-auto">
           {children}
       </main>
 
