@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -13,17 +13,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useChoreographies } from '@/context/ChoreographiesContext';
-import type { DanceStyle, DanceSubStyle, Complexity } from '@/types';
+import type { DanceStyle, DanceSubStyle, Complexity, Choreography } from '@/types';
 
 interface NewChoreographyModalProps {
   open: boolean;
   onClose: () => void;
+  choreography?: Choreography; // Optional: if provided, we're in edit mode
 }
 
-export function NewChoreographyModal({ open, onClose }: NewChoreographyModalProps) {
+export function NewChoreographyModal({ open, onClose, choreography }: NewChoreographyModalProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { addChoreography } = useChoreographies();
+  const { addChoreography, updateChoreography } = useChoreographies();
+  const isEditMode = !!choreography;
   const [formData, setFormData] = useState<{
     name: string;
     danceStyle?: DanceStyle;
@@ -32,6 +34,26 @@ export function NewChoreographyModal({ open, onClose }: NewChoreographyModalProp
     phrasesCount?: number;
   }>({ name: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Initialize form data when modal opens or choreography changes
+  useEffect(() => {
+    if (open) {
+      if (choreography) {
+        // Edit mode: pre-fill with existing data
+        setFormData({
+          name: choreography.name,
+          danceStyle: choreography.danceStyle,
+          danceSubStyle: choreography.danceSubStyle,
+          complexity: choreography.complexity,
+          phrasesCount: choreography.phrasesCount,
+        });
+      } else {
+        // New mode: reset form
+        setFormData({ name: '' });
+      }
+      setErrors({});
+    }
+  }, [open, choreography]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,23 +72,42 @@ export function NewChoreographyModal({ open, onClose }: NewChoreographyModalProp
       return;
     }
 
-    // Create choreography
-    const newChoreography = {
-      id: crypto.randomUUID(),
-      name: formData.name.trim(),
-      danceStyle: formData.danceStyle!,
-      danceSubStyle: formData.danceSubStyle,
-      complexity: formData.complexity,
-      phrasesCount: formData.phrasesCount,
-      movements: [],
-      createdAt: new Date().toISOString(),
-    };
+    if (isEditMode && choreography) {
+      // Update existing choreography - only include defined values
+      const updates: Partial<Choreography> = {
+        name: formData.name.trim(),
+        danceStyle: formData.danceStyle!,
+      };
+      
+      // Include optional fields - preserve existing values if not explicitly set to undefined
+      // If the form has a value (even if it was originally undefined), include it
+      updates.danceSubStyle = formData.danceSubStyle;
+      updates.complexity = formData.complexity;
+      if (formData.phrasesCount !== undefined) {
+        updates.phrasesCount = formData.phrasesCount;
+      }
+      
+      updateChoreography(choreography.id, updates);
+      handleClose();
+    } else {
+      // Create new choreography
+      const newChoreography = {
+        id: crypto.randomUUID(),
+        name: formData.name.trim(),
+        danceStyle: formData.danceStyle!,
+        danceSubStyle: formData.danceSubStyle,
+        complexity: formData.complexity,
+        phrasesCount: formData.phrasesCount,
+        movements: [],
+        createdAt: new Date().toISOString(),
+      };
 
-    addChoreography(newChoreography);
+      addChoreography(newChoreography);
 
-    // Close and navigate
-    handleClose();
-    navigate(`/choreography/${newChoreography.id}`);
+      // Close and navigate
+      handleClose();
+      navigate(`/choreography/${newChoreography.id}`);
+    }
   };
 
   const handleClose = () => {
@@ -79,7 +120,9 @@ export function NewChoreographyModal({ open, onClose }: NewChoreographyModalProp
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader onClose={handleClose}>
-          <DialogTitle>{t('choreographies.newChoreography.title')}</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? t('choreographies.edit.title') : t('choreographies.newChoreography.title')}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -137,7 +180,7 @@ export function NewChoreographyModal({ open, onClose }: NewChoreographyModalProp
               <Select
                 value={formData.danceSubStyle}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, danceSubStyle: value as DanceSubStyle })
+                  setFormData({ ...formData, danceSubStyle: value ? (value as DanceSubStyle) : undefined })
                 }
               >
                 <SelectTrigger>
@@ -176,7 +219,7 @@ export function NewChoreographyModal({ open, onClose }: NewChoreographyModalProp
             <Select
               value={formData.complexity}
               onValueChange={(value) =>
-                setFormData({ ...formData, complexity: value as Complexity })
+                setFormData({ ...formData, complexity: value ? (value as Complexity) : undefined })
               }
             >
               <SelectTrigger>
@@ -207,7 +250,7 @@ export function NewChoreographyModal({ open, onClose }: NewChoreographyModalProp
               {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1">
-              {t('choreographies.newChoreography.validate')}
+              {isEditMode ? t('common.save') : t('choreographies.newChoreography.validate')}
             </Button>
           </div>
         </form>

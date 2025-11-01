@@ -116,6 +116,9 @@
         "danceStyleRequired": "El estilo de baile es requerido"
       }
     },
+    "edit": {
+      "title": "Editar coreografía"
+    },
     "detail": {
       "notFound": "Coreografía no encontrada",
       "delete": "Eliminar coreografía"

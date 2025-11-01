@@ -69,9 +69,16 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
   const updateChoreography = (id: string, updates: Partial<Choreography>) => {
     setChoreographies((prev) =>
-      prev.map((choreography) =>
-        choreography.id === id ? { ...choreography, ...updates } : choreography
-      )
+      prev.map((choreography) => {
+        if (choreography.id === id) {
+          // Filter out undefined values to avoid overwriting existing values
+          const filteredUpdates = Object.fromEntries(
+            Object.entries(updates).filter(([_, value]) => value !== undefined)
+          ) as Partial<Choreography>;
+          return { ...choreography, ...filteredUpdates };
+        }
+        return choreography;
+      })
     );
   };
 

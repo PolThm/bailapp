@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -26,6 +26,7 @@ import {
   ComplexityBadge,
 } from '@/components/ui/badge';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyMovementItem } from '@/components/ChoreographyMovementItem';
 import { useChoreographies } from '@/context/ChoreographiesContext';
 import type { ChoreographyMovement } from '@/types';
@@ -106,6 +107,7 @@ export function ChoreographyDetail() {
   const navigate = useNavigate();
   const { getChoreography, deleteChoreography, updateChoreography } = useChoreographies();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const choreography = id ? getChoreography(id) : undefined;
@@ -224,7 +226,14 @@ export function ChoreographyDetail() {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold leading-tight line-clamp-2">{choreography.name}</h1>
+          <h1 className="text-2xl font-bold leading-tight line-clamp-2 flex-1">{choreography.name}</h1>
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
+            aria-label={t('choreographies.edit.title')}
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
         </div>
         {/* Badges */}
         <div className="flex flex-wrap gap-2">
@@ -301,6 +310,13 @@ export function ChoreographyDetail() {
           {t('choreographies.detail.delete')}
         </Button>
       </div>
+
+      {/* Edit Modal */}
+      <NewChoreographyModal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        choreography={choreography}
+      />
 
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
