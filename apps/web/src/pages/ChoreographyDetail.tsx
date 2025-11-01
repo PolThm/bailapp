@@ -1,7 +1,24 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState, useRef, useEffect, createRef } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Plus } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import {
   DanceStyleBadge,
@@ -12,6 +29,73 @@ import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { ChoreographyMovementItem } from '@/components/ChoreographyMovementItem';
 import { useChoreographies } from '@/context/ChoreographiesContext';
 import type { ChoreographyMovement } from '@/types';
+import { GripVertical } from 'lucide-react';
+
+// Sortable wrapper component
+function SortableMovementItem({
+  movement,
+  isEditing,
+  onStartEdit,
+  onEndEdit,
+  onDelete,
+  onDuplicate,
+}: {
+  movement: ChoreographyMovement;
+  isEditing: boolean;
+  onStartEdit: () => void;
+  onEndEdit: (name: string) => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: movement.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: isDragging ? undefined : transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      className={`py-1.5 px-2 rounded-lg border bg-background hover:bg-muted ${
+        isDragging ? 'shadow-lg z-50' : ''
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        {/* Drag Handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors touch-none select-none"
+        >
+          <GripVertical className="h-5 w-5" />
+        </div>
+
+        {/* Movement Item Content */}
+        <div className="flex-1">
+          <ChoreographyMovementItem
+            movement={movement}
+            isDragging={isDragging}
+            isEditing={isEditing}
+            onStartEdit={onStartEdit}
+            onEndEdit={onEndEdit}
+            onDelete={onDelete}
+            onDuplicate={onDuplicate}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function ChoreographyDetail() {
   const { id } = useParams<{ id: string }>();
@@ -19,25 +103,21 @@ export function ChoreographyDetail() {
   const navigate = useNavigate();
   const { getChoreography, deleteChoreography, updateChoreography } = useChoreographies();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [draggedId, setDraggedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [touchStartY, setTouchStartY] = useState<number | null>(null);
-  const [touchStartIndex, setTouchStartIndex] = useState<number | null>(null);
-  const dragHandleRefs = useRef<Record<string, React.RefObject<HTMLDivElement | null>>>({});
-  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const choreography = id ? getChoreography(id) : undefined;
 
-  // Initialize drag handle refs
-  useEffect(() => {
-    if (choreography) {
-      choreography.movements.forEach((movement) => {
-        if (!dragHandleRefs.current[movement.id]) {
-          dragHandleRefs.current[movement.id] = createRef<HTMLDivElement>();
-        }
-      });
-    }
-  }, [choreography]);
+  // Configure sensors for drag & drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   if (!choreography) {
     return (
@@ -66,9 +146,6 @@ export function ChoreographyDetail() {
     const updatedMovements = [...choreography.movements, newMovement];
     updateChoreography(choreography.id, { movements: updatedMovements });
     setEditingId(newMovement.id);
-    
-    // Initialize drag handle ref
-    dragHandleRefs.current[newMovement.id] = createRef<HTMLDivElement>();
   };
 
   const handleUpdateMovementName = (movementId: string, name: string) => {
@@ -84,7 +161,6 @@ export function ChoreographyDetail() {
       .filter((m) => m.id !== movementId)
       .map((m, index) => ({ ...m, order: index }));
     updateChoreography(choreography.id, { movements: updatedMovements });
-    delete dragHandleRefs.current[movementId];
   };
 
   const handleDuplicateMovement = (movementId: string) => {
@@ -104,42 +180,22 @@ export function ChoreographyDetail() {
         })),
       ];
       updateChoreography(choreography.id, { movements: updatedMovements });
-      
-      // Initialize drag handle ref
-      dragHandleRefs.current[newMovement.id] = createRef<HTMLDivElement>();
     }
   };
 
-  const handleDragStart = (e: React.DragEvent, movementId: string) => {
-    setDraggedId(movementId);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', movementId);
-  };
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = (e: React.DragEvent, targetMovementId: string) => {
-    e.preventDefault();
-    if (!draggedId || draggedId === targetMovementId) {
-      setDraggedId(null);
+    if (!over || active.id === over.id) {
       return;
     }
 
-    const draggedIndex = choreography.movements.findIndex((m) => m.id === draggedId);
-    const targetIndex = choreography.movements.findIndex((m) => m.id === targetMovementId);
+    const sortedMovements = [...choreography.movements].sort((a, b) => a.order - b.order);
+    const oldIndex = sortedMovements.findIndex((m) => m.id === active.id);
+    const newIndex = sortedMovements.findIndex((m) => m.id === over.id);
 
-    if (draggedIndex === -1 || targetIndex === -1) {
-      setDraggedId(null);
-      return;
-    }
-
-    const newMovements = [...choreography.movements];
-    const [removed] = newMovements.splice(draggedIndex, 1);
-    newMovements.splice(targetIndex, 0, removed);
-
+    const newMovements = arrayMove(sortedMovements, oldIndex, newIndex);
+    
     // Update order
     const updatedMovements = newMovements.map((m, index) => ({
       ...m,
@@ -147,98 +203,16 @@ export function ChoreographyDetail() {
     }));
 
     updateChoreography(choreography.id, { movements: updatedMovements });
-    setDraggedId(null);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent, movementId: string) => {
-    // Only handle if touching the drag handle area
-    const target = e.target as HTMLElement;
-    const isDragHandle = target.closest('[data-drag-handle]') || 
-                        target.closest('.cursor-grab') ||
-                        dragHandleRefs.current[movementId]?.current?.contains(target);
-    
-    if (!isDragHandle) return;
-    
-    e.preventDefault();
-    const touch = e.touches[0];
-    const sortedMovements = [...choreography.movements].sort((a, b) => a.order - b.order);
-    const startIndex = sortedMovements.findIndex((m) => m.id === movementId);
-    
-    setDraggedId(movementId);
-    setTouchStartY(touch.clientY);
-    setTouchStartIndex(startIndex);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent, movementId: string) => {
-    if (draggedId !== movementId || touchStartY === null) return;
-    
-    e.preventDefault();
-    const touch = e.touches[0];
-
-    // Find element under touch point
-    const touchY = touch.clientY;
-    const sortedMovements = [...choreography.movements].sort((a, b) => a.order - b.order);
-    
-    let targetIndex = touchStartIndex ?? 0;
-    
-    // Check each item's position
-    sortedMovements.forEach((m, index) => {
-      const itemElement = itemRefs.current[m.id];
-      if (itemElement) {
-        const rect = itemElement.getBoundingClientRect();
-        const itemCenterY = rect.top + rect.height / 2;
-        
-        if (touchY > itemCenterY && index > (touchStartIndex ?? 0)) {
-          targetIndex = index;
-        } else if (touchY < itemCenterY && index < (touchStartIndex ?? 0)) {
-          targetIndex = index;
-        }
-      }
-    });
-
-    // Update order in real-time during drag
-    if (targetIndex !== touchStartIndex && touchStartIndex !== null) {
-      const newMovements = [...sortedMovements];
-      const [removed] = newMovements.splice(touchStartIndex, 1);
-      newMovements.splice(targetIndex, 0, removed);
-
-      const updatedMovements = newMovements.map((m, index) => ({
-        ...m,
-        order: index,
-      }));
-
-      updateChoreography(choreography.id, { movements: updatedMovements });
-      
-      // Update indices after reordering
-      const newDraggedIndex = updatedMovements.findIndex((m) => m.id === movementId);
-      setTouchStartIndex(newDraggedIndex);
-    }
-  };
-
-  const handleTouchEnd = (_e: React.TouchEvent, movementId: string) => {
-    if (draggedId !== movementId) return;
-    
-    // Final reorder if needed
-    const sortedMovements = [...choreography.movements].sort((a, b) => a.order - b.order);
-    const finalMovements = sortedMovements.map((m, index) => ({
-      ...m,
-      order: index,
-    }));
-    
-    updateChoreography(choreography.id, { movements: finalMovements });
-    
-    setDraggedId(null);
-    setTouchStartY(null);
-    setTouchStartIndex(null);
   };
 
   // Sort movements by order
   const sortedMovements = [...choreography.movements].sort((a, b) => a.order - b.order);
+  const movementIds = sortedMovements.map((m) => m.id);
 
   return (
     <>
       {/* Header with back icon and title */}
-      <div className="pb-6">
+      <div className="pb-4">
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}
@@ -265,45 +239,41 @@ export function ChoreographyDetail() {
       </div>
 
       {/* Movements List */}
-      {sortedMovements.length > 0 && <div className="space-y-2 mb-6">
-        {sortedMovements.map((movement) => (
-          <div
-            key={movement.id}
-            ref={(el) => {
-              itemRefs.current[movement.id] = el;
-            }}
-          >
-            <ChoreographyMovementItem
-              movement={movement}
-              isDragging={draggedId === movement.id}
-              isEditing={editingId === movement.id}
-              onStartEdit={() => setEditingId(movement.id)}
-              onEndEdit={(name) => {
-                if (!name.trim()) {
-                  // If empty name and it's a new movement (no name originally), delete it
-                  if (!movement.name) {
-                    handleDeleteMovement(movement.id);
-                  } else {
-                    // Keep original name if editing existing
-                    handleUpdateMovementName(movement.id, movement.name);
-                  }
-                } else {
-                  handleUpdateMovementName(movement.id, name);
-                }
-              }}
-              onDelete={() => handleDeleteMovement(movement.id)}
-              onDuplicate={() => handleDuplicateMovement(movement.id)}
-              onDragStart={(e) => handleDragStart(e, movement.id)}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, movement.id)}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              dragHandleRef={dragHandleRefs.current[movement.id] || createRef<HTMLDivElement | null>()}
-            />
-          </div>
-        ))}
-      </div>}
+      {sortedMovements.length > 0 && (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={movementIds} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2 mb-6">
+              {sortedMovements.map((movement) => (
+                <SortableMovementItem
+                  key={movement.id}
+                  movement={movement}
+                  isEditing={editingId === movement.id}
+                  onStartEdit={() => setEditingId(movement.id)}
+                  onEndEdit={(name) => {
+                    if (!name.trim()) {
+                      // If empty name and it's a new movement (no name originally), delete it
+                      if (!movement.name) {
+                        handleDeleteMovement(movement.id);
+                      } else {
+                        // Keep original name if editing existing
+                        handleUpdateMovementName(movement.id, movement.name);
+                      }
+                    } else {
+                      handleUpdateMovementName(movement.id, name);
+                    }
+                  }}
+                  onDelete={() => handleDeleteMovement(movement.id)}
+                  onDuplicate={() => handleDuplicateMovement(movement.id)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
 
       {/* Add Movement Button */}
       <div className="mb-6">

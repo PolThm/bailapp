@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GripVertical, MoreVertical, Trash2, Copy } from 'lucide-react';
+import { MoreVertical, Trash2, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import type { ChoreographyMovement } from '@/types';
@@ -13,13 +13,6 @@ interface ChoreographyMovementItemProps {
   onEndEdit: (name: string) => void;
   onDelete: () => void;
   onDuplicate: () => void;
-  onDragStart: (e: React.DragEvent) => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
-  onTouchStart: (e: React.TouchEvent, movementId: string) => void;
-  onTouchMove: (e: React.TouchEvent, movementId: string) => void;
-  onTouchEnd: (e: React.TouchEvent, movementId: string) => void;
-  dragHandleRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export function ChoreographyMovementItem({
@@ -30,13 +23,6 @@ export function ChoreographyMovementItem({
   onEndEdit,
   onDelete,
   onDuplicate,
-  onDragStart,
-  onDragOver,
-  onDrop,
-  onTouchStart,
-  onTouchMove,
-  onTouchEnd,
-  dragHandleRef,
 }: ChoreographyMovementItemProps) {
   const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -114,26 +100,10 @@ export function ChoreographyMovementItem({
   return (
     <>
       <div
-        draggable
-        onDragStart={onDragStart}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-        onTouchStart={(e) => onTouchStart(e, movement.id)}
-        onTouchMove={(e) => onTouchMove(e, movement.id)}
-        onTouchEnd={(e) => onTouchEnd(e, movement.id)}
-        className={`flex items-center gap-3 p-3 rounded-lg border transition-all touch-manipulation ${
-          isDragging ? 'opacity-50' : 'hover:bg-muted'
+        className={`flex items-center gap-2 ${
+          isDragging ? 'opacity-50' : ''
         }`}
       >
-        {/* Drag Handle */}
-        <div
-          ref={dragHandleRef}
-          data-drag-handle
-          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors touch-none select-none"
-        >
-          <GripVertical className="h-5 w-5" />
-        </div>
-
         {/* Name (editable on click) */}
         {isEditing ? (
           <Input
@@ -148,10 +118,14 @@ export function ChoreographyMovementItem({
         ) : (
           <div
             onClick={handleNameClick}
-            className="flex-1 cursor-text hover:bg-muted/50 rounded px-2 py-1 -mx-2 -my-1 min-h-[32px] flex items-center"
+            className="flex-1 cursor-text hover:bg-muted/50 rounded px-2 py-1 -mx-2 -my-1 min-h-[32px] flex items-start"
           >
-            {movement.name || (
-              <span className="text-muted-foreground">
+            {movement.name ? (
+              <span className="line-clamp-2 break-words">
+                {movement.name}
+              </span>
+            ) : (
+              <span className="text-muted-foreground flex items-center">
                 {t('choreographies.movements.namePlaceholder')}
               </span>
             )}
@@ -207,4 +181,3 @@ export function ChoreographyMovementItem({
     </>
   );
 }
-
