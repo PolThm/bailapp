@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Pencil } from 'lucide-react';
 import {
   DndContext,
@@ -50,6 +50,7 @@ function SortableMovementItem({
   onDelete: () => void;
   onDuplicate: () => void;
 }) {
+  const [isHoveringHandle, setIsHoveringHandle] = useState(false);
   const {
     attributes,
     listeners,
@@ -57,20 +58,36 @@ function SortableMovementItem({
     transform,
     transition,
     isDragging,
+    isOver,
   } = useSortable({ id: movement.id });
+
+  // Reset hover state when dragging starts
+  useEffect(() => {
+    if (isDragging && isHoveringHandle) {
+      setIsHoveringHandle(false);
+    }
+  }, [isDragging, isHoveringHandle]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: isDragging ? undefined : transition,
-    opacity: isDragging ? 0.5 : 1,
+    transition: isDragging ? 'none' : transition,
+    opacity: isDragging ? 0.7 : 1,
   };
 
   return (
     <div 
       ref={setNodeRef} 
-      style={style} 
-      className={`py-1.5 px-2 rounded-lg border bg-background hover:bg-muted ${
-        isDragging ? 'shadow-lg z-50' : ''
+      style={{
+        transform: style.transform,
+        transition: style.transition,
+        opacity: style.opacity,
+      }}
+      className={`py-1.5 px-2 rounded-lg border bg-background ${
+        isDragging 
+          ? 'shadow-2xl z-50 ring-2 ring-primary ring-opacity-50 border-primary' 
+          : isOver || isHoveringHandle
+          ? 'bg-muted/80 border-primary/40 shadow-md transition-colors'
+          : 'hover:bg-muted transition-colors'
       }`}
     >
       <div className="flex items-center gap-2">
@@ -78,9 +95,20 @@ function SortableMovementItem({
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors touch-none select-none"
+          onMouseEnter={() => setIsHoveringHandle(true)}
+          onMouseLeave={() => setIsHoveringHandle(false)}
+          onTouchStart={() => setIsHoveringHandle(true)}
+          className={`cursor-grab active:cursor-grabbing touch-none select-none rounded p-1.5 ${
+            isDragging
+              ? 'text-primary bg-primary/20 shadow-lg'
+              : isHoveringHandle
+              ? 'text-primary bg-primary/10 shadow-sm transition-colors'
+              : 'text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors'
+          }`}
         >
-          <GripVertical className="h-5 w-5" />
+          <GripVertical className={`h-5 w-5 ${
+            isDragging ? 'opacity-90' : isHoveringHandle ? 'opacity-100' : ''
+          }`} />
         </div>
 
         {/* Movement Item Content */}
