@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthModal } from '@/components/AuthModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.0.93';
+const APP_VERSION = '0.0.94';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -25,57 +25,54 @@ export function Profile() {
 
       <div className="flex-1 flex flex-col">
         {/* Language Preferences */}
-        <Card className="my-6">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            <CardTitle className="text-lg">{t('profile.languagePreferences')}</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            {t('profile.selectLanguage')}
-          </p>
-          <div className="grid grid-cols-1 gap-2">
-            <Button
-              variant={i18n.language === 'en' ? 'default' : 'outline'}
-              onClick={() => changeLanguage('en')}
-              className="min-h-[48px] justify-start"
-            >
-              <span className="text-xl mr-3">🇬🇧</span>
-              <span className="flex-1 text-left">English</span>
-              {i18n.language === 'en' && (
-                <span className="text-xs opacity-70">✓</span>
-              )}
-            </Button>
-            <Button
-              variant={i18n.language === 'fr' ? 'default' : 'outline'}
-              onClick={() => changeLanguage('fr')}
-              className="min-h-[48px] justify-start"
-            >
-              <span className="text-xl mr-3">🇫🇷</span>
-              <span className="flex-1 text-left">Français</span>
-              {i18n.language === 'fr' && (
-                <span className="text-xs opacity-70">✓</span>
-              )}
-            </Button>
-            <Button
-              variant={i18n.language === 'es' ? 'default' : 'outline'}
-              onClick={() => changeLanguage('es')}
-              className="min-h-[48px] justify-start"
-            >
-              <span className="text-xl mr-3">🇪🇸</span>
-              <span className="flex-1 text-left">Español</span>
-              {i18n.language === 'es' && (
-                <span className="text-xs opacity-70">✓</span>
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-        {/* Spacer to push button to bottom */}
-        <div className="flex-1" />
+        <Card className="my-auto">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              <CardTitle className="text-lg">{t('profile.languagePreferences')}</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              {t('profile.selectLanguage')}
+            </p>
+            <div className="grid grid-cols-1 gap-2">
+              <Button
+                variant={i18n.language === 'en' ? 'default' : 'outline'}
+                onClick={() => changeLanguage('en')}
+                className="min-h-[48px] justify-start"
+              >
+                <span className="text-xl mr-3">🇬🇧</span>
+                <span className="flex-1 text-left">English</span>
+                {i18n.language === 'en' && (
+                  <span className="text-xs opacity-70">✓</span>
+                )}
+              </Button>
+              <Button
+                variant={i18n.language === 'fr' ? 'default' : 'outline'}
+                onClick={() => changeLanguage('fr')}
+                className="min-h-[48px] justify-start"
+              >
+                <span className="text-xl mr-3">🇫🇷</span>
+                <span className="flex-1 text-left">Français</span>
+                {i18n.language === 'fr' && (
+                  <span className="text-xs opacity-70">✓</span>
+                )}
+              </Button>
+              <Button
+                variant={i18n.language === 'es' ? 'default' : 'outline'}
+                onClick={() => changeLanguage('es')}
+                className="min-h-[48px] justify-start"
+              >
+                <span className="text-xl mr-3">🇪🇸</span>
+                <span className="flex-1 text-left">Español</span>
+                {i18n.language === 'es' && (
+                  <span className="text-xs opacity-70">✓</span>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Authentication Section */}
         {user ? (
@@ -107,7 +104,7 @@ export function Profile() {
         ) : (
           <Button
             onClick={() => setShowAuthModal(true)}
-            className="w-full min-h-[48px] mt-auto"
+            className="w-full mt-auto"
           >
             <LogIn className="h-5 w-5 mr-2" />
             {t('profile.signIn')}
