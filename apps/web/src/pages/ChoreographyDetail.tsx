@@ -35,6 +35,7 @@ import { GripVertical } from 'lucide-react';
 function SortableMovementItem({
   movement,
   isEditing,
+  choreography,
   onStartEdit,
   onEndEdit,
   onDelete,
@@ -42,6 +43,7 @@ function SortableMovementItem({
 }: {
   movement: ChoreographyMovement;
   isEditing: boolean;
+  choreography: { danceStyle: import('@/types').DanceStyle };
   onStartEdit: () => void;
   onEndEdit: (name: string) => void;
   onDelete: () => void;
@@ -86,6 +88,7 @@ function SortableMovementItem({
             movement={movement}
             isDragging={isDragging}
             isEditing={isEditing}
+            danceStyle={choreography.danceStyle}
             onStartEdit={onStartEdit}
             onEndEdit={onEndEdit}
             onDelete={onDelete}
@@ -212,7 +215,7 @@ export function ChoreographyDetail() {
   return (
     <>
       {/* Header with back icon and title */}
-      <div className="pb-4">
+      <div className="pb-6">
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}
@@ -251,6 +254,7 @@ export function ChoreographyDetail() {
                 <SortableMovementItem
                   key={movement.id}
                   movement={movement}
+                  choreography={choreography}
                   isEditing={editingId === movement.id}
                   onStartEdit={() => setEditingId(movement.id)}
                   onEndEdit={(name) => {
