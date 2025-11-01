@@ -186,7 +186,7 @@ export function ChoreographyMovementItem({
   return (
     <>
       <div
-        className={`flex items-center gap-2 ${
+        className={`flex items-center gap-3 ${
           isDragging ? 'opacity-50' : ''
         }`}
       >
