@@ -42,43 +42,9 @@ export function ChoreographyMovementItem({
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isEditing) {
-      // On mobile, we need a delay to ensure the input is fully rendered in the DOM
-      // and the keyboard can open properly
-      const isMobile = window.innerWidth < 640;
-      
-      const focusInput = (attempts = 0) => {
-        // Retry if input is not yet available (max 10 attempts)
-        if (!inputRef.current && attempts < 10) {
-          if (isMobile) {
-            setTimeout(() => focusInput(attempts + 1), 50);
-          } else {
-            requestAnimationFrame(() => focusInput(attempts + 1));
-          }
-          return;
-        }
-
-        if (inputRef.current) {
-          // Focus and select text - this should open the keyboard on mobile
-          inputRef.current.focus({ preventScroll: false });
-          // Use setTimeout to ensure focus is set before selecting (important on mobile)
-          setTimeout(() => {
-            if (inputRef.current) {
-              inputRef.current.select();
-            }
-          }, 0);
-        }
-      };
-
-      if (isMobile) {
-        // On mobile, wait a bit longer for DOM to be ready
-        setTimeout(() => focusInput(), 100);
-      } else {
-        // Use requestAnimationFrame for desktop to ensure DOM is ready
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => focusInput());
-        });
-      }
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
     }
   }, [isEditing]);
 
