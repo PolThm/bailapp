@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Plus, Pencil } from 'lucide-react';
 import {
   DndContext,
@@ -58,15 +58,30 @@ function SortableMovementItem({
     transform,
     transition,
     isDragging,
-    isOver,
   } = useSortable({ id: movement.id });
 
-  // Reset hover state when dragging starts or ends
+  // Track previous values to detect changes
+  const prevIsDragging = useRef(isDragging);
+  const prevOrder = useRef(movement.order);
+  
+  // Reset hover state when dragging starts, ends, or when movement order changes
   useEffect(() => {
+    // If drag just started or is active
     if (isDragging) {
       setIsHoveringHandle(false);
     }
-  }, [isDragging]);
+    // If drag just ended (was dragging, now not dragging)
+    else if (prevIsDragging.current && !isDragging) {
+      setIsHoveringHandle(false);
+    }
+    // If order changed (item was moved)
+    if (prevOrder.current !== movement.order) {
+      setIsHoveringHandle(false);
+    }
+    
+    prevIsDragging.current = isDragging;
+    prevOrder.current = movement.order;
+  }, [isDragging, movement.order]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -85,7 +100,7 @@ function SortableMovementItem({
       className={`py-1.5 px-2 rounded-lg border bg-background ${
         isDragging 
           ? 'shadow-2xl z-50 ring-2 ring-primary ring-opacity-50 border-primary' 
-          : isOver || isHoveringHandle
+          : isHoveringHandle
           ? 'bg-muted/80 border-primary/40 shadow-md transition-colors'
           : 'hover:bg-muted transition-colors'
       }`}
