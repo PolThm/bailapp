@@ -288,20 +288,17 @@ export function ChoreographyDetail() {
         </DndContext>
       )}
 
-      {/* Add Movement Button */}
+      {/* Footer Buttons */}
       <div className="mt-auto">
         <Button
           variant="outline"
           onClick={handleAddMovement}
-          className="w-full mb-4"
+          className="w-full mb-2"
         >
           <Plus className="h-4 w-4 mr-2" />
           {t('choreographies.movements.add')}
         </Button>
-      </div>
 
-      {/* Delete Button at bottom */}
-      <div className="pb-4">
         <Button
           variant="link"
           className="w-full underline"

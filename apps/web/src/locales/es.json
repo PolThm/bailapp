@@ -226,8 +226,8 @@
   "auth": {
     "signIn": "Iniciar sesión",
     "signInWithGoogle": "Iniciar sesión con Google",
-    "signInRequired": "Inicio de sesión requerido",
-    "signInToSave": "Por favor inicia sesión para guardar tu trabajo y crear nuevo contenido",
+    "signInRequired": "Próximamente",
+    "signInToSave": "Las funciones de autenticación están en desarrollo y estarán disponibles pronto.",
     "signInToContinue": "Inicia sesión para continuar",
     "cancel": "Cancelar"
   },

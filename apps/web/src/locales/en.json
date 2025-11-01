@@ -226,8 +226,8 @@
   "auth": {
     "signIn": "Sign In",
     "signInWithGoogle": "Sign in with Google",
-    "signInRequired": "Sign In Required",
-    "signInToSave": "Please sign in to save your work and create new content",
+    "signInRequired": "Coming Soon",
+    "signInToSave": "Authentication features are under development and will be available soon.",
     "signInToContinue": "Sign in to continue",
     "cancel": "Cancel"
   },

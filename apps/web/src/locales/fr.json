@@ -226,8 +226,8 @@
   "auth": {
     "signIn": "Se connecter",
     "signInWithGoogle": "Se connecter avec Google",
-    "signInRequired": "Connexion requise",
-    "signInToSave": "Veuillez vous connecter pour sauvegarder et créer de nouveaux contenus",
+    "signInRequired": "Bientôt disponible",
+    "signInToSave": "Les fonctionnalités d'authentification sont en cours de développement et seront bientôt disponibles.",
     "signInToContinue": "Connectez-vous pour continuer",
     "cancel": "Annuler"
   },
