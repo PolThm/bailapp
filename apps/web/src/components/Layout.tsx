@@ -52,13 +52,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <span className="text-xs mt-1 font-medium">{t('nav.favorites')}</span>
           </Link>
           <Link
-            to="/choreography"
+            to="/choreographies"
             className={`flex flex-col items-center justify-center py-2 px-1 rounded-lg active:scale-95 transition-all touch-manipulation min-h-[56px] ${
-              isActive('/choreography') ? 'text-primary bg-accent' : 'text-muted-foreground'
+              isActive('/choreographies') ? 'text-primary bg-accent' : 'text-muted-foreground'
             }`}
           >
             <Music className="h-5 w-5" />
-            <span className="text-xs mt-1 font-medium">{t('nav.choreography')}</span>
+            <span className="text-xs mt-1 font-medium">{t('nav.choreographies')}</span>
           </Link>
           <Link
             to="/profile"

@@ -7,7 +7,7 @@
     "home": "Home",
     "discover": "Discover",
     "favorites": "Favorites",
-    "choreography": "Choreos",
+    "choreographies": "Choreos",
     "profile": "Profile",
     "signIn": "Sign In",
     "signOut": "Sign Out"
@@ -24,7 +24,7 @@
         "title": "Review your favorites",
         "description": "Practice the moves you love"
       },
-      "choreography": {
+      "choreographies": {
         "title": "Polish your choreographies",
         "description": "Create and refine your sequences"
       }
@@ -97,7 +97,7 @@
       "action": "Discover movements"
     }
   },
-  "choreography": {
+  "choreographies": {
     "title": "Choreographies",
     "subtitle": "Create and manage your sequences",
     "new": "New",

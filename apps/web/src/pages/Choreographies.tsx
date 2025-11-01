@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { EmptyState } from '@/components/EmptyState';
 import { AuthModal } from '@/components/AuthModal';
 
-export function Choreography() {
+export function Choreographies() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -27,15 +27,15 @@ export function Choreography() {
       {/* Header with Add Button */}
       <div className="flex items-start justify-between">
         <div className="flex-1 pr-4">
-          <h1 className="text-3xl font-bold">{t('choreography.title')}</h1>
+          <h1 className="text-3xl font-bold">{t('choreographies.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            {t('choreography.subtitle')}
+            {t('choreographies.subtitle')}
           </p>
         </div>
         <button
           onClick={handleNewChoreography}
           className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center flex-shrink-0"
-          aria-label={t('choreography.new')}
+          aria-label={t('choreographies.new')}
         >
           <Plus className="h-6 w-6" />
         </button>
@@ -45,9 +45,9 @@ export function Choreography() {
       {choreographies.length === 0 ? (
         <EmptyState
           icon={Music}
-          title={t('choreography.empty.title')}
-          description={t('choreography.empty.description')}
-          actionLabel={t('choreography.empty.action')}
+          title={t('choreographies.empty.title')}
+          description={t('choreographies.empty.description')}
+          actionLabel={t('choreographies.empty.action')}
           onAction={handleNewChoreography}
         />
       ) : (

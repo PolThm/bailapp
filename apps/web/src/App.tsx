@@ -12,7 +12,7 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { Home } from '@/pages/Home';
 import { Discover } from '@/pages/Discover';
 import { Favorites } from '@/pages/Favorites';
-import { Choreography } from '@/pages/Choreography';
+import { Choreographies } from '@/pages/Choreographies';
 import { Profile } from '@/pages/Profile';
 import { FigureDetail } from '@/pages/FigureDetail';
 
@@ -49,7 +49,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/discover" element={<Discover />} />
                   <Route path="/favorites" element={<Favorites />} />
-                  <Route path="/choreography" element={<Choreography />} />
+                  <Route path="/choreographies" element={<Choreographies />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/figure/:id" element={<FigureDetail />} />
                 </Routes>

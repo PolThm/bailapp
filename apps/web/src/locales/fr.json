@@ -7,7 +7,7 @@
     "home": "Accueil",
     "discover": "Découvrir",
     "favorites": "Favoris",
-    "choreography": "Chorés",
+    "choreographies": "Chorés",
     "profile": "Profil",
     "signIn": "Se connecter",
     "signOut": "Se déconnecter"
@@ -24,7 +24,7 @@
         "title": "Revoir tes classiques",
         "description": "Pratiquer les mouvements que tu aimes"
       },
-      "choreography": {
+      "choreographies": {
         "title": "Peaufiner tes chorégraphies",
         "description": "Créer et affiner tes séquences"
       }
@@ -97,7 +97,7 @@
       "action": "Découvrir des mouvements"
     }
   },
-  "choreography": {
+  "choreographies": {
     "title": "Chorégraphies",
     "subtitle": "Créer et gérer tes séquences",
     "new": "Nouvelle",
