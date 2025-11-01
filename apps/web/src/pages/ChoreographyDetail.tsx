@@ -138,7 +138,16 @@ export function ChoreographyDetail() {
       };
       const updatedMovements = [newMovement];
       updateChoreography(choreography.id, { movements: updatedMovements });
-      setEditingId(newMovement.id);
+      // Use a small delay on mobile to ensure the DOM is updated before setting editing mode
+      // This helps ensure the keyboard opens properly
+      const isMobile = window.innerWidth < 640;
+      if (isMobile) {
+        setTimeout(() => {
+          setEditingId(newMovement.id);
+        }, 50);
+      } else {
+        setEditingId(newMovement.id);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choreography?.id]); // Only depend on choreography ID to run once per choreography
