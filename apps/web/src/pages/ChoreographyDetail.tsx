@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Pencil } from 'lucide-react';
 import {
   DndContext,
@@ -50,7 +50,6 @@ function SortableMovementItem({
   onDelete: () => void;
   onDuplicate: () => void;
 }) {
-  const [isHoveringHandle, setIsHoveringHandle] = useState(false);
   const {
     attributes,
     listeners,
@@ -59,29 +58,6 @@ function SortableMovementItem({
     transition,
     isDragging,
   } = useSortable({ id: movement.id });
-
-  // Track previous values to detect changes
-  const prevIsDragging = useRef(isDragging);
-  const prevOrder = useRef(movement.order);
-  
-  // Reset hover state when dragging starts, ends, or when movement order changes
-  useEffect(() => {
-    // If drag just started or is active
-    if (isDragging) {
-      setIsHoveringHandle(false);
-    }
-    // If drag just ended (was dragging, now not dragging)
-    else if (prevIsDragging.current && !isDragging) {
-      setIsHoveringHandle(false);
-    }
-    // If order changed (item was moved)
-    if (prevOrder.current !== movement.order) {
-      setIsHoveringHandle(false);
-    }
-    
-    prevIsDragging.current = isDragging;
-    prevOrder.current = movement.order;
-  }, [isDragging, movement.order]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -97,12 +73,8 @@ function SortableMovementItem({
         transition: style.transition,
         opacity: style.opacity,
       }}
-      className={`py-1.5 px-2 rounded-lg border bg-background ${
-        isDragging 
-          ? 'shadow-2xl z-50 ring-2 ring-primary ring-opacity-50 border-primary' 
-          : isHoveringHandle
-          ? 'bg-muted/80 border-primary/40 shadow-md transition-colors'
-          : 'hover:bg-muted transition-colors'
+      className={`py-1.5 px-2 rounded-lg border bg-background hover:bg-muted transition-colors ${
+        isDragging ? 'z-50' : ''
       }`}
     >
       <div className="flex items-center gap-2">
@@ -110,21 +82,9 @@ function SortableMovementItem({
         <div
           {...attributes}
           {...listeners}
-          onMouseEnter={() => !isDragging && setIsHoveringHandle(true)}
-          onMouseLeave={() => setIsHoveringHandle(false)}
-          onTouchStart={() => !isDragging && setIsHoveringHandle(true)}
-          onTouchEnd={() => setIsHoveringHandle(false)}
-          className={`cursor-grab active:cursor-grabbing touch-none select-none rounded p-1.5 ${
-            isDragging
-              ? 'text-primary bg-primary/20 shadow-lg'
-              : isHoveringHandle
-              ? 'text-primary bg-primary/10 shadow-sm transition-colors'
-              : 'text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors'
-          }`}
+          className="cursor-grab active:cursor-grabbing touch-none select-none rounded p-1.5 text-muted-foreground hover:text-foreground transition-colors"
         >
-          <GripVertical className={`h-5 w-5 ${
-            isDragging ? 'opacity-90' : isHoveringHandle ? 'opacity-100' : ''
-          }`} />
+          <GripVertical className="h-5 w-5" />
         </div>
 
         {/* Movement Item Content */}
