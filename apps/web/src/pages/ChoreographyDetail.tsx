@@ -144,7 +144,7 @@ export function ChoreographyDetail() {
       if (isMobile) {
         setTimeout(() => {
           setEditingId(newMovement.id);
-        }, 0);
+        }, 50);
       } else {
         setEditingId(newMovement.id);
       }
