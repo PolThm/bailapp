@@ -152,6 +152,21 @@ export function ChoreographyDetail() {
     })
   );
 
+  // Auto-add first movement for new choreographies (only once)
+  useEffect(() => {
+    if (choreography && choreography.movements.length === 0) {
+      const newMovement: ChoreographyMovement = {
+        id: crypto.randomUUID(),
+        name: '',
+        order: 0,
+      };
+      const updatedMovements = [newMovement];
+      updateChoreography(choreography.id, { movements: updatedMovements });
+      setEditingId(newMovement.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [choreography?.id]); // Only depend on choreography ID to run once per choreography
+
   if (!choreography) {
     return (
       <div className="flex flex-col items-center justify-center flex-1">
@@ -317,7 +332,6 @@ export function ChoreographyDetail() {
       )}
 
       {/* Footer Buttons */}
-      <div className="mt-auto">
         <Button
           variant="outline"
           onClick={handleAddMovement}
@@ -329,12 +343,11 @@ export function ChoreographyDetail() {
 
         <Button
           variant="link"
-          className="w-full underline -mb-3"
+          className="w-full underline -mb-3 mt-auto"
           onClick={() => setShowDeleteModal(true)}
         >
           {t('choreographies.detail.delete')}
         </Button>
-      </div>
 
       {/* Edit Modal */}
       <NewChoreographyModal
