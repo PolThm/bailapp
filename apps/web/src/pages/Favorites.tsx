@@ -47,14 +47,13 @@ export function Favorites() {
     clearFilters,
   } = useFigureFilters(favoriteFiguresData);
 
-  // TODO: Add back the add figure button when we have a way to add figures to favorites in the backend
-  // const handleAddFigure = () => {
-  //   if (!user) {
-  //     setShowAuthModal(true);
-  //   } else {
-  //     setShowNewFigureModal(true);
-  //   }
-  // };
+  const handleAddFigure = () => {
+    if (!user) {
+      setShowAuthModal(true);
+    } else {
+      setShowNewFigureModal(true);
+    }
+  };
 
   const handleSubmitFigure = (data: NewFigureFormData) => {
     const newFigure: Figure = {
@@ -78,14 +77,13 @@ export function Favorites() {
               {t('favorites.subtitle')}
             </p>
           </div>
-          {/* // TODO: Add back the add figure button when we have a way to add figures to favorites in the backend
           <button
             onClick={handleAddFigure}
             className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center flex-shrink-0"
             aria-label={t('common.addFigure')}
           >
             <Plus className="h-6 w-6" />
-          </button> */}
+          </button>
         </div>
       </div>
 

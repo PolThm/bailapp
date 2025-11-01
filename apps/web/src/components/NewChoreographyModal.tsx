@@ -58,6 +58,7 @@ export function NewChoreographyModal({ open, onClose }: NewChoreographyModalProp
       danceSubStyle: formData.danceSubStyle,
       complexity: formData.complexity,
       phrasesCount: formData.phrasesCount,
+      movements: [],
       createdAt: new Date().toISOString(),
     };
 

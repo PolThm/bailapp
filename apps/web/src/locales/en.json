@@ -118,12 +118,22 @@
     },
     "detail": {
       "notFound": "Choreography not found",
-      "delete": "Delete"
+      "delete": "Delete choreography"
     },
     "delete": {
       "title": "Delete Choreography",
       "message": "Are you sure you want to delete this choreography?",
       "confirm": "Delete"
+    },
+    "movements": {
+      "add": "Add a movement",
+      "namePlaceholder": "Movement name",
+      "menu": "Menu",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "deleteTitle": "Delete Movement",
+      "deleteMessage": "Are you sure you want to delete this movement?",
+      "deleteConfirm": "Delete"
     }
   },
   "profile": {

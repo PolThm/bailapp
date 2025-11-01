@@ -118,12 +118,22 @@
     },
     "detail": {
       "notFound": "Coreografía no encontrada",
-      "delete": "Eliminar"
+      "delete": "Eliminar coreografía"
     },
     "delete": {
       "title": "Eliminar Coreografía",
       "message": "¿Estás seguro de que quieres eliminar esta coreografía?",
       "confirm": "Eliminar"
+    },
+    "movements": {
+      "add": "Agregar un movimiento",
+      "namePlaceholder": "Nombre del movimiento",
+      "menu": "Menú",
+      "duplicate": "Duplicar",
+      "delete": "Eliminar",
+      "deleteTitle": "Eliminar Movimiento",
+      "deleteMessage": "¿Estás seguro de que quieres eliminar este movimiento?",
+      "deleteConfirm": "Eliminar"
     }
   },
   "profile": {

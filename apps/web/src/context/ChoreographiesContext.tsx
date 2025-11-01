@@ -30,7 +30,12 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
         const stored = await getItem(STORAGE_KEY);
         if (!cancelled) {
           const parsedChoreographies = stored ? JSON.parse(stored) : [];
-          setChoreographies(parsedChoreographies);
+          // Ensure all choreographies have movements array
+          const migratedChoreographies = parsedChoreographies.map((choreography: Choreography) => ({
+            ...choreography,
+            movements: choreography.movements || [],
+          }));
+          setChoreographies(migratedChoreographies);
           setIsLoaded(true);
         }
       } catch (error) {

@@ -118,12 +118,22 @@
     },
     "detail": {
       "notFound": "Chorégraphie non trouvée",
-      "delete": "Supprimer"
+      "delete": "Supprimer la chorégraphie"
     },
     "delete": {
       "title": "Supprimer la Chorégraphie",
       "message": "Êtes-vous sûr de vouloir supprimer cette chorégraphie ?",
       "confirm": "Supprimer"
+    },
+    "movements": {
+      "add": "Ajouter un mouvement",
+      "namePlaceholder": "Nom du mouvement",
+      "menu": "Menu",
+      "duplicate": "Dupliquer",
+      "delete": "Supprimer",
+      "deleteTitle": "Supprimer le Mouvement",
+      "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce mouvement ?",
+      "deleteConfirm": "Supprimer"
     }
   },
   "profile": {
