@@ -289,11 +289,11 @@ export function ChoreographyDetail() {
       )}
 
       {/* Add Movement Button */}
-      <div className="mb-6">
+      <div className="mt-auto">
         <Button
           variant="outline"
           onClick={handleAddMovement}
-          className="w-full"
+          className="w-full mb-4"
         >
           <Plus className="h-4 w-4 mr-2" />
           {t('choreographies.movements.add')}
@@ -301,7 +301,7 @@ export function ChoreographyDetail() {
       </div>
 
       {/* Delete Button at bottom */}
-      <div className="mt-auto pt-8 pb-4">
+      <div className="pb-4">
         <Button
           variant="link"
           className="w-full underline"
