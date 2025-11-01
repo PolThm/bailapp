@@ -1,25 +1,20 @@
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Music, Plus } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import { useChoreographies } from '@/context/ChoreographiesContext';
 import { EmptyState } from '@/components/EmptyState';
 import { AuthModal } from '@/components/AuthModal';
+import { NewChoreographyModal } from '@/components/NewChoreographyModal';
+import { ChoreographyCard } from '@/components/ChoreographyCard';
 
 export function Choreographies() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { choreographies } = useChoreographies();
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // Mock empty choreographies list
-  const choreographies: never[] = [];
+  const [showNewChoreographyModal, setShowNewChoreographyModal] = useState(false);
 
   const handleNewChoreography = () => {
-    if (!user) {
-      setShowAuthModal(true);
-    } else {
-      // TODO: Open new choreography modal/page
-      console.log('Create new choreography');
-    }
+    setShowNewChoreographyModal(true);
   };
 
   return (
@@ -51,13 +46,21 @@ export function Choreographies() {
           onAction={handleNewChoreography}
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {/* TODO: Choreography cards */}
+        <div className="grid grid-cols-1 gap-4 mt-6">
+          {choreographies.map((choreography) => (
+            <ChoreographyCard key={choreography.id} choreography={choreography} />
+          ))}
         </div>
       )}
 
       {/* Auth Dialog */}
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
+
+      {/* New Choreography Modal */}
+      <NewChoreographyModal
+        open={showNewChoreographyModal}
+        onClose={() => setShowNewChoreographyModal(false)}
+      />
     </>
   );
 }

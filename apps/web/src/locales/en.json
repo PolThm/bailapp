@@ -105,6 +105,25 @@
       "title": "No choreographies yet",
       "description": "Create your first choreography to combine figures and practice sequences!",
       "action": "New Choreography"
+    },
+    "newChoreography": {
+      "title": "New Choreography",
+      "name": "Name",
+      "namePlaceholder": "Choreography name",
+      "validate": "Create",
+      "errors": {
+        "nameRequired": "Choreography name is required",
+        "danceStyleRequired": "Dance style is required"
+      }
+    },
+    "detail": {
+      "notFound": "Choreography not found",
+      "delete": "Delete"
+    },
+    "delete": {
+      "title": "Delete Choreography",
+      "message": "Are you sure you want to delete this choreography?",
+      "confirm": "Delete"
     }
   },
   "profile": {
@@ -243,7 +262,7 @@
     "fullTitlePlaceholder": "Complete figure name",
     "figureType": "Movement Type",
     "figureTypePlaceholder": "Select movement type",
-    "complexity": "Complexity",
+    "complexity": "Complexity (optional)",
     "complexityPlaceholder": "Select complexity",
     "phrasesCount": "Phrases Count",
     "phrasesCountPlaceholder": "4",

@@ -64,7 +64,7 @@ export function AdvancedFiltersModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
-        <DialogHeader onClose={onClose}>
+        <DialogHeader onClose={onClose} className="mb-0">
           <DialogTitle>{t('discover.advancedFilters.title')}</DialogTitle>
         </DialogHeader>
 

@@ -6,6 +6,7 @@ export enum StorageKey {
   DISCOVER_SHOW_IMAGES = 'discover_showImages',
   FAVORITES_SHOW_IMAGES = 'favorites_showImages',
   MASTERY_LEVELS = 'masteryLevels',
+  CHOREOGRAPHIES = 'choreographies',
 }
 
 /**

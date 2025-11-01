@@ -75,6 +75,7 @@ const DialogHeader = ({
         hasCloseButton
           ? 'flex flex-row items-center justify-between space-y-0 text-left'
           : 'flex flex-col space-y-1.5 text-center',
+        'mb-4',
         className
       )}
       {...props}

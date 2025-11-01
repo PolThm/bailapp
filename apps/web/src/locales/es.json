@@ -105,6 +105,25 @@
       "title": "No hay coreografías todavía",
       "description": "¡Crea tu primera coreografía para combinar figuras y practicar secuencias!",
       "action": "Nueva coreografía"
+    },
+    "newChoreography": {
+      "title": "Nueva Coreografía",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre de la coreografía",
+      "validate": "Crear",
+      "errors": {
+        "nameRequired": "El nombre de la coreografía es requerido",
+        "danceStyleRequired": "El estilo de baile es requerido"
+      }
+    },
+    "detail": {
+      "notFound": "Coreografía no encontrada",
+      "delete": "Eliminar"
+    },
+    "delete": {
+      "title": "Eliminar Coreografía",
+      "message": "¿Estás seguro de que quieres eliminar esta coreografía?",
+      "confirm": "Eliminar"
     }
   },
   "profile": {
@@ -243,7 +262,7 @@
     "fullTitlePlaceholder": "Nombre completo de la figura",
     "figureType": "Tipo de movimiento",
     "figureTypePlaceholder": "Seleccionar tipo",
-    "complexity": "Complejidad",
+    "complexity": "Complejidad (opcional)",
     "complexityPlaceholder": "Seleccionar complejidad",
     "phrasesCount": "Número de frases",
     "phrasesCountPlaceholder": "4",

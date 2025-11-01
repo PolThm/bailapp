@@ -47,13 +47,14 @@ export function Favorites() {
     clearFilters,
   } = useFigureFilters(favoriteFiguresData);
 
-  const handleAddFigure = () => {
-    if (!user) {
-      setShowAuthModal(true);
-    } else {
-      setShowNewFigureModal(true);
-    }
-  };
+  // TODO: Add back the add figure button when we have a way to add figures to favorites in the backend
+  // const handleAddFigure = () => {
+  //   if (!user) {
+  //     setShowAuthModal(true);
+  //   } else {
+  //     setShowNewFigureModal(true);
+  //   }
+  // };
 
   const handleSubmitFigure = (data: NewFigureFormData) => {
     const newFigure: Figure = {
@@ -77,13 +78,14 @@ export function Favorites() {
               {t('favorites.subtitle')}
             </p>
           </div>
+          {/* // TODO: Add back the add figure button when we have a way to add figures to favorites in the backend
           <button
             onClick={handleAddFigure}
             className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center flex-shrink-0"
             aria-label={t('common.addFigure')}
           >
             <Plus className="h-6 w-6" />
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -118,7 +120,7 @@ export function Favorites() {
           title={favoriteFiguresData.length === 0 ? t('favorites.empty.title') : t('discover.empty.filtered.title')}
           description={favoriteFiguresData.length === 0 ? t('favorites.empty.description') : t('discover.empty.filtered.description')}
           actionLabel={favoriteFiguresData.length === 0 ? t('favorites.empty.action') : t('discover.empty.action')}
-          onAction={favoriteFiguresData.length === 0 ? () => window.location.href = '/discover' : handleAddFigure}
+          onAction={() => window.location.href = '/discover'}
         />
       ) : (
         <div className="grid grid-cols-1 gap-5">

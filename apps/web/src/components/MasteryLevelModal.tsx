@@ -65,7 +65,7 @@ export function MasteryLevelModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="space-y-1">
-        <DialogHeader onClose={onClose}>
+        <DialogHeader onClose={onClose} className="mb-0">
           <DialogTitle className="text-center">{t('figure.mastery.updateTitle')}</DialogTitle>
         </DialogHeader>
 

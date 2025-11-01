@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/context/AuthContext';
 import { FavoritesProvider } from '@/context/FavoritesContext';
 import { FiguresProvider } from '@/context/FiguresContext';
+import { ChoreographiesProvider } from '@/context/ChoreographiesContext';
 import { Layout } from '@/components/Layout';
 import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
@@ -15,6 +16,7 @@ import { Favorites } from '@/pages/Favorites';
 import { Choreographies } from '@/pages/Choreographies';
 import { Profile } from '@/pages/Profile';
 import { FigureDetail } from '@/pages/FigureDetail';
+import { ChoreographyDetail } from '@/pages/ChoreographyDetail';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,21 +42,24 @@ function App() {
       <AuthProvider>
         <FiguresProvider>
           <FavoritesProvider>
-            <BrowserRouter>
-              <PortraitLock />
-              <PWAUpdateNotification />
-              {isProduction && <PWAInstallPrompt />}
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/discover" element={<Discover />} />
-                  <Route path="/favorites" element={<Favorites />} />
-                  <Route path="/choreographies" element={<Choreographies />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/figure/:id" element={<FigureDetail />} />
-                </Routes>
-              </Layout>
-            </BrowserRouter>
+            <ChoreographiesProvider>
+              <BrowserRouter>
+                <PortraitLock />
+                <PWAUpdateNotification />
+                {isProduction && <PWAInstallPrompt />}
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/discover" element={<Discover />} />
+                    <Route path="/favorites" element={<Favorites />} />
+                    <Route path="/choreographies" element={<Choreographies />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/figure/:id" element={<FigureDetail />} />
+                    <Route path="/choreography/:id" element={<ChoreographyDetail />} />
+                  </Routes>
+                </Layout>
+              </BrowserRouter>
+            </ChoreographiesProvider>
           </FavoritesProvider>
         </FiguresProvider>
       </AuthProvider>
