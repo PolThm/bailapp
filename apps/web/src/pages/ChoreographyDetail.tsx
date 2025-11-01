@@ -301,7 +301,7 @@ export function ChoreographyDetail() {
 
         <Button
           variant="link"
-          className="w-full underline"
+          className="w-full underline -mb-3"
           onClick={() => setShowDeleteModal(true)}
         >
           {t('choreographies.detail.delete')}
