@@ -61,12 +61,12 @@ function SortableMovementItem({
     isOver,
   } = useSortable({ id: movement.id });
 
-  // Reset hover state when dragging starts
+  // Reset hover state when dragging starts or ends
   useEffect(() => {
-    if (isDragging && isHoveringHandle) {
+    if (isDragging) {
       setIsHoveringHandle(false);
     }
-  }, [isDragging, isHoveringHandle]);
+  }, [isDragging]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -95,9 +95,10 @@ function SortableMovementItem({
         <div
           {...attributes}
           {...listeners}
-          onMouseEnter={() => setIsHoveringHandle(true)}
+          onMouseEnter={() => !isDragging && setIsHoveringHandle(true)}
           onMouseLeave={() => setIsHoveringHandle(false)}
-          onTouchStart={() => setIsHoveringHandle(true)}
+          onTouchStart={() => !isDragging && setIsHoveringHandle(true)}
+          onTouchEnd={() => setIsHoveringHandle(false)}
           className={`cursor-grab active:cursor-grabbing touch-none select-none rounded p-1.5 ${
             isDragging
               ? 'text-primary bg-primary/20 shadow-lg'
