@@ -36,9 +36,9 @@ export function Home() {
     },
     {
       icon: Music,
-      title: t('home.options.choreography.title'),
-      description: t('home.options.choreography.description'),
-      link: '/choreography',
+      title: t('home.options.choreographies.title'),
+      description: t('home.options.choreographies.description'),
+      link: '/choreographies',
       gradient: 'from-violet-500 to-purple-600',
       bgGradient: 'bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950 dark:to-purple-950',
       iconColor: 'text-violet-600 dark:text-violet-400',

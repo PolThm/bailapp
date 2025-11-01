@@ -39,3 +39,20 @@ export interface Figure {
   createdAt: string;
 }
 
+export interface ChoreographyMovement {
+  id: string;
+  name: string;
+  order: number;
+}
+
+export interface Choreography {
+  id: string;
+  name: string;
+  danceStyle: DanceStyle;
+  danceSubStyle?: DanceSubStyle;
+  complexity?: Complexity;
+  phrasesCount?: number;
+  movements: ChoreographyMovement[];
+  createdAt: string;
+}
+

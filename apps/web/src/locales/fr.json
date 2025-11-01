@@ -7,7 +7,7 @@
     "home": "Accueil",
     "discover": "Découvrir",
     "favorites": "Favoris",
-    "choreography": "Chorés",
+    "choreographies": "Chorés",
     "profile": "Profil",
     "signIn": "Se connecter",
     "signOut": "Se déconnecter"
@@ -24,7 +24,7 @@
         "title": "Revoir tes classiques",
         "description": "Pratiquer les mouvements que tu aimes"
       },
-      "choreography": {
+      "choreographies": {
         "title": "Peaufiner tes chorégraphies",
         "description": "Créer et affiner tes séquences"
       }
@@ -97,7 +97,7 @@
       "action": "Découvrir des mouvements"
     }
   },
-  "choreography": {
+  "choreographies": {
     "title": "Chorégraphies",
     "subtitle": "Créer et gérer tes séquences",
     "new": "Nouvelle",
@@ -105,6 +105,38 @@
       "title": "Aucune chorégraphie pour l'instant",
       "description": "Crée ta première chorégraphie pour combiner des figures et pratiquer des séquences !",
       "action": "Nouvelle chorégraphie"
+    },
+    "newChoreography": {
+      "title": "Nouvelle Chorégraphie",
+      "name": "Nom",
+      "namePlaceholder": "Nom de la chorégraphie",
+      "validate": "Créer",
+      "errors": {
+        "nameRequired": "Le nom de la chorégraphie est requis",
+        "danceStyleRequired": "Le style de danse est requis"
+      }
+    },
+    "edit": {
+      "title": "Modifier la chorégraphie"
+    },
+    "detail": {
+      "notFound": "Chorégraphie non trouvée",
+      "delete": "Supprimer la chorégraphie"
+    },
+    "delete": {
+      "title": "Supprimer la Chorégraphie",
+      "message": "Êtes-vous sûr de vouloir supprimer cette chorégraphie ?",
+      "confirm": "Supprimer"
+    },
+    "movements": {
+      "add": "Ajouter un mouvement",
+      "namePlaceholder": "Nom du mouvement",
+      "menu": "Menu",
+      "duplicate": "Dupliquer",
+      "delete": "Supprimer",
+      "deleteTitle": "Supprimer le Mouvement",
+      "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce mouvement ?",
+      "deleteConfirm": "Supprimer"
     }
   },
   "profile": {
@@ -194,8 +226,8 @@
   "auth": {
     "signIn": "Se connecter",
     "signInWithGoogle": "Se connecter avec Google",
-    "signInRequired": "Connexion requise",
-    "signInToSave": "Veuillez vous connecter pour sauvegarder et créer de nouveaux contenus",
+    "signInRequired": "Bientôt disponible",
+    "signInToSave": "Les fonctionnalités d'authentification sont en cours de développement et seront bientôt disponibles.",
     "signInToContinue": "Connectez-vous pour continuer",
     "cancel": "Annuler"
   },
@@ -243,7 +275,7 @@
     "fullTitlePlaceholder": "Nom complet de la figure",
     "figureType": "Type de mouvement",
     "figureTypePlaceholder": "Sélectionner le type",
-    "complexity": "Complexité",
+    "complexity": "Complexité (optionnel)",
     "complexityPlaceholder": "Sélectionner la complexité",
     "phrasesCount": "Nombre de phrases",
     "phrasesCountPlaceholder": "4",

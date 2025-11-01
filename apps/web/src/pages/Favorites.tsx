@@ -118,7 +118,7 @@ export function Favorites() {
           title={favoriteFiguresData.length === 0 ? t('favorites.empty.title') : t('discover.empty.filtered.title')}
           description={favoriteFiguresData.length === 0 ? t('favorites.empty.description') : t('discover.empty.filtered.description')}
           actionLabel={favoriteFiguresData.length === 0 ? t('favorites.empty.action') : t('discover.empty.action')}
-          onAction={favoriteFiguresData.length === 0 ? () => window.location.href = '/discover' : handleAddFigure}
+          onAction={() => window.location.href = '/discover'}
         />
       ) : (
         <div className="grid grid-cols-1 gap-5">

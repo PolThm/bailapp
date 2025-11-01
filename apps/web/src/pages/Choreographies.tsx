@@ -1,25 +1,20 @@
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Music, Plus } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import { useChoreographies } from '@/context/ChoreographiesContext';
 import { EmptyState } from '@/components/EmptyState';
 import { AuthModal } from '@/components/AuthModal';
+import { NewChoreographyModal } from '@/components/NewChoreographyModal';
+import { ChoreographyCard } from '@/components/ChoreographyCard';
 
-export function Choreography() {
+export function Choreographies() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { choreographies } = useChoreographies();
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // Mock empty choreographies list
-  const choreographies: never[] = [];
+  const [showNewChoreographyModal, setShowNewChoreographyModal] = useState(false);
 
   const handleNewChoreography = () => {
-    if (!user) {
-      setShowAuthModal(true);
-    } else {
-      // TODO: Open new choreography modal/page
-      console.log('Create new choreography');
-    }
+    setShowNewChoreographyModal(true);
   };
 
   return (
@@ -27,15 +22,15 @@ export function Choreography() {
       {/* Header with Add Button */}
       <div className="flex items-start justify-between">
         <div className="flex-1 pr-4">
-          <h1 className="text-3xl font-bold">{t('choreography.title')}</h1>
+          <h1 className="text-3xl font-bold">{t('choreographies.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            {t('choreography.subtitle')}
+            {t('choreographies.subtitle')}
           </p>
         </div>
         <button
           onClick={handleNewChoreography}
           className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center flex-shrink-0"
-          aria-label={t('choreography.new')}
+          aria-label={t('choreographies.new')}
         >
           <Plus className="h-6 w-6" />
         </button>
@@ -45,19 +40,27 @@ export function Choreography() {
       {choreographies.length === 0 ? (
         <EmptyState
           icon={Music}
-          title={t('choreography.empty.title')}
-          description={t('choreography.empty.description')}
-          actionLabel={t('choreography.empty.action')}
+          title={t('choreographies.empty.title')}
+          description={t('choreographies.empty.description')}
+          actionLabel={t('choreographies.empty.action')}
           onAction={handleNewChoreography}
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {/* TODO: Choreography cards */}
+        <div className="grid grid-cols-1 gap-4 mt-6">
+          {choreographies.map((choreography) => (
+            <ChoreographyCard key={choreography.id} choreography={choreography} />
+          ))}
         </div>
       )}
 
       {/* Auth Dialog */}
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
+
+      {/* New Choreography Modal */}
+      <NewChoreographyModal
+        open={showNewChoreographyModal}
+        onClose={() => setShowNewChoreographyModal(false)}
+      />
     </>
   );
 }

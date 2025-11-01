@@ -7,7 +7,7 @@
     "home": "Home",
     "discover": "Discover",
     "favorites": "Favorites",
-    "choreography": "Choreos",
+    "choreographies": "Choreos",
     "profile": "Profile",
     "signIn": "Sign In",
     "signOut": "Sign Out"
@@ -24,7 +24,7 @@
         "title": "Review your favorites",
         "description": "Practice the moves you love"
       },
-      "choreography": {
+      "choreographies": {
         "title": "Polish your choreographies",
         "description": "Create and refine your sequences"
       }
@@ -97,7 +97,7 @@
       "action": "Discover movements"
     }
   },
-  "choreography": {
+  "choreographies": {
     "title": "Choreographies",
     "subtitle": "Create and manage your sequences",
     "new": "New",
@@ -105,6 +105,38 @@
       "title": "No choreographies yet",
       "description": "Create your first choreography to combine figures and practice sequences!",
       "action": "New Choreography"
+    },
+    "newChoreography": {
+      "title": "New Choreography",
+      "name": "Name",
+      "namePlaceholder": "Choreography name",
+      "validate": "Create",
+      "errors": {
+        "nameRequired": "Choreography name is required",
+        "danceStyleRequired": "Dance style is required"
+      }
+    },
+    "edit": {
+      "title": "Edit Choreography"
+    },
+    "detail": {
+      "notFound": "Choreography not found",
+      "delete": "Delete choreography"
+    },
+    "delete": {
+      "title": "Delete Choreography",
+      "message": "Are you sure you want to delete this choreography?",
+      "confirm": "Delete"
+    },
+    "movements": {
+      "add": "Add a movement",
+      "namePlaceholder": "Movement name",
+      "menu": "Menu",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "deleteTitle": "Delete Movement",
+      "deleteMessage": "Are you sure you want to delete this movement?",
+      "deleteConfirm": "Delete"
     }
   },
   "profile": {
@@ -194,8 +226,8 @@
   "auth": {
     "signIn": "Sign In",
     "signInWithGoogle": "Sign in with Google",
-    "signInRequired": "Sign In Required",
-    "signInToSave": "Please sign in to save your work and create new content",
+    "signInRequired": "Coming Soon",
+    "signInToSave": "Authentication features are under development and will be available soon.",
     "signInToContinue": "Sign in to continue",
     "cancel": "Cancel"
   },
@@ -243,7 +275,7 @@
     "fullTitlePlaceholder": "Complete figure name",
     "figureType": "Movement Type",
     "figureTypePlaceholder": "Select movement type",
-    "complexity": "Complexity",
+    "complexity": "Complexity (optional)",
     "complexityPlaceholder": "Select complexity",
     "phrasesCount": "Phrases Count",
     "phrasesCountPlaceholder": "4",
