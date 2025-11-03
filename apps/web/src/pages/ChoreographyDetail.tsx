@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Pencil } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, Plus, Pencil, Music2 } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -28,6 +28,7 @@ import {
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyMovementItem } from '@/components/ChoreographyMovementItem';
+import { EmptyState } from '@/components/EmptyState';
 import { useChoreographies } from '@/context/ChoreographiesContext';
 import type { ChoreographyMovement } from '@/types';
 import { GripVertical } from 'lucide-react';
@@ -128,20 +129,6 @@ export function ChoreographyDetail() {
     })
   );
 
-  // Auto-add first movement for new choreographies (only once)
-  useEffect(() => {
-    if (choreography && choreography.movements.length === 0) {
-      const newMovement: ChoreographyMovement = {
-        id: crypto.randomUUID(),
-        name: '',
-        order: 0,
-      };
-      const updatedMovements = [newMovement];
-      updateChoreography(choreography.id, { movements: updatedMovements });
-      setEditingId(newMovement.id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [choreography?.id]); // Only depend on choreography ID to run once per choreography
 
   if (!choreography) {
     return (
@@ -236,7 +223,7 @@ export function ChoreographyDetail() {
   return (
     <>
       {/* Header with back icon and title */}
-      <div className="pb-6">
+      <div>
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}
@@ -270,14 +257,14 @@ export function ChoreographyDetail() {
       </div>
 
       {/* Movements List */}
-      {sortedMovements.length > 0 && (
+      {sortedMovements.length > 0 ? (
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={movementIds} strategy={verticalListSortingStrategy}>
-            <div className="space-y-2 mb-6">
+            <div className="space-y-2 my-6">
               {sortedMovements.map((movement) => (
                 <SortableMovementItem
                   key={movement.id}
@@ -304,26 +291,44 @@ export function ChoreographyDetail() {
               ))}
             </div>
           </SortableContext>
+          {/* <Button
+            variant="default"
+            onClick={handleAddMovement}
+            className="w-full mb-2"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {t('choreographies.movements.add')}
+          </Button> */}
         </DndContext>
+      ) : (
+        <EmptyState
+          icon={Music2}
+          title={t('choreographies.movements.empty.title')}
+          description={t('choreographies.movements.empty.description')}
+          actionLabel={t('choreographies.movements.add')}
+          onAction={handleAddMovement}
+        />
       )}
 
-      {/* Footer Buttons */}
-        <Button
-          variant="outline"
-          onClick={handleAddMovement}
-          className="w-full mb-2"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          {t('choreographies.movements.add')}
-        </Button>
-
-        <Button
-          variant="link"
-          className="w-full underline -mb-3 mt-auto"
-          onClick={() => setShowDeleteModal(true)}
-        >
-          {t('choreographies.detail.delete')}
-        </Button>
+      <div className="flex flex-col gap-2 mt-auto">
+        {sortedMovements.length > 0 && (
+          <Button
+              variant="default"
+              onClick={handleAddMovement}
+              className="w-full"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {t('choreographies.movements.add')}
+            </Button>
+          )}
+          <Button
+            variant="link"
+            className="w-full underline -mb-3 mt-auto"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            {t('choreographies.detail.delete')}
+          </Button>
+      </div>
 
       {/* Edit Modal */}
       <NewChoreographyModal

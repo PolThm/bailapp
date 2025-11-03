@@ -136,7 +136,11 @@
       "delete": "Delete",
       "deleteTitle": "Delete Movement",
       "deleteMessage": "Are you sure you want to delete this movement?",
-      "deleteConfirm": "Delete"
+      "deleteConfirm": "Delete",
+      "empty": {
+        "title": "No movements yet",
+        "description": "Start building your choreography by adding your first dance step or figure."
+      }
     }
   },
   "profile": {
