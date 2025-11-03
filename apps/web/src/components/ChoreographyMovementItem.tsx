@@ -58,7 +58,7 @@ export function ChoreographyMovementItem({
 
   // Load and filter suggestions based on danceStyle and input
   useEffect(() => {
-    if (!isEditing || !danceStyle || !editName.trim() || editName.trim().length < 2) {
+    if (!isEditing || !danceStyle || !editName.trim()) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
@@ -73,8 +73,7 @@ export function ChoreographyMovementItem({
       .filter(move => {
         const moveLower = move.toLowerCase();
         return moveLower.includes(searchTerm) && moveLower !== searchTerm;
-      })
-      .slice(0, 5); // Limit to 5 suggestions
+      });
     
     if (filtered.length > 0) {
       setSuggestions(filtered);
