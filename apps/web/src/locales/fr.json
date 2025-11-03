@@ -136,7 +136,11 @@
       "delete": "Supprimer",
       "deleteTitle": "Supprimer le Mouvement",
       "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce mouvement ?",
-      "deleteConfirm": "Supprimer"
+      "deleteConfirm": "Supprimer",
+      "empty": {
+        "title": "Aucun mouvement pour l'instant",
+        "description": "Commence à créer ta chorégraphie en ajoutant ton premier pas de danse ou figure."
+      }
     }
   },
   "profile": {
