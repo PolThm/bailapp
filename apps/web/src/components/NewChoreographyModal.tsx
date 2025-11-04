@@ -135,7 +135,15 @@ export function NewChoreographyModal({ open, onClose, choreography }: NewChoreog
               id="name"
               placeholder={t('choreographies.newChoreography.namePlaceholder')}
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => {
+                const newName = e.target.value;
+                setFormData({ ...formData, name: newName });
+                // Clear error if field is now valid
+                if (errors.name && newName.trim()) {
+                  const { name, ...restErrors } = errors;
+                  setErrors(restErrors);
+                }
+              }}
               className={errors.name ? 'border-destructive' : ''}
             />
             {errors.name && (
@@ -150,13 +158,18 @@ export function NewChoreographyModal({ open, onClose, choreography }: NewChoreog
             </Label>
             <Select
               value={formData.danceStyle}
-              onValueChange={(value) =>
+              onValueChange={(value) => {
                 setFormData({
                   ...formData,
                   danceStyle: value as DanceStyle,
                   danceSubStyle: undefined,
-                })
-              }
+                });
+                // Clear error if field is now valid
+                if (errors.danceStyle) {
+                  const { danceStyle, ...restErrors } = errors;
+                  setErrors(restErrors);
+                }
+              }}
             >
               <SelectTrigger
                 className={errors.danceStyle ? 'border-destructive' : ''}
