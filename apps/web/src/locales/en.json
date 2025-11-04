@@ -141,6 +141,9 @@
         "title": "No movements yet",
         "description": "Start building your choreography by adding your first dance step or figure."
       }
+    },
+    "example": {
+      "name": "Salsa Example"
     }
   },
   "profile": {
