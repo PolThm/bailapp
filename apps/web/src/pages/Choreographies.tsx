@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { AuthModal } from '@/components/AuthModal';
 import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyCard } from '@/components/ChoreographyCard';
+import { Button } from '@/components/ui/button';
 
 export function Choreographies() {
   const { t } = useTranslation();
@@ -50,6 +51,20 @@ export function Choreographies() {
           {choreographies.map((choreography) => (
             <ChoreographyCard key={choreography.id} choreography={choreography} />
           ))}
+        </div>
+      )}
+
+      {/* Add Button at Bottom */}
+      {choreographies.length > 0 && (
+        <div className="mt-auto pt-6">
+          <Button
+            onClick={handleNewChoreography}
+            className="w-full"
+            variant="default"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {t('choreographies.empty.action')}
+          </Button>
         </div>
       )}
 
