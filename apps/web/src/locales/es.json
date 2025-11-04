@@ -141,6 +141,9 @@
         "title": "Aún no hay movimientos",
         "description": "Comienza a crear tu coreografía agregando tu primer paso de baile o figura."
       }
+    },
+    "example": {
+      "name": "Ejemplo Salsa"
     }
   },
   "profile": {

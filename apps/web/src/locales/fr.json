@@ -141,6 +141,9 @@
         "title": "Aucun mouvement pour l'instant",
         "description": "Commence à créer ta chorégraphie en ajoutant ton premier pas de danse ou figure."
       }
+    },
+    "example": {
+      "name": "Exemple Salsa"
     }
   },
   "profile": {
