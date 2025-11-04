@@ -41,7 +41,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
           
           // Check if example choreography already exists in the list
           const hasExample = migratedChoreographies.some(
-            (choreography) => choreography.id === EXAMPLE_CHOREOGRAPHY_ID
+            (choreography: Choreography) => choreography.id === EXAMPLE_CHOREOGRAPHY_ID
           );
           
           // Only create example if:
