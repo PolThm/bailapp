@@ -237,7 +237,7 @@ export function ChoreographyMovementItem({
             className="flex-1 cursor-text hover:bg-muted/50 rounded px-2 py-1 -mx-2 -my-1 min-h-[32px] flex items-start"
           >
             {movement.name ? (
-              <span className="line-clamp-2 break-words">
+              <span className="line-clamp-3 break-words">
                 {movement.name}
               </span>
             ) : (
