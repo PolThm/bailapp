@@ -39,7 +39,6 @@ export function useIndexedDB<T>(key: string, initialValue: T): [T, (value: T | (
               setIsLoaded(true);
               // Migrate to JSON format in the background
               if (typeof window !== 'undefined') {
-                const { setItem } = await import('@/lib/indexedDB');
                 setItem(key, JSON.stringify(item)).catch(() => {
                   // Ignore migration errors
                 });

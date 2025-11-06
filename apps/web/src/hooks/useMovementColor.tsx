@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useIndexedDB } from './useIndexedDB';
-import { getItem } from '@/lib/indexedDB';
+import { getItem, setItem } from '@/lib/indexedDB';
 
 // Counter to help distribute colors more evenly
 let colorGenerationCounter = 0;
@@ -37,7 +37,6 @@ export function generateRandomColor(): string {
  * Change the color for a movement
  */
 export async function changeMovementColor(movementId: string): Promise<string> {
-  const { setItem } = await import('@/lib/indexedDB');
   const newColor = generateRandomColor();
   const storageKey = `movement-color-${movementId}`;
   // Use JSON.stringify to match how useIndexedDB stores values
@@ -77,7 +76,6 @@ export function useMovementColor(movementId: string, refreshKey?: number): strin
                 setColor(item);
                 hasGeneratedRef.current = true;
                 // Migrate to JSON format
-                const { setItem } = await import('@/lib/indexedDB');
                 setItem(storageKey, JSON.stringify(item)).catch(() => {
                   // Ignore migration errors
                 });
