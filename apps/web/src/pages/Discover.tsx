@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useAuth } from '@/context/AuthContext';
@@ -15,14 +16,26 @@ import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import type { Figure } from '@/types';
 
+// Fisher-Yates shuffle algorithm for randomizing array
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export function Discover() {
   const { t } = useTranslation();
   const { figures, addFigure } = useFigures();
   const { user } = useAuth();
+  const location = useLocation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.DISCOVER_SHOW_IMAGES), true);
+  const [shuffleKey, setShuffleKey] = useState(0);
   
   const {
     selectedStyle,
@@ -35,6 +48,23 @@ export function Discover() {
     hasActiveFilters,
     clearFilters,
   } = useFigureFilters(figures);
+
+  // Shuffle figures when arriving on the page (only if no filters are active)
+  useEffect(() => {
+    if (!hasActiveFilters) {
+      setShuffleKey(Date.now());
+    }
+  }, [location.pathname, hasActiveFilters]);
+
+  // Shuffle filtered figures only when there are no active filters
+  const shuffledFigures = useMemo(() => {
+    if (hasActiveFilters) {
+      // Don't shuffle when filters are active - keep consistent results
+      return filteredFigures;
+    }
+    // Shuffle when no filters are active
+    return shuffleArray(filteredFigures);
+  }, [filteredFigures, hasActiveFilters, shuffleKey]);
 
   const handleAddFigure = () => {
     if (!user) {
@@ -79,14 +109,14 @@ export function Discover() {
         {/* Results Summary */}
         {hasActiveFilters && (
           <ResultsSummary
-            count={filteredFigures.length}
+            count={shuffledFigures.length}
             onClear={clearFilters}
           />
         )}
       </div>
 
       {/* Figures Grid */}
-      {filteredFigures.length === 0 ? (
+      {shuffledFigures.length === 0 ? (
         <EmptyState
           icon={Plus}
           title={!hasActiveFilters ? t('discover.empty.title') : t('discover.empty.filtered.title')}
@@ -96,7 +126,7 @@ export function Discover() {
         />
       ) : (
         <div className="grid grid-cols-1 gap-5">
-          {filteredFigures.map((figure) => (
+          {shuffledFigures.map((figure) => (
             <FigureCard key={figure.id} figure={figure} showImage={showImages} />
           ))}
         </div>
