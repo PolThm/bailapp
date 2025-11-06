@@ -36,7 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
       <main 
         ref={mainRef}
-        className="flex flex-col px-4 py-5 h-[calc(100vh-72px)] overflow-y-auto relative"
+        className="flex flex-col px-4 py-5 h-[calc(100dvh-72px)] overflow-y-auto relative"
       >
         <PullToRefreshIndicator
           isPulling={isPulling}
