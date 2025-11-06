@@ -1,6 +1,6 @@
 {
   "name": "bailapp",
-  "version": "0.0.104",
+  "version": "0.0.115",
   "private": true,
   "description": "Bailapp - A PWA app for creating choreographies and learning dance moves",
   "workspaces": [
@@ -17,7 +17,8 @@
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "type-check": "bun --cwd apps/web run type-check && bun --cwd apps/functions run type-check",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ngrok": "ngrok http 5173 --domain=game-calm-doe.ngrok-free.app"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.11.0",
