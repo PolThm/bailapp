@@ -279,7 +279,7 @@ export function ChoreographyMovementItem({
 
           {/* Menu Dropdown */}
           {showMenu && (
-            <div className="absolute right-0 top-full mt-1 bg-background border rounded-lg shadow-lg z-10 min-w-[150px]">
+            <div className="absolute right-0 top-full mt-1 bg-background border rounded-lg shadow-lg z-10 min-w-[160px]">
               <button
                 onClick={handleDuplicate}
                 className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"

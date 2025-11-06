@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthModal } from '@/components/AuthModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.0.116';
+const APP_VERSION = '0.0.117';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
