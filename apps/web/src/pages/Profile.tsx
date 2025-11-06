@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthModal } from '@/components/AuthModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.0.117';
+const APP_VERSION = '0.0.118';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -112,7 +112,7 @@ export function Profile() {
         )}
         
         {/* About text at the bottom */}
-        <p className="text-xs text-muted-foreground text-center mt-4 -mb-1">
+        <p className="text-xs text-muted-foreground text-center mt-4 -mb-2">
           {t('profile.about.version', { version: APP_VERSION })} • {t('profile.about.developed')} <a href="https://github.com/PolThm" target="_blank" rel="noopener noreferrer" className="underline">Pol Thomas</a>
         </p>
       </div>
