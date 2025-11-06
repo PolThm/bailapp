@@ -82,7 +82,7 @@ function SortableMovementItem({
       const hue = parseInt(hslMatch[1]);
       const saturation = parseInt(hslMatch[2]);
       const lightness = parseInt(hslMatch[3]);
-      return `hsla(${hue}, ${saturation}%, ${lightness}%, 0.075)`;
+      return `hsla(${hue}, ${saturation}%, ${lightness}%, 0.15)`;
     }
     
     // Fallback: if it's already in a different format, try to add opacity
