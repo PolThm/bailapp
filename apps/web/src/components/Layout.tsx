@@ -8,21 +8,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   // Scroll to top when route changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+  useEffect(() => window.scrollTo(0, 0), [location.pathname]);
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex flex-col min-h-screen max-w-sm mx-auto sm:border">
-      {/* Main Content - Mobile Optimized with Padding */}
-      <main className="flex flex-col flex-1 min-h-screen px-4 p-safe-nave container mx-auto">
+    <div className="flex flex-col h-screen max-w-sm mx-auto sm:border p-safe-area overflow-hidden">
+      {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
+      <main className="flex flex-col px-4 py-5 h-[calc(100vh-72px)] overflow-y-auto">
           {children}
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur safe-bottom max-w-sm mx-auto sm:border">
+      <nav className="z-50 border-t bg-background/95 backdrop-blur">
         <div className="grid grid-cols-5 gap-1 p-2">
           <Link
             to="/"
