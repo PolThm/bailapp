@@ -133,6 +133,7 @@
       "namePlaceholder": "Nom du mouvement",
       "menu": "Menu",
       "duplicate": "Dupliquer",
+      "changeColor": "Changer couleur",
       "delete": "Supprimer",
       "deleteTitle": "Supprimer le Mouvement",
       "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce mouvement ?",

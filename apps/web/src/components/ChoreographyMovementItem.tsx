@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical, Trash2, Copy } from 'lucide-react';
+import { MoreVertical, Trash2, Copy, Palette } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import type { ChoreographyMovement } from '@/types';
+import { changeMovementColor } from '@/hooks/useMovementColor';
 
 import type { DanceStyle } from '@/types';
 import movementList from '@/data/movementList.json';
@@ -17,6 +18,7 @@ interface ChoreographyMovementItemProps {
   onEndEdit: (name: string) => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  onColorChange?: () => void;
 }
 
 export function ChoreographyMovementItem({
@@ -28,6 +30,7 @@ export function ChoreographyMovementItem({
   onEndEdit,
   onDelete,
   onDuplicate,
+  onColorChange,
 }: ChoreographyMovementItemProps) {
   const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -182,6 +185,22 @@ export function ChoreographyMovementItem({
     onDuplicate();
   };
 
+  const handleChangeColor = async () => {
+    setShowMenu(false);
+    try {
+      await changeMovementColor(movement.id);
+      // Notify parent to force re-render
+      if (onColorChange) {
+        onColorChange();
+      } else {
+        // Fallback: reload if no callback provided
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Error changing color:', error);
+    }
+  };
+
   return (
     <>
       <div
@@ -267,6 +286,13 @@ export function ChoreographyMovementItem({
               >
                 <Copy className="h-4 w-4" />
                 {t('choreographies.movements.duplicate')}
+              </button>
+              <button
+                onClick={handleChangeColor}
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"
+              >
+                <Palette className="h-4 w-4" />
+                {t('choreographies.movements.changeColor')}
               </button>
               <button
                 onClick={() => {

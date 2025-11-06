@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { ArrowLeft, Plus, Pencil, Music2 } from 'lucide-react';
+import { useMovementColor } from '@/hooks/useMovementColor';
 import {
   DndContext,
   closestCenter,
@@ -42,6 +43,8 @@ function SortableMovementItem({
   onEndEdit,
   onDelete,
   onDuplicate,
+  colorUpdateKey,
+  onColorChange,
 }: {
   movement: ChoreographyMovement;
   isEditing: boolean;
@@ -50,6 +53,8 @@ function SortableMovementItem({
   onEndEdit: (name: string) => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  colorUpdateKey: number;
+  onColorChange: () => void;
 }) {
   const {
     attributes,
@@ -59,11 +64,29 @@ function SortableMovementItem({
     transition,
     isDragging,
   } = useSortable({ id: movement.id });
+  const backgroundColor = useMovementColor(movement.id, colorUpdateKey);
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.7 : 1,
+  };
+
+  // Convert HSL color to HSLA with 20% opacity
+  const getBackgroundColorWithOpacity = (color: string): string => {
+    if (color === 'transparent') return 'transparent';
+    
+    // Parse HSL color (format: hsl(hue, saturation%, lightness%))
+    const hslMatch = color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+    if (hslMatch) {
+      const hue = parseInt(hslMatch[1]);
+      const saturation = parseInt(hslMatch[2]);
+      const lightness = parseInt(hslMatch[3]);
+      return `hsla(${hue}, ${saturation}%, ${lightness}%, 0.2)`;
+    }
+    
+    // Fallback: if it's already in a different format, try to add opacity
+    return color;
   };
 
   return (
@@ -73,8 +96,9 @@ function SortableMovementItem({
         transform: style.transform,
         transition: style.transition,
         opacity: style.opacity,
+        backgroundColor: getBackgroundColorWithOpacity(backgroundColor),
       }}
-      className={`py-1.5 px-2 rounded-lg border bg-background hover:bg-muted transition-colors ${
+      className={`py-1.5 px-2 rounded-lg border hover:bg-muted/50 transition-colors ${
         isDragging ? 'z-50' : ''
       }`}
     >
@@ -99,6 +123,7 @@ function SortableMovementItem({
             onEndEdit={onEndEdit}
             onDelete={onDelete}
             onDuplicate={onDuplicate}
+            onColorChange={onColorChange}
           />
         </div>
       </div>
@@ -114,6 +139,7 @@ export function ChoreographyDetail() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [colorUpdateKey, setColorUpdateKey] = useState(0);
 
   const choreography = id ? getChoreography(id) : undefined;
 
@@ -194,6 +220,11 @@ export function ChoreographyDetail() {
     }
   };
 
+  const handleColorChange = () => {
+    // Force re-render by updating the key
+    setColorUpdateKey(prev => prev + 1);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -267,7 +298,7 @@ export function ChoreographyDetail() {
             <div className="space-y-2 my-6">
               {sortedMovements.map((movement) => (
                 <SortableMovementItem
-                  key={movement.id}
+                  key={`${movement.id}-${colorUpdateKey}`}
                   movement={movement}
                   choreography={choreography}
                   isEditing={editingId === movement.id}
@@ -287,6 +318,8 @@ export function ChoreographyDetail() {
                   }}
                   onDelete={() => handleDeleteMovement(movement.id)}
                   onDuplicate={() => handleDuplicateMovement(movement.id)}
+                  colorUpdateKey={colorUpdateKey}
+                  onColorChange={handleColorChange}
                 />
               ))}
             </div>
