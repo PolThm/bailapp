@@ -5,6 +5,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { FavoritesProvider } from '@/context/FavoritesContext';
 import { FiguresProvider } from '@/context/FiguresContext';
 import { ChoreographiesProvider } from '@/context/ChoreographiesContext';
+import { PullToRefreshProvider } from '@/context/PullToRefreshContext';
 import { Layout } from '@/components/Layout';
 import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
@@ -43,22 +44,24 @@ function App() {
         <FiguresProvider>
           <FavoritesProvider>
             <ChoreographiesProvider>
-              <BrowserRouter>
-                <PortraitLock />
-                <PWAUpdateNotification />
-                {isProduction && <PWAInstallPrompt />}
-                <Layout>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/discover" element={<Discover />} />
-                    <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/choreographies" element={<Choreographies />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/figure/:id" element={<FigureDetail />} />
-                    <Route path="/choreography/:id" element={<ChoreographyDetail />} />
-                  </Routes>
-                </Layout>
-              </BrowserRouter>
+              <PullToRefreshProvider>
+                <BrowserRouter>
+                  <PortraitLock />
+                  <PWAUpdateNotification />
+                  {isProduction && <PWAInstallPrompt />}
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/discover" element={<Discover />} />
+                      <Route path="/favorites" element={<Favorites />} />
+                      <Route path="/choreographies" element={<Choreographies />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/figure/:id" element={<FigureDetail />} />
+                      <Route path="/choreography/:id" element={<ChoreographyDetail />} />
+                    </Routes>
+                  </Layout>
+                </BrowserRouter>
+              </PullToRefreshProvider>
             </ChoreographiesProvider>
           </FavoritesProvider>
         </FiguresProvider>

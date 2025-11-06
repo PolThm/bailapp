@@ -1,22 +1,50 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, Compass, Heart, Music, User } from 'lucide-react';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
+import { usePullToRefreshContext } from '@/context/PullToRefreshContext';
+import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
+  const { refreshHandler } = usePullToRefreshContext();
+  const mainRef = useRef<HTMLElement | null>(null);
 
   // Scroll to top when route changes
   useEffect(() => window.scrollTo(0, 0), [location.pathname]);
+
+  const { isPulling, isRefreshing, pullDistance } = usePullToRefresh({
+    onRefresh: async () => {
+      if (refreshHandler) {
+        await refreshHandler();
+      } else {
+        // Default refresh: reload the page
+        window.location.reload();
+      }
+    },
+    enabled: true,
+    threshold: 80,
+    elementRef: mainRef,
+  });
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className="flex flex-col h-screen max-w-sm mx-auto sm:border p-safe-area overflow-hidden">
       {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
-      <main className="flex flex-col px-4 py-5 h-[calc(100vh-72px)] overflow-y-auto">
-          {children}
+      <main 
+        ref={mainRef}
+        className="flex flex-col px-4 py-5 h-[calc(100vh-72px)] overflow-y-auto relative"
+      >
+        <PullToRefreshIndicator
+          isPulling={isPulling}
+          isRefreshing={isRefreshing}
+          pullDistance={pullDistance}
+          threshold={80}
+        />
+        {children}
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
