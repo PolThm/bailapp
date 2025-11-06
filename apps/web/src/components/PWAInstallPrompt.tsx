@@ -42,7 +42,7 @@ export function PWAInstallPrompt() {
   return (
     <>
       {/* Install Prompt Snackbar */}
-      <div className={`fixed bottom-24 left-4 right-4 z-50 flex justify-center transition-all duration-500 ${
+      <div className={`fixed bottom-24 left-4 right-4 z-50 flex justify-center transition-all duration-500 max-w-[350px] mx-auto ${
         isExiting 
           ? 'animate-out slide-out-to-bottom fade-out' 
           : 'animate-in slide-in-from-bottom fade-in'
