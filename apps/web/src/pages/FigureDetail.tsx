@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Heart, Share2, Clock } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useFavorites } from '@/context/FavoritesContext';
@@ -21,7 +21,7 @@ export function FigureDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { getFigure } = useFigures();
+  const { getFigure, updateFigure } = useFigures();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -29,6 +29,16 @@ export function FigureDetail() {
 
   const figure = id ? getFigure(id) : undefined;
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
+  const lastUpdatedIdRef = useRef<string | null>(null);
+
+  // Update lastOpenedAt when figure is opened (only once per id)
+  useEffect(() => {
+    if (figure && id && lastUpdatedIdRef.current !== id) {
+      const now = new Date().toISOString();
+      updateFigure(id, { lastOpenedAt: now });
+      lastUpdatedIdRef.current = id;
+    }
+  }, [id, figure, updateFigure]);
 
   if (!figure) {
     return (

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Plus, Pencil, Music2 } from 'lucide-react';
 import { useMovementColor } from '@/hooks/useMovementColor';
 import {
@@ -142,6 +142,16 @@ export function ChoreographyDetail() {
   const [colorUpdateKey, setColorUpdateKey] = useState(0);
 
   const choreography = id ? getChoreography(id) : undefined;
+  const lastUpdatedIdRef = useRef<string | null>(null);
+
+  // Update lastOpenedAt when choreography is opened (only once per id)
+  useEffect(() => {
+    if (choreography && id && lastUpdatedIdRef.current !== id) {
+      const now = new Date().toISOString();
+      updateChoreography(id, { lastOpenedAt: now });
+      lastUpdatedIdRef.current = id;
+    }
+  }, [id, choreography, updateChoreography]);
 
   // Configure sensors for drag & drop
   const sensors = useSensors(

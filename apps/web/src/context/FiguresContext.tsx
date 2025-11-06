@@ -7,6 +7,7 @@ interface FiguresContextType {
   getFigure: (id: string) => Figure | undefined;
   getFiguresByCategory: (category: DanceStyle) => Figure[];
   addFigure: (figure: Figure) => void;
+  updateFigure: (id: string, updates: Partial<Figure>) => void;
 }
 
 const FiguresContext = createContext<FiguresContextType | undefined>(undefined);
@@ -26,6 +27,21 @@ export function FiguresProvider({ children }: { children: ReactNode }) {
     setFigures((prev) => [...prev, figure]);
   };
 
+  const updateFigure = (id: string, updates: Partial<Figure>) => {
+    setFigures((prev) =>
+      prev.map((figure) => {
+        if (figure.id === id) {
+          // Filter out undefined values to avoid overwriting existing values
+          const filteredUpdates = Object.fromEntries(
+            Object.entries(updates).filter(([_, value]) => value !== undefined)
+          ) as Partial<Figure>;
+          return { ...figure, ...filteredUpdates };
+        }
+        return figure;
+      })
+    );
+  };
+
   return (
     <FiguresContext.Provider
       value={{
@@ -33,6 +49,7 @@ export function FiguresProvider({ children }: { children: ReactNode }) {
         getFigure,
         getFiguresByCategory,
         addFigure,
+        updateFigure,
       }}
     >
       {children}

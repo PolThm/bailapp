@@ -14,6 +14,7 @@ import { ResultsSummary } from '@/components/ResultsSummary';
 import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
+import { sortByLastOpened } from '@/lib/utils';
 import type { Figure } from '@/types';
 
 export function Favorites() {
@@ -26,12 +27,13 @@ export function Favorites() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.FAVORITES_SHOW_IMAGES), false);
 
-  // Get favorite figures - ensure favorites is always an array
+  // Get favorite figures - ensure favorites is always an array, sorted by lastOpenedAt
   const favoriteFiguresData = useMemo(() => {
     if (!favorites || !Array.isArray(favorites)) {
       return [];
     }
-    return figures.filter((figure) => favorites.includes(figure.id));
+    const favoriteFigures = figures.filter((figure) => favorites.includes(figure.id));
+    return sortByLastOpened(favoriteFigures);
   }, [figures, favorites]);
 
   // Filter favorite figures

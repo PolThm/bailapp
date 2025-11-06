@@ -7,6 +7,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyCard } from '@/components/ChoreographyCard';
 import { Button } from '@/components/ui/button';
+import { sortByLastOpened } from '@/lib/utils';
 
 export function Choreographies() {
   const { t } = useTranslation();
@@ -17,6 +18,9 @@ export function Choreographies() {
   const handleNewChoreography = () => {
     setShowNewChoreographyModal(true);
   };
+
+  // Sort choreographies by lastOpenedAt (most recent first), then by createdAt for those without lastOpenedAt
+  const sortedChoreographies = sortByLastOpened(choreographies);
 
   return (
     <>
@@ -38,7 +42,7 @@ export function Choreographies() {
       </div>
 
       {/* Choreographies List or Empty State */}
-      {choreographies.length === 0 ? (
+      {sortedChoreographies.length === 0 ? (
         <EmptyState
           icon={Music}
           title={t('choreographies.empty.title')}
@@ -48,14 +52,14 @@ export function Choreographies() {
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 mt-6">
-          {choreographies.map((choreography) => (
+          {sortedChoreographies.map((choreography) => (
             <ChoreographyCard key={choreography.id} choreography={choreography} />
           ))}
         </div>
       )}
 
       {/* Add Button at Bottom */}
-      {choreographies.length > 0 && (
+      {sortedChoreographies.length > 0 && (
         <div className="mt-auto pt-6">
           <Button
             onClick={handleNewChoreography}

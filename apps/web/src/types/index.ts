@@ -37,6 +37,7 @@ export interface Figure {
   visibility: Visibility;
   importedBy: string;
   createdAt: string;
+  lastOpenedAt?: string;
 }
 
 export interface ChoreographyMovement {
@@ -54,5 +55,6 @@ export interface Choreography {
   phrasesCount?: number;
   movements: ChoreographyMovement[];
   createdAt: string;
+  lastOpenedAt?: string;
 }
 
