@@ -61,6 +61,7 @@ export function Choreographies() {
             onClick={handleNewChoreography}
             className="w-full"
             variant="default"
+            size="lg"
           >
             <Plus className="h-4 w-4 mr-2" />
             {t('choreographies.empty.action')}

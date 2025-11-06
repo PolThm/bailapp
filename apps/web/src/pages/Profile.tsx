@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthModal } from '@/components/AuthModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.0.119';
+const APP_VERSION = '0.0.120';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -105,6 +105,7 @@ export function Profile() {
           <Button
             onClick={() => setShowAuthModal(true)}
             className="w-full mt-auto"
+            size="lg"
           >
             <LogIn className="h-5 w-5 mr-2" />
             {t('profile.signIn')}
