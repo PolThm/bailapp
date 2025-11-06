@@ -82,7 +82,7 @@ function SortableMovementItem({
       const hue = parseInt(hslMatch[1]);
       const saturation = parseInt(hslMatch[2]);
       const lightness = parseInt(hslMatch[3]);
-      return `hsla(${hue}, ${saturation}%, ${lightness}%, 0.3)`;
+      return `hsla(${hue}, ${saturation}%, ${lightness}%, 0.075)`;
     }
     
     // Fallback: if it's already in a different format, try to add opacity
@@ -324,14 +324,6 @@ export function ChoreographyDetail() {
               ))}
             </div>
           </SortableContext>
-          {/* <Button
-            variant="default"
-            onClick={handleAddMovement}
-            className="w-full mb-2"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            {t('choreographies.movements.add')}
-          </Button> */}
         </DndContext>
       ) : (
         <EmptyState
