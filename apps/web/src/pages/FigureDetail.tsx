@@ -123,13 +123,14 @@ export function FigureDetail() {
 
       {/* Video Player */}
       {embedUrl && (
-        <div className="aspect-video w-full bg-black rounded-lg overflow-hidden mb-6">
+        <div className="aspect-video w-full mb-6 bg-black rounded-lg">
           <iframe
             src={embedUrl}
             title={figure.fullTitle}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-            className="w-full h-full"
+            className="w-full h-full rounded-lg"
+            style={{ border: 0, display: 'block' }}
           />
         </div>
       )}
