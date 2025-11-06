@@ -22,9 +22,9 @@ interface FigureCardProps {
 export function FigureCard({ figure, showImage = true, showMastery = false }: FigureCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { masteryLevel, hasMasteryLevel } = useMasteryLevel(figure.id);
-  const [isHovered, setIsHovered] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const thumbnailRef = useRef<HTMLDivElement | null>(null);
+  const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId
     ? getYouTubeThumbnail(videoId, 'medium')
@@ -35,25 +35,101 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   
   const isFav = isFavorite(figure.id);
 
-  // Delay preview loading to avoid loading too quickly on quick hovers
+  // Detect when thumbnail touches the center of screen
   useEffect(() => {
-    if (isHovered) {
-      hoverTimeoutRef.current = setTimeout(() => {
-        setShowPreview(true);
-      }, 500); // 500ms delay before loading preview
-    } else {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-      setShowPreview(false);
-    }
+    if (!thumbnailRef.current || !previewUrl) return;
 
-    return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
+    const thumbnailElement = thumbnailRef.current;
+    let rafId: number | null = null;
+    
+    // Find the scroll container (main element)
+    let parent = thumbnailElement.parentElement;
+    while (parent && parent.tagName !== 'MAIN') {
+      parent = parent.parentElement;
+    }
+    const scrollContainer = parent as HTMLElement | null;
+    
+    // Function to check if thumbnail center is at screen center (vertical only)
+    const isAtCenter = (element: HTMLElement): boolean => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const centerY = viewportHeight / 2;
+      
+      // Check if the center of the thumbnail is at the center of the screen (vertical)
+      const thumbnailCenterY = rect.top + rect.height / 2;
+      
+      // Allow a tolerance for the center detection (larger zone for easier triggering)
+      const tolerance = 150;
+      const isVerticalCenter = Math.abs(thumbnailCenterY - centerY) < tolerance;
+      
+      // Also check that the thumbnail is visible
+      const isVisible = rect.top < viewportHeight && rect.bottom > 0;
+      
+      return isVerticalCenter && isVisible;
+    };
+
+    // Check position function using requestAnimationFrame for better performance
+    const checkPosition = () => {
+      if (!thumbnailElement) return;
+      
+      const atCenter = isAtCenter(thumbnailElement);
+      
+      if (atCenter) {
+        // Thumbnail is at center, start preview after a short delay
+        if (previewTimeoutRef.current) {
+          clearTimeout(previewTimeoutRef.current);
+        }
+        previewTimeoutRef.current = setTimeout(() => {
+          // Double-check it's still at center before showing preview
+          if (thumbnailElement && isAtCenter(thumbnailElement)) {
+            setShowPreview(true);
+          }
+        }, 150);
+      } else {
+        // Thumbnail is not at center, stop preview
+        if (previewTimeoutRef.current) {
+          clearTimeout(previewTimeoutRef.current);
+          previewTimeoutRef.current = null;
+        }
+        setShowPreview(false);
       }
     };
-  }, [isHovered]);
+
+    // Throttled check using requestAnimationFrame
+    const throttledCheck = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+      rafId = requestAnimationFrame(checkPosition);
+    };
+
+    // Initial check
+    checkPosition();
+
+    // Check on scroll and resize
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', throttledCheck, { passive: true });
+    } else {
+      window.addEventListener('scroll', throttledCheck, { passive: true });
+    }
+    window.addEventListener('resize', throttledCheck, { passive: true });
+
+    return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+      if (scrollContainer) {
+        scrollContainer.removeEventListener('scroll', throttledCheck);
+      } else {
+        window.removeEventListener('scroll', throttledCheck);
+      }
+      window.removeEventListener('resize', throttledCheck);
+      if (previewTimeoutRef.current) {
+        clearTimeout(previewTimeoutRef.current);
+      }
+    };
+  }, [previewUrl]);
   
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -83,9 +159,8 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
         {/* Thumbnail / Preview */}
         {showImage && (
           <div
+            ref={thumbnailRef}
             className="relative w-full aspect-video bg-muted overflow-hidden"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
           >
             {showPreview && previewUrl ? (
               <iframe
