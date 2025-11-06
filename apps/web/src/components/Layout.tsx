@@ -13,7 +13,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const mainRef = useRef<HTMLElement | null>(null);
 
   // Scroll to top when route changes
-  useEffect(() => window.scrollTo(0, 0), [location.pathname]);
+  useEffect(() => mainRef.current?.scrollTo(0, 0), [location.pathname]);
 
   const { isPulling, isRefreshing, pullDistance } = usePullToRefresh({
     onRefresh: async () => {
