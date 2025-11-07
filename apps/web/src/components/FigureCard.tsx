@@ -85,7 +85,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
           if (thumbnailElement && isAtCenter(thumbnailElement)) {
             setShowPreview(true);
           }
-        }, 0);
+        }, 50);
       } else {
         // Thumbnail is not at center, stop preview
         if (previewTimeoutRef.current) {
