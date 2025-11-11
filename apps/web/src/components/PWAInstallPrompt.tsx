@@ -103,7 +103,7 @@ export function PWAInstallPrompt() {
                   <Apple className="h-5 w-5 text-primary flex-shrink-0" />
                   <p className="font-semibold text-base">iPhone</p>
                 </div>
-                <ol className="space-y-2 text-sm text-muted-foreground">
+                <ol className="space-y-2 text-sm text-muted-foreground ml-5">
                   <li className="flex items-start gap-1">
                     <span className="font-bold text-primary mr-1">1.</span>
                     <span>{t('pwa.install.instructions.ios1')}</span>
@@ -124,7 +124,7 @@ export function PWAInstallPrompt() {
                   <Smartphone className="h-5 w-5 text-primary flex-shrink-0" />
                   <p className="font-semibold text-base">Android</p>
                 </div>
-                <ol className="space-y-2 text-sm text-muted-foreground">
+                <ol className="space-y-2 text-sm text-muted-foreground ml-5">
                   <li className="flex items-start gap-1">
                     <span className="font-bold text-primary mr-1">1.</span>
                     <Trans
