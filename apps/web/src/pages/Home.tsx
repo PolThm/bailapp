@@ -62,14 +62,14 @@ export function Home() {
               {t('home.welcome').split('Bailapp')[0]}
               <span className="text-primary">Bailapp</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-sm mx-auto pb-3">
+            <p className="text-lg text-muted-foreground max-w-sm mx-auto">
               {t('home.subtitle')}
             </p>
           </div>
         </div>
 
         {/* Options Grid */}
-        <div className="flex flex-col w-full flex-1 justify-center items-center gap-6">
+        <div className="flex flex-col w-full flex-1 justify-center items-center gap-6 py-3">
           {options.map((option, index) => (
             <Link 
               key={option.link} 
