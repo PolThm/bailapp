@@ -16,7 +16,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
       setIsVisible(false);
       // Call onFinish after fade animation completes
       setTimeout(onFinish, 300);
-    }, 1500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [onFinish]);

@@ -58,12 +58,12 @@ export function usePWAInstall(): PWAInstallState {
       setDeferredPrompt(null);
     };
 
-    // Show install prompt after 3 seconds for both Android and iOS (only if not dismissed)
+    // Show install prompt after 1 second for both Android and iOS (only if not dismissed)
     const timeoutId = setTimeout(() => {
       if (!isInstalled && !hasBeenDismissed) {
         setShowInstallPrompt(true);
       }
-    }, 3000);
+    }, 1000);
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);

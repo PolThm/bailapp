@@ -47,12 +47,14 @@ export function PWAInstallPrompt() {
           ? 'animate-out slide-out-to-bottom fade-out' 
           : 'animate-in slide-in-from-bottom fade-in'
       }`}>
-        <Card className="bg-primary border-primary max-w-sm w-full shadow-xl">
-          <CardContent className="p-4">
+        <Card className="bg-primary border-primary max-w-sm w-full shadow-xl cursor-pointer">
+          <CardContent 
+            className="p-4"
+            onClick={handleInstallClick}
+          >
             <div className="flex items-center justify-between">
               {/* Download Button */}
               <Button
-                onClick={handleInstallClick}
                 variant="secondary"
                 size="icon"
                 className="flex-shrink-0 bg-primary-foreground text-primary hover:bg-primary-foreground/90"
@@ -67,7 +69,10 @@ export function PWAInstallPrompt() {
 
               {/* Close Button */}
               <Button
-                onClick={handleDismiss}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDismiss();
+                }}
                 variant="ghost"
                 size="icon"
                 className="flex-shrink-0 text-primary-foreground hover:text-foreground hover:bg-white/20"
