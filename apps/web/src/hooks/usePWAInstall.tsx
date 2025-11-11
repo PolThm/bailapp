@@ -26,6 +26,7 @@ export function usePWAInstall(): PWAInstallState {
   const [showManualInstructions, setShowManualInstructions] = useState(false);
   const [hasBeenDismissed, setHasBeenDismissed] = useState(false);
   const autoCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showManualInstructionsRef = useRef(false);
 
   useEffect(() => {
     // Check if the app is already installed
@@ -87,6 +88,11 @@ export function usePWAInstall(): PWAInstallState {
     setHasBeenDismissed(true);
   }, []);
 
+  // Update ref when showManualInstructions changes
+  useEffect(() => {
+    showManualInstructionsRef.current = showManualInstructions;
+  }, [showManualInstructions]);
+
   // Auto-close timer effect
   useEffect(() => {
     if (showInstallPrompt && !showManualInstructions) {
@@ -95,9 +101,12 @@ export function usePWAInstall(): PWAInstallState {
         clearTimeout(autoCloseTimerRef.current);
       }
 
-      // Set new timer for 30 seconds
+      // Set new timer for 10 seconds
       const timer = setTimeout(() => {
-        handleDismiss();
+        // Only dismiss if the modal is not open (check ref for current state)
+        if (!showManualInstructionsRef.current) {
+          handleDismiss();
+        }
       }, 10000);
 
       autoCloseTimerRef.current = timer;
