@@ -20,6 +20,11 @@ export function PWAInstallPrompt() {
   const [isExiting, setIsExiting] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
 
+  // Detect platform
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+  const isAndroid = /Android/.test(navigator.userAgent);
+
   useEffect(() => {
     if (showInstallPrompt && !isInstalled) {
       setShouldRender(true);
@@ -86,66 +91,81 @@ export function PWAInstallPrompt() {
 
       {/* Manual Installation Instructions Dialog */}
       <Dialog open={showManualInstructions} onOpenChange={setShowManualInstructions}>
-        <DialogContent className="space-y-4">
+        <DialogContent className="space-y-6">
           <DialogHeader onClose={() => setShowManualInstructions(false)}>
             <DialogTitle>{t('pwa.install.instructions.title')}</DialogTitle>
           </DialogHeader>
 
-          {/* iOS / Safari / Chrome */}
-          <div className="flex items-start gap-3">
-              <Apple className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">iOS / Safari / Chrome</p>
-                <div className="flex items-start gap-1 text-sm text-muted-foreground">
-                  <p className="text-sm text-muted-foreground">
-                    {t('pwa.install.instructions.ios1')}
-                  </p>
-                  <Share className="text-foreground h-4 w-4 mt-0.5 flex-shrink-0" />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  <Trans
-                    i18nKey="pwa.install.instructions.ios2"
-                    components={{ b: <strong className="font-bold" /> }}
-                  />
-                </p>
-              </div>
-            </div>
-          
           <div className="space-y-4">
-            {/* Android / Chrome */}
-            <div className="flex items-start gap-3">
-              <Smartphone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Android / Chrome</p>
-                <div className="flex items-start gap-1 text-sm text-muted-foreground">
-                  <p className="text-sm text-muted-foreground">
-                    {t('pwa.install.instructions.android1')}
-                  </p>
-                  (<p className="font-extrabold text-foreground text-md flex-shrink-0 text-md">⋮</p>)
+            {isIOS ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Apple className="h-5 w-5 text-primary flex-shrink-0" />
+                  <p className="font-semibold text-base">iPhone</p>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  <Trans
-                    i18nKey="pwa.install.instructions.android2"
-                    components={{ b: <strong className="font-bold" /> }}
-                  />
-                </p>
+                <ol className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-1">
+                    <span className="font-bold text-primary mr-1">1.</span>
+                    <span>{t('pwa.install.instructions.ios1')}</span>
+                    <Share className="h-4 w-4 mt-0.5 flex-shrink-0 text-foreground" />
+                  </li>
+                  <li className="flex items-start gap-1">
+                    <span className="font-bold text-primary mr-1">2.</span>
+                    <Trans
+                      i18nKey="pwa.install.instructions.ios2"
+                      components={{ b: <strong className="font-bold text-foreground" /> }}
+                    />
+                  </li>
+                </ol>
               </div>
-            </div>
-
-            {/* Other browsers */}
-            <div className="flex items-start gap-3">
-              <Share2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">{t('pwa.install.instructions.otherLabel')}</p>
+            ) : isAndroid ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-primary flex-shrink-0" />
+                  <p className="font-semibold text-base">Android</p>
+                </div>
+                <ol className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-1">
+                    <span className="font-bold text-primary mr-1">1.</span>
+                    <Trans
+                      i18nKey="pwa.install.instructions.android1"
+                      components={{ b: <strong className="font-bold text-foreground" /> }}
+                    />
+                  </li>
+                  <li className="flex items-start gap-1">
+                    <span className="font-bold text-primary mr-1">2.</span>
+                    <Trans
+                      i18nKey="pwa.install.instructions.android2"
+                      components={{ b: <strong className="font-bold text-foreground" /> }}
+                    />
+                  </li>
+                  <li className="flex items-start gap-1 ml-5">
+                    <Trans
+                      i18nKey="pwa.install.instructions.android3"
+                      components={{ b: <strong className="font-bold text-foreground" /> }}
+                    />
+                  </li>
+                </ol>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Share2 className="h-5 w-5 text-primary flex-shrink-0" />
+                  <p className="font-semibold text-base">{t('pwa.install.instructions.otherLabel')}</p>
+                </div>
                 <p className="text-sm text-muted-foreground">
                   <Trans
                     i18nKey="pwa.install.instructions.other"
-                    components={{ b: <strong className="font-semibold" /> }}
+                    components={{ b: <strong className="font-semibold text-foreground" /> }}
                   />
                 </p>
               </div>
-            </div>
+            )}
           </div>
+
+          <p className="text-xs text-muted-foreground">
+            {t('pwa.install.instructions.intro')}
+          </p>
 
           <DialogFooter>
             <Button

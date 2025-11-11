@@ -310,13 +310,15 @@
     "install": {
       "title": "Install Bailapp on your device",
       "instructions": {
-        "title": "Installation Instructions",
-        "android1": "Tap the menu button:",
-        "android2": "Then \"<b>Install App</b>\", or \"<b>Add to home screen</b>\".",
-        "ios1": "Tap the share button:",
-        "ios2": "Then \"<b>Add to home screen</b>\".",
+        "title": "Installation instructions",
+        "intro": "Look for buttons in your browser, not in the app",
+        "android1": "Find the menu button: (<b>⋮</b>)",
+        "android2": "Then « <b>Install App</b> »,",
+        "android3": "or « <b>Add to home screen</b> »",
+        "ios1": "Find the share button:",
+        "ios2": "Then « <b>Add to home screen</b> »",
         "otherLabel": "Other browsers",
-        "other": "Look for \"<b>Install</b>\" or \"<b>Add to home screen</b>\" option in the browser menu.",
+        "other": "Look for « <b>Install</b> » or « <b>Add to home screen</b> » option in the browser menu.",
         "close": "Close"
       }
     }

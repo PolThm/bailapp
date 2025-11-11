@@ -311,12 +311,14 @@
       "title": "Installer Bailapp sur ton appareil",
       "instructions": {
         "title": "Instructions d'installation",
-        "android1": "Appuyer sur le bouton menu :",
-        "android2": "Puis \"<b>Installer l'application</b>\", ou \"<b>Ajouter à l'écran d'accueil</b>\".",
-        "ios1": "Appuyer sur le bouton partager :",
-        "ios2": "Puis \"<b>Ajouter à l'écran d'accueil</b>\".",
+        "intro": "Cherchez les boutons dans votre navigateur, pas dans l'application",
+        "android1": "Trouve le bouton menu : (<b>⋮</b>)",
+        "android2": "Puis « <b>Installer l'application</b> »,",
+        "android3": "ou « <b>Ajouter à l'écran d'accueil</b> »",
+        "ios1": "Trouve le bouton partager :",
+        "ios2": "Puis « <b>Ajouter à l'écran d'accueil</b> »",
         "otherLabel": "Autres navigateurs",
-        "other": "Rechercher l'option \"<b>Installer</b>\" ou \"<b>Ajouter à l'écran d'accueil</b>\" dans le menu du navigateur.",
+        "other": "Rechercher l'option « <b>Installer</b> » ou bouton « <b>Ajouter à l'écran d'accueil</b> » dans le menu du navigateur.",
         "close": "Fermer"
       }
     }

@@ -138,7 +138,7 @@ export function usePWAInstall(): PWAInstallState {
         console.error('Error installing PWA:', error);
       }
     } else {
-      // For iOS/Safari, show instructions
+      // For iOS, show manual instructions
       // Clear auto-close timer when opening modal
       if (autoCloseTimerRef.current) {
         clearTimeout(autoCloseTimerRef.current);
