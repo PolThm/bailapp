@@ -97,7 +97,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                 showPreviewRef.current = false;
                 setPreviewLoaded(false);
               }
-            }, 1000); // Timeout for slow connections
+            }, 3000); // Timeout for slow connections
           }
           setShowPreview(true);
           showPreviewRef.current = true;
