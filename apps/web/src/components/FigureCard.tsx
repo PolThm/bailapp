@@ -25,8 +25,9 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   const [showPreview, setShowPreview] = useState(false);
   const [previewLoaded, setPreviewLoaded] = useState(false);
   const thumbnailRef = useRef<HTMLDivElement | null>(null);
-  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewLoadedRef = useRef(false);
+  const showPreviewRef = useRef(false);
+  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId
     ? getYouTubeThumbnail(videoId, 'medium')
@@ -62,7 +63,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
       const thumbnailCenterY = rect.top + rect.height / 2;
       
       // Allow a tolerance for the center detection (larger zone for easier triggering)
-      const tolerance = 150;
+      const tolerance = 1000;
       const isVerticalCenter = Math.abs(thumbnailCenterY - centerY) < tolerance;
       
       // Also check that the thumbnail is visible
@@ -80,25 +81,31 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
       if (atCenter) {
         // Thumbnail is at center, start preview immediately
         if (thumbnailElement && isAtCenter(thumbnailElement)) {
-          setShowPreview(true);
-          setPreviewLoaded(false); // Reset loaded state when starting new preview
-          previewLoadedRef.current = false; // Reset ref
-          
-          // Set a timeout to cancel preview if it doesn't load within 2 seconds
-          if (loadTimeoutRef.current) {
-            clearTimeout(loadTimeoutRef.current);
-          }
-          loadTimeoutRef.current = setTimeout(() => {
-            if (!previewLoadedRef.current) {
-              // Preview didn't load in time, cancel it and keep showing thumbnail
-              setShowPreview(false);
-              setPreviewLoaded(false);
+          // Only reset loaded state if preview wasn't already showing
+          if (!showPreviewRef.current) {
+            setPreviewLoaded(false);
+            previewLoadedRef.current = false;
+            
+            // Set a timeout to cancel preview if it doesn't load within 3 seconds (only for new previews)
+            if (loadTimeoutRef.current) {
+              clearTimeout(loadTimeoutRef.current);
             }
-          }, 2000); // 2 seconds timeout
+            loadTimeoutRef.current = setTimeout(() => {
+              if (!previewLoadedRef.current) {
+                // Preview didn't load in time, cancel it and keep showing thumbnail
+                setShowPreview(false);
+                showPreviewRef.current = false;
+                setPreviewLoaded(false);
+              }
+            }, 1000); // Timeout for slow connections
+          }
+          setShowPreview(true);
+          showPreviewRef.current = true;
         }
       } else {
         // Thumbnail is not at center, stop preview
         setShowPreview(false);
+        showPreviewRef.current = false;
         setPreviewLoaded(false); // Reset loaded state
         previewLoadedRef.current = false; // Reset ref
         // Clear load timeout when preview is cancelled
