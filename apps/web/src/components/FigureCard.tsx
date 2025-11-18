@@ -267,7 +267,9 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     }, 1000);
                   } else {
                     // For good connections, reveal immediately
-                    setPreviewReady(true);
+                    readyTimeoutRef.current = setTimeout(() => {
+                      setPreviewReady(true);
+                    }, 1000);
                   }
                 }}
                 onError={() => {
