@@ -24,10 +24,12 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   const { masteryLevel, hasMasteryLevel } = useMasteryLevel(figure.id);
   const [showPreview, setShowPreview] = useState(false);
   const [previewLoaded, setPreviewLoaded] = useState(false);
+  const [previewReady, setPreviewReady] = useState(false);
   const thumbnailRef = useRef<HTMLDivElement | null>(null);
   const previewLoadedRef = useRef(false);
   const showPreviewRef = useRef(false);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const readyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId
     ? getYouTubeThumbnail(videoId, 'medium')
@@ -37,6 +39,28 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
     : null;
   
   const isFav = isFavorite(figure.id);
+
+  // Check if connection is slow (only 5g or wifi are considered good)
+  const isSlowConnection = (): boolean => {
+    // Check if navigator.connection is available (Chrome/Edge)
+    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    if (connection) {
+      const effectiveType = connection.effectiveType;
+      // Only 5g, or wifi are considered good connections
+      // Everything else (slow-2g, 2g, 3g, 4g) is considered slow
+      if (effectiveType === '5g') {
+        return false; // Good connection
+      }
+      // Check if on wifi (connection.type === 'wifi' or no cellular connection)
+      if (connection.type === 'wifi' || (!connection.type && !effectiveType)) {
+        return false; // Good connection (wifi or unknown - assume good)
+      }
+      // All other cases are slow connections
+      return true;
+    }
+    // If connection API is not available, assume good connection
+    return false;
+  };
 
   // Detect when thumbnail touches the center of screen
   useEffect(() => {
@@ -84,6 +108,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
           // Only reset loaded state if preview wasn't already showing
           if (!showPreviewRef.current) {
             setPreviewLoaded(false);
+            setPreviewReady(false);
             previewLoadedRef.current = false;
             
             // Set a timeout to cancel preview if it doesn't load within 3 seconds (only for new previews)
@@ -96,6 +121,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                 setShowPreview(false);
                 showPreviewRef.current = false;
                 setPreviewLoaded(false);
+                setPreviewReady(false);
               }
             }, 3000); // Timeout for slow connections
           }
@@ -107,11 +133,16 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
         setShowPreview(false);
         showPreviewRef.current = false;
         setPreviewLoaded(false); // Reset loaded state
+        setPreviewReady(false); // Reset ready state
         previewLoadedRef.current = false; // Reset ref
         // Clear load timeout when preview is cancelled
         if (loadTimeoutRef.current) {
           clearTimeout(loadTimeoutRef.current);
           loadTimeoutRef.current = null;
+        }
+        if (readyTimeoutRef.current) {
+          clearTimeout(readyTimeoutRef.current);
+          readyTimeoutRef.current = null;
         }
       }
     };
@@ -147,6 +178,9 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
       window.removeEventListener('resize', throttledCheck);
       if (loadTimeoutRef.current) {
         clearTimeout(loadTimeoutRef.current);
+      }
+      if (readyTimeoutRef.current) {
+        clearTimeout(readyTimeoutRef.current);
       }
     };
   }, [previewUrl]);
@@ -186,22 +220,39 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
             <img
               src={thumbnail}
               alt={figure.shortTitle}
-              className={`w-full h-full object-cover transition-opacity ${
-                showPreview && previewLoaded ? 'opacity-0' : 'opacity-100'
+              className={`w-full h-full object-cover transition-opacity relative ${
+                showPreview && previewReady ? 'opacity-0 z-0' : 'opacity-100 z-10'
               }`}
               loading="lazy"
             />
-            {/* Show iframe when preview is active, but keep it hidden until loaded */}
+            {/* Iframe - positioned off-screen during loading, then moved into place when loaded */}
             {showPreview && previewUrl && (
               <iframe
                 src={previewUrl}
-                className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300 ${
-                  previewLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
+                className="absolute w-full h-full object-cover pointer-events-none transition-all duration-300"
                 allow="autoplay; encrypted-media"
                 allowFullScreen={false}
                 title={figure.shortTitle}
-                style={{ border: 'none' }}
+                style={{ 
+                  border: 'none',
+                  ...(previewReady 
+                    ? { 
+                        top: 0, 
+                        left: 0, 
+                        right: 0, 
+                        bottom: 0,
+                        zIndex: 20,
+                        opacity: 1
+                      } 
+                    : { 
+                        top: '-10000px', 
+                        left: '-10000px', 
+                        width: '1px', 
+                        height: '1px',
+                        zIndex: 0,
+                        opacity: 0
+                      })
+                }}
                 onLoad={() => {
                   previewLoadedRef.current = true;
                   setPreviewLoaded(true);
@@ -210,15 +261,33 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     clearTimeout(loadTimeoutRef.current);
                     loadTimeoutRef.current = null;
                   }
+                  // Wait before revealing the video to avoid black screen (only for slow connections)
+                  if (readyTimeoutRef.current) {
+                    clearTimeout(readyTimeoutRef.current);
+                  }
+                  if (isSlowConnection()) {
+                    // For slow connections, wait before revealing
+                    readyTimeoutRef.current = setTimeout(() => {
+                      setPreviewReady(true);
+                    }, 1000);
+                  } else {
+                    // For good connections, reveal immediately
+                    setPreviewReady(true);
+                  }
                 }}
                 onError={() => {
                   // If iframe fails to load, keep showing thumbnail
                   previewLoadedRef.current = false;
                   setShowPreview(false);
                   setPreviewLoaded(false);
+                  setPreviewReady(false);
                   if (loadTimeoutRef.current) {
                     clearTimeout(loadTimeoutRef.current);
                     loadTimeoutRef.current = null;
+                  }
+                  if (readyTimeoutRef.current) {
+                    clearTimeout(readyTimeoutRef.current);
+                    readyTimeoutRef.current = null;
                   }
                 }}
               />
