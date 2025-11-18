@@ -25,7 +25,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   const [showPreview, setShowPreview] = useState(false);
   const [previewLoaded, setPreviewLoaded] = useState(false);
   const thumbnailRef = useRef<HTMLDivElement | null>(null);
-  const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewLoadedRef = useRef(false);
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
@@ -79,36 +78,26 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
       const atCenter = isAtCenter(thumbnailElement);
       
       if (atCenter) {
-        // Thumbnail is at center, start preview after a short delay
-        if (previewTimeoutRef.current) {
-          clearTimeout(previewTimeoutRef.current);
-        }
-        previewTimeoutRef.current = setTimeout(() => {
-          // Double-check it's still at center before showing preview
-          if (thumbnailElement && isAtCenter(thumbnailElement)) {
-            setShowPreview(true);
-            setPreviewLoaded(false); // Reset loaded state when starting new preview
-            previewLoadedRef.current = false; // Reset ref
-            
-            // Set a timeout to cancel preview if it doesn't load within 3 seconds
-            if (loadTimeoutRef.current) {
-              clearTimeout(loadTimeoutRef.current);
-            }
-            loadTimeoutRef.current = setTimeout(() => {
-              if (!previewLoadedRef.current) {
-                // Preview didn't load in time, cancel it and keep showing thumbnail
-                setShowPreview(false);
-                setPreviewLoaded(false);
-              }
-            }, 2000); // 2 seconds timeout
+        // Thumbnail is at center, start preview immediately
+        if (thumbnailElement && isAtCenter(thumbnailElement)) {
+          setShowPreview(true);
+          setPreviewLoaded(false); // Reset loaded state when starting new preview
+          previewLoadedRef.current = false; // Reset ref
+          
+          // Set a timeout to cancel preview if it doesn't load within 2 seconds
+          if (loadTimeoutRef.current) {
+            clearTimeout(loadTimeoutRef.current);
           }
-        }, 0);
+          loadTimeoutRef.current = setTimeout(() => {
+            if (!previewLoadedRef.current) {
+              // Preview didn't load in time, cancel it and keep showing thumbnail
+              setShowPreview(false);
+              setPreviewLoaded(false);
+            }
+          }, 2000); // 2 seconds timeout
+        }
       } else {
         // Thumbnail is not at center, stop preview
-        if (previewTimeoutRef.current) {
-          clearTimeout(previewTimeoutRef.current);
-          previewTimeoutRef.current = null;
-        }
         setShowPreview(false);
         setPreviewLoaded(false); // Reset loaded state
         previewLoadedRef.current = false; // Reset ref
@@ -149,9 +138,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
         window.removeEventListener('scroll', throttledCheck);
       }
       window.removeEventListener('resize', throttledCheck);
-      if (previewTimeoutRef.current) {
-        clearTimeout(previewTimeoutRef.current);
-      }
       if (loadTimeoutRef.current) {
         clearTimeout(loadTimeoutRef.current);
       }
