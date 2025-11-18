@@ -23,8 +23,11 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   const { isFavorite, toggleFavorite } = useFavorites();
   const { masteryLevel, hasMasteryLevel } = useMasteryLevel(figure.id);
   const [showPreview, setShowPreview] = useState(false);
+  const [previewLoaded, setPreviewLoaded] = useState(false);
   const thumbnailRef = useRef<HTMLDivElement | null>(null);
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const previewLoadedRef = useRef(false);
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId
     ? getYouTubeThumbnail(videoId, 'medium')
@@ -84,8 +87,22 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
           // Double-check it's still at center before showing preview
           if (thumbnailElement && isAtCenter(thumbnailElement)) {
             setShowPreview(true);
+            setPreviewLoaded(false); // Reset loaded state when starting new preview
+            previewLoadedRef.current = false; // Reset ref
+            
+            // Set a timeout to cancel preview if it doesn't load within 3 seconds
+            if (loadTimeoutRef.current) {
+              clearTimeout(loadTimeoutRef.current);
+            }
+            loadTimeoutRef.current = setTimeout(() => {
+              if (!previewLoadedRef.current) {
+                // Preview didn't load in time, cancel it and keep showing thumbnail
+                setShowPreview(false);
+                setPreviewLoaded(false);
+              }
+            }, 2000); // 2 seconds timeout
           }
-        }, 100);
+        }, 0);
       } else {
         // Thumbnail is not at center, stop preview
         if (previewTimeoutRef.current) {
@@ -93,6 +110,13 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
           previewTimeoutRef.current = null;
         }
         setShowPreview(false);
+        setPreviewLoaded(false); // Reset loaded state
+        previewLoadedRef.current = false; // Reset ref
+        // Clear load timeout when preview is cancelled
+        if (loadTimeoutRef.current) {
+          clearTimeout(loadTimeoutRef.current);
+          loadTimeoutRef.current = null;
+        }
       }
     };
 
@@ -128,6 +152,9 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
       if (previewTimeoutRef.current) {
         clearTimeout(previewTimeoutRef.current);
       }
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+      }
     };
   }, [previewUrl]);
   
@@ -162,21 +189,45 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
             ref={thumbnailRef}
             className="relative w-full aspect-video bg-muted overflow-hidden"
           >
-            {showPreview && previewUrl ? (
+            {/* Always show thumbnail as background */}
+            <img
+              src={thumbnail}
+              alt={figure.shortTitle}
+              className={`w-full h-full object-cover transition-opacity ${
+                showPreview && previewLoaded ? 'opacity-0' : 'opacity-100'
+              }`}
+              loading="lazy"
+            />
+            {/* Show iframe when preview is active, but keep it hidden until loaded */}
+            {showPreview && previewUrl && (
               <iframe
                 src={previewUrl}
-                className="w-full h-full object-cover pointer-events-none"
+                className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300 ${
+                  previewLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
                 allow="autoplay; encrypted-media"
                 allowFullScreen={false}
                 title={figure.shortTitle}
                 style={{ border: 'none' }}
-              />
-            ) : (
-              <img
-                src={thumbnail}
-                alt={figure.shortTitle}
-                className="w-full h-full object-cover transition-opacity"
-                loading="lazy"
+                onLoad={() => {
+                  previewLoadedRef.current = true;
+                  setPreviewLoaded(true);
+                  // Clear timeout when loaded successfully
+                  if (loadTimeoutRef.current) {
+                    clearTimeout(loadTimeoutRef.current);
+                    loadTimeoutRef.current = null;
+                  }
+                }}
+                onError={() => {
+                  // If iframe fails to load, keep showing thumbnail
+                  previewLoadedRef.current = false;
+                  setShowPreview(false);
+                  setPreviewLoaded(false);
+                  if (loadTimeoutRef.current) {
+                    clearTimeout(loadTimeoutRef.current);
+                    loadTimeoutRef.current = null;
+                  }
+                }}
               />
             )}
             {/* Duration badge if time range specified */}
