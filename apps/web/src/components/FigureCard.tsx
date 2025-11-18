@@ -86,7 +86,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
       const thumbnailCenterY = rect.top + rect.height / 2;
       
       // Allow a tolerance for the center detection (larger zone for easier triggering)
-      const tolerance = 150;
+      const tolerance = 300;
       const isVerticalCenter = Math.abs(thumbnailCenterY - centerY) < tolerance;
       
       // Also check that the thumbnail is visible
@@ -261,13 +261,15 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     clearTimeout(readyTimeoutRef.current);
                   }
                   if (isSlowConnection()) {
-                    // For slow connections, wait before revealing
+                    // For slow connections, wait 2s before revealing
+                    readyTimeoutRef.current = setTimeout(() => {
+                      setPreviewReady(true);
+                    }, 2000);
+                  } else {
+                    // For good connections, wait 1s before revealing
                     readyTimeoutRef.current = setTimeout(() => {
                       setPreviewReady(true);
                     }, 1000);
-                  } else {
-                    // For good connections, reveal immediately
-                    setPreviewReady(true);
                   }
                 }}
                 onError={() => {
