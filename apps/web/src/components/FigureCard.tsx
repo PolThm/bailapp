@@ -23,7 +23,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   const { isFavorite, toggleFavorite } = useFavorites();
   const { masteryLevel, hasMasteryLevel } = useMasteryLevel(figure.id);
   const [showPreview, setShowPreview] = useState(false);
-  const [previewLoaded, setPreviewLoaded] = useState(false);
   const [previewReady, setPreviewReady] = useState(false);
   const thumbnailRef = useRef<HTMLDivElement | null>(null);
   const previewLoadedRef = useRef(false);
@@ -107,7 +106,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
         if (thumbnailElement && isAtCenter(thumbnailElement)) {
           // Only reset loaded state if preview wasn't already showing
           if (!showPreviewRef.current) {
-            setPreviewLoaded(false);
             setPreviewReady(false);
             previewLoadedRef.current = false;
             
@@ -120,7 +118,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                 // Preview didn't load in time, cancel it and keep showing thumbnail
                 setShowPreview(false);
                 showPreviewRef.current = false;
-                setPreviewLoaded(false);
                 setPreviewReady(false);
               }
             }, 3000); // Timeout for slow connections
@@ -132,7 +129,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
         // Thumbnail is not at center, stop preview
         setShowPreview(false);
         showPreviewRef.current = false;
-        setPreviewLoaded(false); // Reset loaded state
         setPreviewReady(false); // Reset ready state
         previewLoadedRef.current = false; // Reset ref
         // Clear load timeout when preview is cancelled
@@ -255,7 +251,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                 }}
                 onLoad={() => {
                   previewLoadedRef.current = true;
-                  setPreviewLoaded(true);
                   // Clear timeout when loaded successfully
                   if (loadTimeoutRef.current) {
                     clearTimeout(loadTimeoutRef.current);
@@ -279,7 +274,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                   // If iframe fails to load, keep showing thumbnail
                   previewLoadedRef.current = false;
                   setShowPreview(false);
-                  setPreviewLoaded(false);
                   setPreviewReady(false);
                   if (loadTimeoutRef.current) {
                     clearTimeout(loadTimeoutRef.current);
