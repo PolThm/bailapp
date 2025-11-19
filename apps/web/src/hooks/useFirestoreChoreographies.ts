@@ -97,8 +97,6 @@ export function useFirestoreChoreographies() {
  * Hook to get a single choreography by ID
  */
 export function useFirestoreChoreography(choreographyId: string | null) {
-  const queryClient = useQueryClient();
-
   const {
     data: choreography,
     isLoading,

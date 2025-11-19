@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthModal } from '@/components/AuthModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.1.28';
+const APP_VERSION = '0.1.29';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -78,8 +78,8 @@ export function Profile() {
         {user ? (
           <div className="space-y-4 mt-auto pt-4">
             <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3 mb-4">
+              <CardContent className="pt-4">
+                <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <span className="text-lg font-bold text-primary">
                       {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}

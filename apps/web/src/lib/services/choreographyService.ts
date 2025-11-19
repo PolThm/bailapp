@@ -11,6 +11,8 @@ import {
   orderBy,
   serverTimestamp,
   Timestamp,
+  FieldValue,
+  UpdateData,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Choreography, ChoreographyMovement } from '@/types';
@@ -27,6 +29,20 @@ export interface FirestoreChoreography {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   lastOpenedAt?: Timestamp;
+}
+
+// Type for update operations that can include FieldValue
+export interface FirestoreChoreographyUpdate {
+  userId?: string;
+  name?: string;
+  danceStyle?: string;
+  danceSubStyle?: string;
+  complexity?: string;
+  phrasesCount?: number;
+  movements?: ChoreographyMovement[];
+  createdAt?: Timestamp | FieldValue;
+  updatedAt?: Timestamp | FieldValue;
+  lastOpenedAt?: Timestamp | FieldValue;
 }
 
 /**
@@ -144,11 +160,11 @@ export async function createChoreography(
 export async function updateChoreography(
   choreographyId: string,
   updates: Partial<Choreography>,
-  userId: string
+  _userId: string // Prefixed with _ to indicate intentionally unused (used by Firestore rules)
 ): Promise<void> {
   try {
     const docRef = doc(db, 'choreographies', choreographyId);
-    const updateData: Partial<FirestoreChoreography> = {
+    const updateData: UpdateData<FirestoreChoreography> = {
       updatedAt: serverTimestamp(),
     };
 
