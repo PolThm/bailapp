@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/context/AuthContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { FavoritesProvider } from '@/context/FavoritesContext';
 import { FiguresProvider } from '@/context/FiguresContext';
 import { ChoreographiesProvider } from '@/context/ChoreographiesContext';
@@ -28,16 +28,50 @@ const queryClient = new QueryClient({
   },
 });
 
-// Désactiver SplashScreen et PWA Install Prompt en mode développement
+// Disable SplashScreen and PWA Install Prompt in development
 const isProduction = import.meta.env.PROD;
 
-function App() {
+// Internal component that handles splash screen based on auth loading
+function AppContent() {
+  const { loading } = useAuth();
   const [showSplash, setShowSplash] = useState(isProduction);
+
+  useEffect(() => {
+    // Close splash screen when auth is loaded
+    if (!loading && showSplash) {
+      // Small delay for smooth transition
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, showSplash]);
 
   if (showSplash) {
     return <SplashScreen onFinish={() => setShowSplash(false)} />;
   }
 
+  return (
+    <BrowserRouter>
+      <PortraitLock />
+      <PWAUpdateNotification />
+      {isProduction && <PWAInstallPrompt />}
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/discover" element={<Discover />} />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/choreographies" element={<Choreographies />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/figure/:id" element={<FigureDetail />} />
+          <Route path="/choreography/:id" element={<ChoreographyDetail />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  );
+}
+
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -45,22 +79,7 @@ function App() {
           <FavoritesProvider>
             <ChoreographiesProvider>
               <PullToRefreshProvider>
-                <BrowserRouter>
-                  <PortraitLock />
-                  <PWAUpdateNotification />
-                  {isProduction && <PWAInstallPrompt />}
-                  <Layout>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/discover" element={<Discover />} />
-                      <Route path="/favorites" element={<Favorites />} />
-                      <Route path="/choreographies" element={<Choreographies />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="/figure/:id" element={<FigureDetail />} />
-                      <Route path="/choreography/:id" element={<ChoreographyDetail />} />
-                    </Routes>
-                  </Layout>
-                </BrowserRouter>
+                <AppContent />
               </PullToRefreshProvider>
             </ChoreographiesProvider>
           </FavoritesProvider>
