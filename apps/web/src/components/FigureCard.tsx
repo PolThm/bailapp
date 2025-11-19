@@ -216,7 +216,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
             <img
               src={thumbnail}
               alt={figure.shortTitle}
-              className={`w-full h-full object-cover transition-opacity relative ${
+              className={`w-full h-full object-cover relative ${
                 showPreview && previewReady ? 'opacity-0 z-0' : 'opacity-100 z-10'
               }`}
               loading="lazy"
@@ -228,7 +228,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                 style={{
                   zIndex: previewReady ? 20 : 0,
                   opacity: previewReady ? 1 : 0,
-                  transition: 'opacity 0.3s ease-in-out'
                 }}
               >
                 <iframe
@@ -265,7 +264,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     // For good connections, wait for YouTube to fully initialize and resize
                     readyTimeoutRef.current = setTimeout(() => {
                       setPreviewReady(true);
-                    }, 700);
+                    }, 800);
                   }
                 }}
                 onError={() => {
