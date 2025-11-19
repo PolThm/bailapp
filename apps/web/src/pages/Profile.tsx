@@ -8,7 +8,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.1.31';
+const APP_VERSION = '0.1.32';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -97,6 +97,18 @@ export function Profile() {
         </Card>
 
         <div className="mt-auto">
+          {!user && (
+            <Card className="mb-4">
+              <CardContent>
+                <div className="flex items-center gap-3 pt-4">
+                  <div className="flex-1">
+                    <p className="font-semibold">{t('profile.signInRequired')}</p>
+                    <p className="text-sm text-muted-foreground">{t('profile.signInDescription')}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
           {user ? (
             <Button
               variant="outline"
