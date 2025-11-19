@@ -8,11 +8,11 @@ import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.1.37';
+const APP_VERSION = '0.1.38';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
-  const { user, logout, loading } = useAuth();
+  const { user, logout } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -28,16 +28,7 @@ export function Profile() {
       <div className="flex-1 flex flex-col pt-4 gap-4">
 
         {/* Authentication Section */}
-        {loading ? (
-          <Card>
-            <CardContent className="h-[80px] flex">
-              <div className="flex justify-center gap-3 pt-4 flex-col">
-                <div className="h-4 bg-muted rounded animate-pulse w-40" />
-                <div className="h-3 bg-muted rounded animate-pulse w-56" />
-              </div>
-            </CardContent>
-          </Card>
-        ) : user ? (
+        {user ? (
           <Card>
             <CardContent>
               <div className="flex items-center gap-3 pt-4 ">
@@ -117,9 +108,7 @@ export function Profile() {
         </Card>
 
         <div className="mt-auto">
-          {loading ? (
-            <div className="w-full min-h-[48px] bg-muted rounded-md animate-pulse" />
-          ) : user ? (
+          {user ? (
             <Button
               variant="outline"
               onClick={() => setShowLogoutConfirm(true)}
