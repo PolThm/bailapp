@@ -8,11 +8,11 @@ import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.1.33';
+const APP_VERSION = '0.1.34';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -28,7 +28,7 @@ export function Profile() {
       <div className="flex-1 flex flex-col pt-4 gap-4">
 
         {/* Authentication Section */}
-        {user && (
+        {loading ? null : user ? (
           <Card>
             <CardContent>
               <div className="flex items-center gap-3 pt-4">
@@ -44,7 +44,7 @@ export function Profile() {
               </div>
             </CardContent>
           </Card>
-        )}
+        ) : null}
 
         {/* Language Preferences */}
         <Card>
@@ -97,36 +97,54 @@ export function Profile() {
         </Card>
 
         <div className="mt-auto">
-          {!user && (
-            <Card className="mb-4">
-              <CardContent>
-                <div className="flex items-center gap-3 pt-4">
-                  <div className="flex-1">
-                    <p className="font-semibold">{t('profile.signInRequired')}</p>
-                    <p className="text-sm text-muted-foreground">{t('profile.signInDescription')}</p>
+          {loading ? (
+            <>
+              <Card className="mb-4">
+                <CardContent>
+                  <div className="flex items-center gap-3 pt-4">
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-muted rounded animate-pulse w-40" />
+                      <div className="h-3 bg-muted rounded animate-pulse w-56" />
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-          {user ? (
-            <Button
-              variant="outline"
-              onClick={() => setShowLogoutConfirm(true)}
-              className="w-full min-h-[48px]"
-            >
-              <LogOut className="h-5 w-5 mr-2" />
-              {t('profile.signOut')}
-            </Button>
+                </CardContent>
+              </Card>
+              <div className="w-full min-h-[48px] bg-muted rounded-md animate-pulse" />
+            </>
           ) : (
-            <Button
-              onClick={() => setShowAuthModal(true)}
-              className="w-full mt-auto"
-              size="lg"
-            >
-              <LogIn className="h-5 w-5 mr-2" />
-              {t('profile.signIn')}
-            </Button>
+            <>
+              {!user && (
+                <Card className="mb-4">
+                  <CardContent>
+                    <div className="flex items-center gap-3 pt-4">
+                      <div className="flex-1">
+                        <p className="font-semibold">{t('profile.signInRequired')}</p>
+                        <p className="text-sm text-muted-foreground">{t('profile.signInDescription')}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {user ? (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowLogoutConfirm(true)}
+                  className="w-full min-h-[48px]"
+                >
+                  <LogOut className="h-5 w-5 mr-2" />
+                  {t('profile.signOut')}
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => setShowAuthModal(true)}
+                  className="w-full mt-auto"
+                  size="lg"
+                >
+                  <LogIn className="h-5 w-5 mr-2" />
+                  {t('profile.signIn')}
+                </Button>
+              )}
+            </>
           )}
 
           {/* About text at the bottom */}
