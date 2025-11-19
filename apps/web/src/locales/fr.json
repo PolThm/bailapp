@@ -155,6 +155,10 @@
     "languagePreferences": "Préférences linguistiques",
     "selectLanguage": "Choisis ta langue préférée",
     "signOut": "Se déconnecter",
+    "signOutConfirm": {
+      "title": "Se déconnecter",
+      "message": "Es-tu sûr de vouloir te déconnecter ?"
+    },
     "about": {
       "title": "À propos",
       "version": "V{{version}}",

@@ -155,6 +155,10 @@
     "languagePreferences": "Language Preferences",
     "selectLanguage": "Choose your preferred language",
     "signOut": "Sign Out",
+    "signOutConfirm": {
+      "title": "Sign Out",
+      "message": "Are you sure you want to sign out?"
+    },
     "about": {
       "title": "About",
       "version": "V{{version}}",

@@ -5,14 +5,16 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthModal } from '@/components/AuthModal';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.1.30';
+const APP_VERSION = '0.1.31';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -96,14 +98,14 @@ export function Profile() {
 
         <div className="mt-auto">
           {user ? (
-              <Button
-                variant="outline"
-                onClick={logout}
-                className="w-full min-h-[48px]"
-              >
-                <LogOut className="h-5 w-5 mr-2" />
-                {t('profile.signOut')}
-              </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowLogoutConfirm(true)}
+              className="w-full min-h-[48px]"
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              {t('profile.signOut')}
+            </Button>
           ) : (
             <Button
               onClick={() => setShowAuthModal(true)}
@@ -126,6 +128,18 @@ export function Profile() {
 
       {/* Auth Dialog */}
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
+
+      {/* Logout Confirmation Modal */}
+      <ConfirmationModal
+        open={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        title={t('profile.signOutConfirm.title')}
+        message={t('profile.signOutConfirm.message')}
+        confirmLabel={t('profile.signOut')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={logout}
+        destructive={false}
+      />
     </>
   );
 }

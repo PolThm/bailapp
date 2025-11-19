@@ -155,6 +155,10 @@
     "languagePreferences": "Preferencias de idioma",
     "selectLanguage": "Elige tu idioma preferido",
     "signOut": "Cerrar sesión",
+    "signOutConfirm": {
+      "title": "Cerrar sesión",
+      "message": "¿Estás seguro de que quieres cerrar sesión?"
+    },
     "about": {
       "title": "Acerca de",
       "version": "V{{version}}",
