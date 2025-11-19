@@ -86,7 +86,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
       const thumbnailCenterY = rect.top + rect.height / 2;
       
       // Allow a tolerance for the center detection (larger zone for easier triggering)
-      const tolerance = 250;
+      const tolerance = 225;
       const isVerticalCenter = Math.abs(thumbnailCenterY - centerY) < tolerance;
       
       // Also check that the thumbnail is visible
