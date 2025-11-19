@@ -8,7 +8,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.1.34';
+const APP_VERSION = '0.1.35';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -28,10 +28,19 @@ export function Profile() {
       <div className="flex-1 flex flex-col pt-4 gap-4">
 
         {/* Authentication Section */}
-        {loading ? null : user ? (
+        {loading ? (
+          <Card>
+            <CardContent className="h-[80px] flex">
+              <div className="flex justify-center gap-3 pt-4 flex-col">
+                <div className="h-4 bg-muted rounded animate-pulse w-40" />
+                <div className="h-3 bg-muted rounded animate-pulse w-56" />
+              </div>
+            </CardContent>
+          </Card>
+        ) : user ? (
           <Card>
             <CardContent>
-              <div className="flex items-center gap-3 pt-4">
+              <div className="flex items-center gap-3 pt-4 ">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="text-lg font-bold text-primary">
                     {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
@@ -44,7 +53,18 @@ export function Profile() {
               </div>
             </CardContent>
           </Card>
-        ) : null}
+        ) : (
+          <Card>
+            <CardContent className="min-h-[80px] flex">
+              <div className="flex items-center gap-3 pt-4">
+                <div className="flex-1">
+                  <p className="font-semibold">{t('profile.signInRequired')}</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.signInDescription')}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Language Preferences */}
         <Card>
@@ -98,53 +118,25 @@ export function Profile() {
 
         <div className="mt-auto">
           {loading ? (
-            <>
-              <Card className="mb-4">
-                <CardContent>
-                  <div className="flex items-center gap-3 pt-4">
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-muted rounded animate-pulse w-40" />
-                      <div className="h-3 bg-muted rounded animate-pulse w-56" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <div className="w-full min-h-[48px] bg-muted rounded-md animate-pulse" />
-            </>
+            <div className="w-full min-h-[48px] bg-muted rounded-md animate-pulse" />
+          ) : user ? (
+            <Button
+              variant="outline"
+              onClick={() => setShowLogoutConfirm(true)}
+              className="w-full min-h-[48px]"
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              {t('profile.signOut')}
+            </Button>
           ) : (
-            <>
-              {!user && (
-                <Card className="mb-4">
-                  <CardContent>
-                    <div className="flex items-center gap-3 pt-4">
-                      <div className="flex-1">
-                        <p className="font-semibold">{t('profile.signInRequired')}</p>
-                        <p className="text-sm text-muted-foreground">{t('profile.signInDescription')}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-              {user ? (
-                <Button
-                  variant="outline"
-                  onClick={() => setShowLogoutConfirm(true)}
-                  className="w-full min-h-[48px]"
-                >
-                  <LogOut className="h-5 w-5 mr-2" />
-                  {t('profile.signOut')}
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => setShowAuthModal(true)}
-                  className="w-full mt-auto"
-                  size="lg"
-                >
-                  <LogIn className="h-5 w-5 mr-2" />
-                  {t('profile.signIn')}
-                </Button>
-              )}
-            </>
+            <Button
+              onClick={() => setShowAuthModal(true)}
+              className="w-full mt-auto"
+              size="lg"
+            >
+              <LogIn className="h-5 w-5 mr-2" />
+              {t('profile.signIn')}
+            </Button>
           )}
 
           {/* About text at the bottom */}
