@@ -326,6 +326,10 @@
   "orientation": {
     "title": "Rotación requerida",
     "message": "Por favor, gira tu dispositivo al modo vertical para usar la aplicación"
+  },
+  "comingSoon": {
+    "title": "Próximamente",
+    "description": "¡Estamos trabajando en ello! Pronto podrás agregar tus propias figuras."
   }
 }
 

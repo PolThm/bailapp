@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthModal } from '@/components/AuthModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.1.29';
+const APP_VERSION = '0.1.30';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -23,9 +23,29 @@ export function Profile() {
       {/* Header */}
       <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col pt-4 gap-4">
+
+        {/* Authentication Section */}
+        {user && (
+          <Card>
+            <CardContent>
+              <div className="flex items-center gap-3 pt-4">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-lg font-bold text-primary">
+                    {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold">{user.displayName || 'User'}</p>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Language Preferences */}
-        <Card className="my-auto">
+        <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
               <Globe className="h-5 w-5" />
@@ -74,48 +94,34 @@ export function Profile() {
           </CardContent>
         </Card>
 
-        {/* Authentication Section */}
-        {user ? (
-          <div className="space-y-4 mt-auto pt-4">
-            <Card>
-              <CardContent className="pt-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-lg font-bold text-primary">
-                      {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold">{user.displayName || 'User'}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="mt-auto">
+          {user ? (
+              <Button
+                variant="outline"
+                onClick={logout}
+                className="w-full min-h-[48px]"
+              >
+                <LogOut className="h-5 w-5 mr-2" />
+                {t('profile.signOut')}
+              </Button>
+          ) : (
             <Button
-              variant="outline"
-              onClick={logout}
-              className="w-full min-h-[48px]"
+              onClick={() => setShowAuthModal(true)}
+              className="w-full mt-auto"
+              size="lg"
             >
-              <LogOut className="h-5 w-5 mr-2" />
-              {t('profile.signOut')}
+              <LogIn className="h-5 w-5 mr-2" />
+              {t('profile.signIn')}
             </Button>
-          </div>
-        ) : (
-          <Button
-            onClick={() => setShowAuthModal(true)}
-            className="w-full mt-auto"
-            size="lg"
-          >
-            <LogIn className="h-5 w-5 mr-2" />
-            {t('profile.signIn')}
-          </Button>
-        )}
+          )}
+
+          {/* About text at the bottom */}
+          <p className="text-xs text-muted-foreground text-center mt-4 -mb-2">
+            {t('profile.about.version', { version: APP_VERSION })} • {t('profile.about.developed')} <a href="https://github.com/PolThm" target="_blank" rel="noopener noreferrer" className="underline">Pol Thomas</a>
+          </p>
+        </div>
         
-        {/* About text at the bottom */}
-        <p className="text-xs text-muted-foreground text-center mt-4 -mb-2">
-          {t('profile.about.version', { version: APP_VERSION })} • {t('profile.about.developed')} <a href="https://github.com/PolThm" target="_blank" rel="noopener noreferrer" className="underline">Pol Thomas</a>
-        </p>
+        
       </div>
 
       {/* Auth Dialog */}

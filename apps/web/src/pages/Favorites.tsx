@@ -1,13 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
 import { Heart, Plus } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useFigures } from '@/context/FiguresContext';
 import { FigureCard } from '@/components/FigureCard';
 import { EmptyState } from '@/components/EmptyState';
-import { AuthModal } from '@/components/AuthModal';
-import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureModal';
+import { ComingSoonModal } from '@/components/ComingSoonModal';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
 import { ResultsSummary } from '@/components/ResultsSummary';
@@ -15,15 +13,12 @@ import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import { sortByLastOpened } from '@/lib/utils';
-import type { Figure } from '@/types';
 
 export function Favorites() {
   const { t } = useTranslation();
   const { favorites } = useFavorites();
-  const { figures, addFigure } = useFigures();
-  const { user } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showNewFigureModal, setShowNewFigureModal] = useState(false);
+  const { figures } = useFigures();
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.FAVORITES_SHOW_IMAGES), false);
 
@@ -49,25 +44,10 @@ export function Favorites() {
     clearFilters,
   } = useFigureFilters(favoriteFiguresData);
 
-  // TODO: Put back when backend is ready
-  // const handleAddFigure = () => {
-  //   if (!user) {
-  //     setShowAuthModal(true);
-  //   } else {
-  //     setShowNewFigureModal(true);
-  //   }
-  // };
-
-  const handleSubmitFigure = (data: NewFigureFormData) => {
-    const newFigure: Figure = {
-      id: `figure-${Date.now()}`,
-      ...data,
-      importedBy: user?.displayName || 'User',
-      createdAt: new Date().toISOString(),
-    };
-    addFigure(newFigure);
-    setShowNewFigureModal(false);
+  const handleAddFigure = () => {
+    setShowComingSoonModal(true);
   };
+
 
   return (
     <>
@@ -80,14 +60,13 @@ export function Favorites() {
               {t('favorites.subtitle')}
             </p>
           </div>
-          {/* // TODO: Put back when backend is ready
           <button
             onClick={handleAddFigure}
             className="w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center flex-shrink-0"
             aria-label={t('common.addFigure')}
           >
             <Plus className="h-6 w-6" />
-          </button> */}
+          </button>
         </div>
       </div>
 
@@ -132,14 +111,10 @@ export function Favorites() {
         </div>
       )}
 
-      {/* Auth Dialog */}
-      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
-
-      {/* New Figure Modal */}
-      <NewFigureModal
-        open={showNewFigureModal}
-        onClose={() => setShowNewFigureModal(false)}
-        onSubmit={handleSubmitFigure}
+      {/* Coming Soon Modal */}
+      <ComingSoonModal
+        open={showComingSoonModal}
+        onClose={() => setShowComingSoonModal(false)}
       />
 
       {/* Advanced Filters Modal */}
