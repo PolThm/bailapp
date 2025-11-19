@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog';
 
 interface AuthModalProps {
@@ -40,11 +39,6 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
             {t('auth.signInWithGoogle')}
           </Button>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {t('auth.cancel')}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

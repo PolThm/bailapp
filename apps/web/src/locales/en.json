@@ -151,7 +151,7 @@
     "title": "Profile",
     "signIn": "Sign In",
     "signInRequired": "Sign in to view your profile",
-    "signInDescription": "Access your preferences, and settings",
+    "signInDescription": "Access your preferences and settings",
     "languagePreferences": "Language Preferences",
     "selectLanguage": "Choose your preferred language",
     "signOut": "Sign Out",
@@ -238,10 +238,9 @@
   "auth": {
     "signIn": "Sign In",
     "signInWithGoogle": "Sign in with Google",
-    "signInRequired": "Coming Soon",
-    "signInToSave": "Authentication features are under development and will be available soon.",
-    "signInToContinue": "Sign in to continue",
-    "cancel": "Cancel"
+    "signInRequired": "Sign In",
+    "signInToSave": "Sign in to save your preferences and access your personal data.",
+    "signInToContinue": "Sign in to continue"
   },
   "common": {
     "loading": "Loading...",

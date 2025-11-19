@@ -238,10 +238,9 @@
   "auth": {
     "signIn": "Iniciar sesión",
     "signInWithGoogle": "Iniciar sesión con Google",
-    "signInRequired": "Próximamente",
-    "signInToSave": "Las funciones de autenticación están en desarrollo y estarán disponibles pronto.",
-    "signInToContinue": "Inicia sesión para continuar",
-    "cancel": "Cancelar"
+    "signInRequired": "Iniciar sesión",
+    "signInToSave": "Inicia sesión para guardar tus preferencias y acceder a tus datos personales.",
+    "signInToContinue": "Inicia sesión para continuar"
   },
   "common": {
     "loading": "Cargando...",

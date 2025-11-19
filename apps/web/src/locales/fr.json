@@ -238,10 +238,9 @@
   "auth": {
     "signIn": "Se connecter",
     "signInWithGoogle": "Se connecter avec Google",
-    "signInRequired": "Bientôt disponible",
-    "signInToSave": "Les fonctionnalités d'authentification sont en cours de développement et seront bientôt disponibles.",
-    "signInToContinue": "Connectez-vous pour continuer",
-    "cancel": "Annuler"
+    "signInRequired": "Se connecter",
+    "signInToSave": "Connecte-toi pour sauvegarder tes préférences et accéder à tes données personnelles.",
+    "signInToContinue": "Connectez-vous pour continuer"
   },
   "common": {
     "loading": "Chargement...",
