@@ -221,34 +221,30 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
               }`}
               loading="lazy"
             />
-            {/* Iframe - positioned off-screen during loading, then moved into place when loaded */}
+            {/* Iframe - keep at normal size but hidden until ready */}
             {showPreview && previewUrl && (
-              <iframe
-                src={previewUrl}
-                className="absolute w-full h-full object-cover pointer-events-none transition-all duration-300"
-                allow="autoplay; encrypted-media"
-                allowFullScreen={false}
-                title={figure.shortTitle}
-                style={{ 
-                  border: 'none',
-                  ...(previewReady 
-                    ? { 
-                        top: 0, 
-                        left: 0, 
-                        right: 0, 
-                        bottom: 0,
-                        zIndex: 20,
-                        opacity: 1
-                      } 
-                    : { 
-                        top: '-10000px', 
-                        left: '-10000px', 
-                        width: '1px', 
-                        height: '1px',
-                        zIndex: 0,
-                        opacity: 0
-                      })
+              <div
+                className="absolute inset-0 w-full h-full overflow-hidden"
+                style={{
+                  zIndex: previewReady ? 20 : 0,
+                  opacity: previewReady ? 1 : 0,
+                  transition: 'opacity 0.3s ease-in-out'
                 }}
+              >
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-full pointer-events-none"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen={false}
+                  title={figure.shortTitle}
+                  style={{ 
+                    border: 'none',
+                    width: '100%',
+                    height: '100%',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0
+                  }}
                 onLoad={() => {
                   previewLoadedRef.current = true;
                   // Clear timeout when loaded successfully
@@ -264,12 +260,12 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     // For slow connections, wait before revealing
                     readyTimeoutRef.current = setTimeout(() => {
                       setPreviewReady(true);
-                    }, 1000);
+                    }, 2000);
                   } else {
-                    // For good connections, reveal immediately
+                    // For good connections, wait for YouTube to fully initialize and resize
                     readyTimeoutRef.current = setTimeout(() => {
                       setPreviewReady(true);
-                    }, 1000);
+                    }, 500);
                   }
                 }}
                 onError={() => {
@@ -286,7 +282,8 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     readyTimeoutRef.current = null;
                   }
                 }}
-              />
+                />
+              </div>
             )}
             {/* Duration badge if time range specified */}
             {figure.startTime && figure.endTime && (
