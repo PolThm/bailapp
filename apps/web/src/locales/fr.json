@@ -239,8 +239,8 @@
     "signIn": "Se connecter",
     "signInWithGoogle": "Se connecter avec Google",
     "signInRequired": "Se connecter",
-    "signInToSave": "Connecte-toi pour sauvegarder tes préférences et accéder à tes données personnelles.",
-    "signInToContinue": "Connectez-vous pour continuer"
+    "signInToSave": "Sauvegarde tes préférences et accède à tes données personnelles.",
+    "signInToContinue": "Connecte-toi pour continuer"
   },
   "common": {
     "loading": "Chargement...",

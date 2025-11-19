@@ -3,9 +3,11 @@ import { useState, useMemo } from 'react';
 import { Heart, Plus } from 'lucide-react';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useFigures } from '@/context/FiguresContext';
+import { useAuth } from '@/context/AuthContext';
 import { FigureCard } from '@/components/FigureCard';
 import { EmptyState } from '@/components/EmptyState';
 import { Loader } from '@/components/Loader';
+import { AuthModal } from '@/components/AuthModal';
 import { ComingSoonModal } from '@/components/ComingSoonModal';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
@@ -19,8 +21,10 @@ export function Favorites() {
   const { t } = useTranslation();
   const { favorites, isLoading } = useFavorites();
   const { figures } = useFigures();
+  const { user } = useAuth();
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.FAVORITES_SHOW_IMAGES), false);
 
   // Get favorite figures - ensure favorites is always an array, sorted by lastOpenedAt
@@ -107,6 +111,8 @@ export function Favorites() {
               description={favoriteFiguresData.length === 0 ? t('favorites.empty.description') : t('discover.empty.filtered.description')}
               actionLabel={favoriteFiguresData.length === 0 ? t('favorites.empty.action') : t('discover.empty.action')}
               onAction={() => window.location.href = '/discover'}
+              isAuthenticated={!!user}
+              onLogin={() => setShowAuthModal(true)}
             />
           ) : (
             <div className="grid grid-cols-1 gap-5">
@@ -117,6 +123,9 @@ export function Favorites() {
           )}
         </>
       )}
+
+      {/* Auth Dialog */}
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       {/* Coming Soon Modal */}
       <ComingSoonModal
