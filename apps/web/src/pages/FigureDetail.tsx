@@ -187,7 +187,13 @@ export function FigureDetail() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setShowMasteryModal(true)}
+                        onClick={() => {
+                          if (!user) {
+                            setShowAuthModal(true);
+                          } else {
+                            setShowMasteryModal(true);
+                          }
+                        }}
                         className="ml-auto"
                       >
                         {t('common.update')}
@@ -200,7 +206,13 @@ export function FigureDetail() {
               <Button
                 variant="default"
                 className="w-full"
-                onClick={() => setShowMasteryModal(true)}
+                onClick={() => {
+                  if (!user) {
+                    setShowAuthModal(true);
+                  } else {
+                    setShowMasteryModal(true);
+                  }
+                }}
               >
                 {t('figure.mastery.enter')}
               </Button>
