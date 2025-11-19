@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { mockFigures } from '@/data/mockFigures';
 import type { Figure, DanceStyle } from '@/types';
+import { useFavorites } from '@/context/FavoritesContext';
 
 interface FiguresContextType {
   figures: Figure[];
@@ -13,7 +14,18 @@ interface FiguresContextType {
 const FiguresContext = createContext<FiguresContextType | undefined>(undefined);
 
 export function FiguresProvider({ children }: { children: ReactNode }) {
+  const { lastOpenedAt } = useFavorites();
   const [figures, setFigures] = useState<Figure[]>(mockFigures);
+
+  // Merge mockFigures with lastOpenedAt from favorites
+  useEffect(() => {
+    setFigures(
+      mockFigures.map((figure) => ({
+        ...figure,
+        lastOpenedAt: lastOpenedAt[figure.id] || figure.lastOpenedAt,
+      }))
+    );
+  }, [lastOpenedAt]);
 
   const getFigure = (id: string) => {
     return figures.find((figure) => figure.id === id);

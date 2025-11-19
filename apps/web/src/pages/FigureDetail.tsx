@@ -22,8 +22,8 @@ export function FigureDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { getFigure, updateFigure } = useFigures();
-  const { isFavorite, toggleFavorite } = useFavorites();
+  const { getFigure } = useFigures();
+  const { isFavorite, toggleFavorite, updateLastOpened } = useFavorites();
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -33,14 +33,14 @@ export function FigureDetail() {
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
   const lastUpdatedIdRef = useRef<string | null>(null);
 
-  // Update lastOpenedAt when figure is opened (only once per id)
+  // Update lastOpenedAt when figure is opened (only once per id, and only if favorited)
   useEffect(() => {
-    if (figure && id && lastUpdatedIdRef.current !== id) {
+    if (figure && id && isFavorite(id) && lastUpdatedIdRef.current !== id) {
       const now = new Date().toISOString();
-      updateFigure(id, { lastOpenedAt: now });
+      updateLastOpened(id, now);
       lastUpdatedIdRef.current = id;
     }
-  }, [id, figure, updateFigure]);
+  }, [id, figure, isFavorite, updateLastOpened]);
 
   if (!figure) {
     return (

@@ -75,15 +75,15 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <FiguresProvider>
-          <FavoritesProvider>
+        <FavoritesProvider>
+          <FiguresProvider>
             <ChoreographiesProvider>
               <PullToRefreshProvider>
                 <AppContent />
               </PullToRefreshProvider>
             </ChoreographiesProvider>
+          </FiguresProvider>
           </FavoritesProvider>
-        </FiguresProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

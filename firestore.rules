@@ -51,23 +51,13 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
     
-    // User favorites
+    // User favorites (includes figureIds, lastOpenedAt, and masteryLevels)
     match /favorites/{userId} {
       // Only the user can read their own favorites
       allow read: if isOwner(userId);
       // Only the user can create/update their own favorites
       allow create, update: if isOwner(userId);
       // Users can delete their own favorites
-      allow delete: if isOwner(userId);
-    }
-    
-    // User mastery levels
-    match /masteryLevels/{userId} {
-      // Only the user can read their own mastery levels
-      allow read: if isOwner(userId);
-      // Only the user can create/update their own mastery levels
-      allow create, update: if isOwner(userId);
-      // Users can delete their own mastery levels
       allow delete: if isOwner(userId);
     }
   }

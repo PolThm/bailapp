@@ -4,14 +4,20 @@ import {
   getUserFavoritesFromFirestore,
   addToFavoritesInFirestore,
   removeFromFavoritesInFirestore,
+  updateFavoriteLastOpenedInFirestore,
+  updateFavoriteMasteryLevelInFirestore,
 } from '@/lib/services/favoritesService';
 
 interface FavoritesContextType {
   favorites: string[];
+  lastOpenedAt: Record<string, string>; // { figureId: ISO string }
+  masteryLevels: Record<string, number>; // { figureId: level }
   addToFavorites: (id: string) => void;
   removeFromFavorites: (id: string) => void;
   isFavorite: (id: string) => boolean;
   toggleFavorite: (id: string) => void;
+  updateLastOpened: (id: string, lastOpenedAt: string) => void;
+  updateMasteryLevel: (id: string, level: number) => void;
   isLoading: boolean;
 }
 
@@ -22,9 +28,11 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [lastOpenedAt, setLastOpenedAt] = useState<Record<string, string>>({});
+  const [masteryLevels, setMasteryLevels] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load favorites from Firestore (only if authenticated)
+  // Load favorites and lastOpenedAt from Firestore (only if authenticated)
   useEffect(() => {
     let cancelled = false;
 
@@ -34,9 +42,11 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         if (user && user.uid) {
           // User is authenticated: load from Firestore
           try {
-            const firestoreFavorites = await getUserFavoritesFromFirestore(user.uid);
+            const { figureIds, lastOpenedAt: lastOpenedAtMap, masteryLevels: masteryLevelsMap } = await getUserFavoritesFromFirestore(user.uid);
             if (!cancelled) {
-              setFavorites(firestoreFavorites);
+              setFavorites(figureIds);
+              setLastOpenedAt(lastOpenedAtMap);
+              setMasteryLevels(masteryLevelsMap);
               setIsLoading(false);
             }
           } catch (error: any) {
@@ -44,6 +54,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
             if (!cancelled) {
               // On error, set empty array
               setFavorites([]);
+              setLastOpenedAt({});
+              setMasteryLevels({});
               setIsLoading(false);
             }
           }
@@ -51,6 +63,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           // User is not authenticated: no favorites
           if (!cancelled) {
             setFavorites([]);
+            setLastOpenedAt({});
+            setMasteryLevels({});
             setIsLoading(false);
           }
         }
@@ -58,6 +72,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         console.error('Failed to load favorites:', error);
         if (!cancelled) {
           setFavorites([]);
+          setLastOpenedAt({});
+          setMasteryLevels({});
           setIsLoading(false);
         }
       }
@@ -124,14 +140,72 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateLastOpened = async (id: string, lastOpenedAtValue: string) => {
+    // Only update if the figure is in favorites
+    if (!isFavorite(id)) return;
+
+    // Optimistic update: update local state immediately
+    setLastOpenedAt((prev) => ({
+      ...prev,
+      [id]: lastOpenedAtValue,
+    }));
+
+    // Sync to Firestore if authenticated (background operation)
+    if (user && user.uid) {
+      updateFavoriteLastOpenedInFirestore(user.uid, id, lastOpenedAtValue).catch((error: any) => {
+        console.error('Failed to update favorite lastOpenedAt in Firestore:', error);
+        // Only revert if it's a permissions error (user might have been logged out)
+        if (error?.code === 'permission-denied') {
+          // Revert on error
+          setLastOpenedAt((prev) => {
+            const newMap = { ...prev };
+            delete newMap[id];
+            return newMap;
+          });
+        }
+      });
+    }
+  };
+
+  const updateMasteryLevel = async (id: string, level: number) => {
+    // Only update if the figure is in favorites
+    if (!isFavorite(id)) return;
+
+    // Optimistic update: update local state immediately
+    setMasteryLevels((prev) => ({
+      ...prev,
+      [id]: level,
+    }));
+
+    // Sync to Firestore if authenticated (background operation)
+    if (user && user.uid) {
+      updateFavoriteMasteryLevelInFirestore(user.uid, id, level).catch((error: any) => {
+        console.error('Failed to update favorite mastery level in Firestore:', error);
+        // Only revert if it's a permissions error (user might have been logged out)
+        if (error?.code === 'permission-denied') {
+          // Revert on error
+          setMasteryLevels((prev) => {
+            const newMap = { ...prev };
+            delete newMap[id];
+            return newMap;
+          });
+        }
+      });
+    }
+  };
+
   return (
     <FavoritesContext.Provider
       value={{
         favorites,
+        lastOpenedAt,
+        masteryLevels,
         addToFavorites,
         removeFromFavorites,
         isFavorite,
         toggleFavorite,
+        updateLastOpened,
+        updateMasteryLevel,
         isLoading,
       }}
     >
