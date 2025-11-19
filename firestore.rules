@@ -50,6 +50,16 @@ service cloud.firestore {
       // Users can delete their own progress
       allow delete: if isOwner(userId);
     }
+    
+    // User favorites
+    match /favorites/{userId} {
+      // Only the user can read their own favorites
+      allow read: if isOwner(userId);
+      // Only the user can create/update their own favorites
+      allow create, update: if isOwner(userId);
+      // Users can delete their own favorites
+      allow delete: if isOwner(userId);
+    }
   }
 }
 

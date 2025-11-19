@@ -1,6 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getStorageKey, StorageKey } from '@/lib/storageKeys';
-import { getItem, setItem } from '@/lib/indexedDB';
+import { useAuth } from '@/context/AuthContext';
+import {
+  getUserFavoritesFromFirestore,
+  addToFavoritesInFirestore,
+  removeFromFavoritesInFirestore,
+} from '@/lib/services/favoritesService';
 
 interface FavoritesContextType {
   favorites: string[];
@@ -8,35 +12,53 @@ interface FavoritesContextType {
   removeFromFavorites: (id: string) => void;
   isFavorite: (id: string) => boolean;
   toggleFavorite: (id: string) => void;
+  isLoading: boolean;
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(
   undefined
 );
 
-const STORAGE_KEY = getStorageKey(StorageKey.FAVORITES);
-
 export function FavoritesProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load from IndexedDB on mount
+  // Load favorites from Firestore (only if authenticated)
   useEffect(() => {
     let cancelled = false;
 
     async function loadFavorites() {
+      setIsLoading(true);
       try {
-        const stored = await getItem(STORAGE_KEY);
-        if (!cancelled) {
-          const parsedFavorites = stored ? JSON.parse(stored) : [];
-          setFavorites(parsedFavorites);
-          setIsLoaded(true);
+        if (user && user.uid) {
+          // User is authenticated: load from Firestore
+          try {
+            const firestoreFavorites = await getUserFavoritesFromFirestore(user.uid);
+            if (!cancelled) {
+              setFavorites(firestoreFavorites);
+              setIsLoading(false);
+            }
+          } catch (error: any) {
+            console.error('Failed to load favorites from Firestore:', error);
+            if (!cancelled) {
+              // On error, set empty array
+              setFavorites([]);
+              setIsLoading(false);
+            }
+          }
+        } else {
+          // User is not authenticated: no favorites
+          if (!cancelled) {
+            setFavorites([]);
+            setIsLoading(false);
+          }
         }
       } catch (error) {
         console.error('Failed to load favorites:', error);
         if (!cancelled) {
           setFavorites([]);
-          setIsLoaded(true);
+          setIsLoading(false);
         }
       }
     }
@@ -46,26 +68,48 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user]);
 
-  // Persist to IndexedDB whenever favorites change
-  useEffect(() => {
-    if (isLoaded && typeof window !== 'undefined') {
-      setItem(STORAGE_KEY, JSON.stringify(favorites)).catch((error) => {
-        console.error('Failed to save favorites:', error);
-      });
-    }
-  }, [favorites, isLoaded]);
+  // No need to persist to IndexedDB - Firestore is the source of truth
 
-  const addToFavorites = (id: string) => {
+  const addToFavorites = async (id: string) => {
+    // Optimistic update: update local state immediately
     setFavorites((prev) => {
       if (prev.includes(id)) return prev;
       return [...prev, id];
     });
+
+    // Sync to Firestore if authenticated (background operation)
+    if (user && user.uid) {
+      addToFavoritesInFirestore(user.uid, id).catch((error: any) => {
+        console.error('Failed to add to favorites in Firestore:', error);
+        // Only revert if it's a permissions error (user might have been logged out)
+        if (error?.code === 'permission-denied') {
+          // Revert on error
+          setFavorites((prev) => prev.filter((favId) => favId !== id));
+        }
+      });
+    }
   };
 
-  const removeFromFavorites = (id: string) => {
+  const removeFromFavorites = async (id: string) => {
+    // Optimistic update: update local state immediately
     setFavorites((prev) => prev.filter((favId) => favId !== id));
+
+    // Sync to Firestore if authenticated (background operation)
+    if (user && user.uid) {
+      removeFromFavoritesInFirestore(user.uid, id).catch((error: any) => {
+        console.error('Failed to remove from favorites in Firestore:', error);
+        // Only revert if it's a permissions error (user might have been logged out)
+        if (error?.code === 'permission-denied') {
+          // Revert on error
+          setFavorites((prev) => {
+            if (prev.includes(id)) return prev;
+            return [...prev, id];
+          });
+        }
+      });
+    }
   };
 
   const isFavorite = (id: string) => {
@@ -88,6 +132,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         removeFromFavorites,
         isFavorite,
         toggleFavorite,
+        isLoading,
       }}
     >
       {children}

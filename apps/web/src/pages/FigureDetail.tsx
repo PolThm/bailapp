@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Heart, Share2, Clock } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useFavorites } from '@/context/FavoritesContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -23,6 +24,7 @@ export function FigureDetail() {
   const navigate = useNavigate();
   const { getFigure, updateFigure } = useFigures();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMasteryModal, setShowMasteryModal] = useState(false);
@@ -59,13 +61,11 @@ export function FigureDetail() {
   const isFav = isFavorite(figure.id);
 
   const handleToggleFavorite = () => {
-    // TODO: For now, allow adding to favorites without authentication, when backend is plugged, add the auth check back:
-    // if (!user) {
-    //   setShowAuthModal(true);
-    // } else {
-    //   toggleFavorite(figure.id);
-    // }
-    toggleFavorite(figure.id);
+    if (!user) {
+      setShowAuthModal(true);
+    } else {
+      toggleFavorite(figure.id);
+    }
   };
 
   const handleShare = async () => {
