@@ -265,7 +265,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     // For good connections, wait for YouTube to fully initialize and resize
                     readyTimeoutRef.current = setTimeout(() => {
                       setPreviewReady(true);
-                    }, 750);
+                    }, 600);
                   }
                 }}
                 onError={() => {
