@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
+import { createUserProfileOnSignIn } from '@/lib/services/userService';
 
 interface AuthContextType {
   user: User | null;
@@ -16,9 +17,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       setLoading(false);
+      
+      // Create user profile in Firestore on first sign-in
+      if (user) {
+        try {
+          await createUserProfileOnSignIn(user);
+        } catch (error) {
+          // Don't block the app if profile creation fails
+          console.error('Failed to create user profile:', error);
+        }
+      }
     });
 
     return unsubscribe;

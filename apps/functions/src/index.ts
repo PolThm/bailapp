@@ -1,5 +1,6 @@
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions/v1';
+import type { CallableContext } from 'firebase-functions/v1/https';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -10,47 +11,55 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 });
 
 // Example authenticated function
-export const getUserProfile = functions.https.onCall(async (data, context) => {
-  // Check if user is authenticated
-  if (!context.auth) {
-    throw new functions.https.HttpsError(
-      'unauthenticated',
-      'User must be authenticated to get profile'
-    );
-  }
-
-  const uid = context.auth.uid;
-
-  try {
-    // Get user data from Firestore
-    const userDoc = await admin.firestore().collection('users').doc(uid).get();
-
-    if (!userDoc.exists) {
-      return {
-        uid,
-        displayName: context.auth.token.name || 'Anonymous',
-        email: context.auth.token.email || null,
-        profileCreated: false,
-      };
+export const getUserProfile = functions.https.onCall(
+  async (data: unknown, context: CallableContext) => {
+    // Check if user is authenticated
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        'unauthenticated',
+        'User must be authenticated to get profile'
+      );
     }
 
-    return {
-      uid,
-      ...userDoc.data(),
-      profileCreated: true,
-    };
-  } catch (error) {
-    console.error('Error getting user profile:', error);
-    throw new functions.https.HttpsError(
-      'internal',
-      'Failed to get user profile'
-    );
+    const uid = context.auth.uid;
+
+    try {
+      // Get user data from Firestore
+      const userDoc = await admin.firestore().collection('users').doc(uid).get();
+
+      if (!userDoc.exists) {
+        return {
+          uid,
+          displayName: context.auth.token.name || 'Anonymous',
+          email: context.auth.token.email || null,
+          profileCreated: false,
+        };
+      }
+
+      return {
+        uid,
+        ...userDoc.data(),
+        profileCreated: true,
+      };
+    } catch (error) {
+      console.error('Error getting user profile:', error);
+      throw new functions.https.HttpsError(
+        'internal',
+        'Failed to get user profile'
+      );
+    }
   }
-});
+);
 
 // Example function to create/update user profile
+interface UpdateUserProfileData {
+  displayName?: string;
+  bio?: string;
+  favoriteStyles?: string[];
+}
+
 export const updateUserProfile = functions.https.onCall(
-  async (data, context) => {
+  async (data: UpdateUserProfileData, context: CallableContext) => {
     if (!context.auth) {
       throw new functions.https.HttpsError(
         'unauthenticated',
@@ -88,8 +97,18 @@ export const updateUserProfile = functions.https.onCall(
 );
 
 // Example function to save a choreography
+interface SaveChoreographyData {
+  title: string;
+  description?: string;
+  moves: Array<{
+    id: string;
+    name: string;
+    order: number;
+  }>;
+}
+
 export const saveChoreography = functions.https.onCall(
-  async (data, context) => {
+  async (data: SaveChoreographyData, context: CallableContext) => {
     if (!context.auth) {
       throw new functions.https.HttpsError(
         'unauthenticated',
