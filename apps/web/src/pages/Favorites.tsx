@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart, Plus } from 'lucide-react';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useFigures } from '@/context/FiguresContext';
@@ -19,6 +20,7 @@ import { sortByLastOpened } from '@/lib/utils';
 
 export function Favorites() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { favorites, isLoading } = useFavorites();
   const { figures } = useFigures();
   const { user } = useAuth();
@@ -110,7 +112,7 @@ export function Favorites() {
               title={favoriteFiguresData.length === 0 ? t('favorites.empty.title') : t('discover.empty.filtered.title')}
               description={favoriteFiguresData.length === 0 ? t('favorites.empty.description') : t('discover.empty.filtered.description')}
               actionLabel={favoriteFiguresData.length === 0 ? t('favorites.empty.action') : t('discover.empty.action')}
-              onAction={() => window.location.href = '/discover'}
+              onAction={() => navigate('/discover')}
               isAuthenticated={!!user}
               onLogin={() => setShowAuthModal(true)}
             />
