@@ -170,7 +170,9 @@ export function ChoreographyDetail() {
 
   // Load public choreography if viewing someone else's
   useEffect(() => {
-    if (isViewingPublicChoreography && id && ownerId) {
+    // Check if we have ownerId in URL (shared choreography)
+    // Even if user is not authenticated, we should try to load it if ownerId exists
+    if (ownerId && id && ownerId !== user?.uid) {
       setIsLoadingPublic(true);
       getPublicChoreography(id, ownerId)
         .then((choreo) => {
@@ -186,17 +188,21 @@ export function ChoreographyDetail() {
     } else {
       setPublicChoreography(null);
     }
-  }, [id, ownerId, isViewingPublicChoreography]);
+  }, [id, ownerId, user]);
 
-  // Redirect to choreographies list if user signs in while viewing example choreography
+  // Redirect after sign in
   useEffect(() => {
     // Check if user just signed in (was null, now is not null)
     const justSignedIn = !previousUserRef.current && user;
     
-    if (id === EXAMPLE_CHOREOGRAPHY_ID && justSignedIn) {
-      // User just signed in while viewing example choreography
-      // Redirect to choreographies list to avoid "not found" error
-      navigate('/choreographies', { replace: true });
+    if (justSignedIn) {
+      if (id === EXAMPLE_CHOREOGRAPHY_ID) {
+        // User just signed in while viewing example choreography
+        // Redirect to choreographies list to avoid "not found" error
+        navigate('/choreographies', { replace: true });
+      }
+      // For shared choreographies, the useEffect above will automatically reload
+      // the choreography when user changes, so no need to do anything here
     }
     
     // Update previous user ref
