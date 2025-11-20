@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,7 +23,8 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
 
   if (!open) return null;
 
-  return (
+  // Render dialog in a portal to escape the Layout's stacking context
+  return createPortal(
     <>
       {/* Modal positioned above navbar (z-50) */}
       <div
@@ -34,7 +36,8 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
       <div className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none">
         <div className="relative pointer-events-auto">{children}</div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 
