@@ -38,6 +38,7 @@ import type { ChoreographyMovement, Choreography } from '@/types';
 import { GripVertical } from 'lucide-react';
 import { Toast } from '@/components/Toast';
 import { Loader } from '@/components/Loader';
+import { EXAMPLE_CHOREOGRAPHY_ID } from '@/data/mockChoreographies';
 
 // Sortable wrapper component
 function SortableMovementItem({
@@ -186,13 +187,19 @@ export function ChoreographyDetail() {
   }, [id, ownerId, isViewingPublicChoreography]);
 
   // Update lastOpenedAt when choreography is opened (only once per id, and only for own choreographies)
+  // Skip for example choreography if user is not authenticated
   useEffect(() => {
-    if (choreography && id && !isViewingPublicChoreography && lastUpdatedIdRef.current !== id) {
-      const now = new Date().toISOString();
-      updateChoreography(id, { lastOpenedAt: now });
-      lastUpdatedIdRef.current = id;
+    if (choreography && id && !isViewingPublicChoreography && lastUpdatedIdRef.current !== id && user) {
+      const isExampleChoreography = choreography.id === EXAMPLE_CHOREOGRAPHY_ID;
+      // Don't update lastOpenedAt for example choreography if user is not authenticated
+      // (but if user is authenticated and owns it, update it)
+      if (!isExampleChoreography || (isExampleChoreography && user)) {
+        const now = new Date().toISOString();
+        updateChoreography(id, { lastOpenedAt: now });
+        lastUpdatedIdRef.current = id;
+      }
     }
-  }, [id, choreography, isViewingPublicChoreography, updateChoreography]);
+  }, [id, choreography, isViewingPublicChoreography, updateChoreography, user]);
 
   // Configure sensors for drag & drop
   const sensors = useSensors(
@@ -232,7 +239,9 @@ export function ChoreographyDetail() {
   // Check if user owns this choreography
   // If it's not a public choreography from another user, and user is authenticated, they own it
   // (choreographies from context are always owned by the user)
-  const isOwner = !isViewingPublicChoreography && !!user && (user.uid === choreography.ownerId || !choreography.ownerId || contextChoreography !== undefined);
+  // Exception: example choreography is read-only for non-authenticated users
+  const isExampleChoreography = choreography.id === EXAMPLE_CHOREOGRAPHY_ID;
+  const isOwner = !isViewingPublicChoreography && !!user && (user.uid === choreography.ownerId || !choreography.ownerId || contextChoreography !== undefined) && !(isExampleChoreography && !user);
 
   const handleDelete = () => {
     if (isOwner) {

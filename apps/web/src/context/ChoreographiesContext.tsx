@@ -88,9 +88,10 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
             }
           }
         } else {
-          // User is not authenticated: no choreographies
+          // User is not authenticated: show example choreography in read-only mode
           if (!cancelled) {
-            setChoreographies([]);
+            const exampleChoreography = createExampleChoreography();
+            setChoreographies([exampleChoreography]);
             setIsLoading(false);
           }
         }
