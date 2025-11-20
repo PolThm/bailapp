@@ -145,7 +145,7 @@ export function ChoreographyDetail() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { getChoreography, deleteChoreography, updateChoreography, togglePublic, copyChoreography } = useChoreographies();
+  const { getChoreography, deleteChoreography, updateChoreography, togglePublic, copyChoreography, isLoading } = useChoreographies();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -205,7 +205,10 @@ export function ChoreographyDetail() {
   );
 
 
-  if (isLoadingPublic) return <Loader />;
+  // Show loader while loading public choreography or while context is loading (for private choreographies)
+  if (isLoadingPublic || (!isViewingPublicChoreography && isLoading && !choreography)) {
+    return <Loader />;
+  }
 
   if (!choreography) {
     return (
