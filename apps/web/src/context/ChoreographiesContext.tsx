@@ -235,14 +235,16 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
       throw new Error('User must be authenticated to copy a choreography');
     }
 
+    const now = new Date().toISOString();
+    
     // Create a copy of the choreography with a new ID and current user as owner
     const copiedChoreography: Choreography = {
       ...choreography,
       id: crypto.randomUUID(), // New ID for the copy
       ownerId: user.uid, // Set current user as owner
       isPublic: false, // Copy is private by default
-      createdAt: new Date().toISOString(), // New creation date
-      lastOpenedAt: undefined, // Reset last opened
+      createdAt: now, // New creation date
+      lastOpenedAt: now, // Set to now so it appears at the top of the list
     };
 
     // Add to user's choreographies

@@ -498,9 +498,10 @@ export function ChoreographyDetail() {
               size="lg"
               onClick={async () => {
                 try {
-                  const newId = await copyChoreography(choreography);
-                  // Navigate to the copied choreography
-                  navigate(`/choreography/${newId}`);
+                  await copyChoreography(choreography);
+                  // Navigate to choreographies list, replacing current history entry
+                  // so back button goes to the list, not the shared choreography
+                  navigate('/choreographies', { replace: true });
                 } catch (error) {
                   console.error('Failed to copy choreography:', error);
                   // You could add an error toast here
