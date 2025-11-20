@@ -48,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav className="relative z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <nav className="z-50 border-t bg-background/95 backdrop-blur">
         <div className="grid grid-cols-5 gap-1 p-2">
           <Link
             to="/"
