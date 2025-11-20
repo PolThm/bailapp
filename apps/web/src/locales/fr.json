@@ -196,7 +196,7 @@
     "phrases_other": "{{count}} phrases",
     "importedBy": "Importé par",
     "visibility": "Visibilité",
-    "shareText": "Découvre vite ce super mouvement de {{style}} sur Bailapp : {{title}}",
+    "shareText": "Découvre vite ce mouvement de {{style}} « {{title}} » sur Bailapp :",
     "mastery": {
       "title": "Maîtrise du mouvement",
       "enter": "Entrer mon niveau de maîtrise",

@@ -196,7 +196,7 @@
     "phrases_other": "{{count}} frases",
     "importedBy": "Importado por",
     "visibility": "Visibilidad",
-    "shareText": "Descubre este increíble movimiento de {{style}} en Bailapp: {{title}}",
+    "shareText": "Descubre este movimiento de {{style}} « {{title}} » en Bailapp:",
     "linkCopied": "Enlace copiado al portapapeles",
     "mastery": {
       "title": "Dominio del movimiento",

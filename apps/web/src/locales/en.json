@@ -196,7 +196,7 @@
     "phrases_other": "{{count}} phrases",
     "importedBy": "Imported by",
     "visibility": "Visibility",
-    "shareText": "Check out this awesome {{style}} move on Bailapp: {{title}}",
+    "shareText": "Check out this {{style}} move « {{title}} » on Bailapp:",
     "linkCopied": "Link copied to clipboard",
     "mastery": {
       "title": "Movement Mastery",
