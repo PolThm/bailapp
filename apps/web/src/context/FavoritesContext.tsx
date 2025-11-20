@@ -95,6 +95,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       return [...prev, id];
     });
 
+    // Set lastOpenedAt to now when adding to favorites
+    const now = new Date().toISOString();
+    setLastOpenedAt((prev) => ({
+      ...prev,
+      [id]: now,
+    }));
+
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
       addToFavoritesInFirestore(user.uid, id).catch((error: any) => {
@@ -103,6 +110,11 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         if (error?.code === 'permission-denied') {
           // Revert on error
           setFavorites((prev) => prev.filter((favId) => favId !== id));
+          setLastOpenedAt((prev) => {
+            const newMap = { ...prev };
+            delete newMap[id];
+            return newMap;
+          });
         }
       });
     }

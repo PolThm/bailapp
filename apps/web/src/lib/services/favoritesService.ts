@@ -93,13 +93,19 @@ export async function addToFavoritesInFirestore(
   try {
     const favoritesRef = doc(db, 'favorites', userId);
     const existingDoc = await getDoc(favoritesRef);
+    const now = Timestamp.now();
 
     if (existingDoc.exists()) {
       const data = existingDoc.data() as FirestoreFavorites;
       const figureIds = data.figureIds || [];
       if (!figureIds.includes(figureId)) {
+        const lastOpenedAt = { ...(data.lastOpenedAt || {}) };
+        // Set lastOpenedAt to now when adding to favorites
+        lastOpenedAt[figureId] = now;
+        
         await updateDoc(favoritesRef, {
           figureIds: [...figureIds, figureId],
+          lastOpenedAt,
           updatedAt: serverTimestamp(),
         });
       }
@@ -107,6 +113,9 @@ export async function addToFavoritesInFirestore(
       // Create new favorites document
       await setDoc(favoritesRef, {
         figureIds: [figureId],
+        lastOpenedAt: {
+          [figureId]: now,
+        },
         updatedAt: serverTimestamp(),
       });
     }
