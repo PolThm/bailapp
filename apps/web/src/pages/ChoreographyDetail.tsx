@@ -243,16 +243,21 @@ export function ChoreographyDetail() {
   }
 
   if (!choreography) {
+    // If ownerId is present, it's a shared choreography - prioritize sign in
+    const isSharedChoreography = !!ownerId;
+    
     return (
       <>
         <EmptyState
           icon={FileQuestion}
           title={t('choreographies.detail.notFound')}
           description={t('choreographies.detail.notFoundDescription')}
-          actionLabel={t('choreographies.detail.backToChoreographies')}
-          onAction={() => navigate('/choreographies')}
+          actionLabel={isSharedChoreography && !user ? t('profile.signIn') : t('choreographies.detail.backToChoreographies')}
+          onAction={isSharedChoreography && !user ? () => setShowAuthModal(true) : () => navigate('/choreographies')}
+          secondaryActionLabel={isSharedChoreography && !user ? t('choreographies.detail.backToChoreographies') : undefined}
+          onSecondaryAction={isSharedChoreography && !user ? () => navigate('/choreographies') : undefined}
           isAuthenticated={!!user}
-          onLogin={() => setShowAuthModal(true)}
+          onLogin={isSharedChoreography ? undefined : () => setShowAuthModal(true)}
         />
         <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
       </>

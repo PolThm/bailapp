@@ -8,6 +8,8 @@ interface EmptyStateProps {
   description: string;
   actionLabel?: string;
   onAction?: () => void;
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
   isAuthenticated?: boolean;
   onLogin?: () => void;
 }
@@ -18,6 +20,8 @@ export function EmptyState({
   description,
   actionLabel,
   onAction,
+  secondaryActionLabel,
+  onSecondaryAction,
   isAuthenticated = true,
   onLogin,
 }: EmptyStateProps) {
@@ -36,7 +40,12 @@ export function EmptyState({
             {actionLabel}
           </Button>
         )}
-        {!isAuthenticated && onLogin && (
+        {secondaryActionLabel && onSecondaryAction && (
+          <Button onClick={onSecondaryAction} variant="link" className="text-sm text-muted-foreground underline">
+            {secondaryActionLabel}
+          </Button>
+        )}
+        {!isAuthenticated && onLogin && !secondaryActionLabel && (
           <Button onClick={onLogin} variant="link" className="text-sm text-muted-foreground underline">
             {t('profile.signIn')}
           </Button>
