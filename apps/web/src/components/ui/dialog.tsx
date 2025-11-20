@@ -23,18 +23,18 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
   if (!open) return null;
 
   return (
-    <>
-      {/* Modal positioned above navbar (z-50) */}
+    <div style={{ position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none' }}>
+      {/* Modal overlay - positioned above navbar */}
       <div
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange?.(false)}
-        style={{ zIndex: 55 }}
+        style={{ zIndex: 9999 }}
       />
-      {/* Dialog content - positioned above overlay (z-55) */}
-      <div className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none">
+      {/* Dialog content - positioned above overlay */}
+      <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10000 }}>
         <div className="relative pointer-events-auto">{children}</div>
       </div>
-    </>
+    </div>
   );
 };
 
