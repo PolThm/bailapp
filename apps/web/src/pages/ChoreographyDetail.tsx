@@ -224,7 +224,9 @@ export function ChoreographyDetail() {
   }
 
   // Check if user owns this choreography
-  const isOwner = !isViewingPublicChoreography && user?.uid === choreography.ownerId;
+  // If it's not a public choreography from another user, and user is authenticated, they own it
+  // (choreographies from context are always owned by the user)
+  const isOwner = !isViewingPublicChoreography && !!user && (user.uid === choreography.ownerId || !choreography.ownerId || contextChoreography !== undefined);
 
   const handleDelete = () => {
     if (isOwner) {
