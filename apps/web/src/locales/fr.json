@@ -127,7 +127,7 @@
       "delete": "Supprimer"
     },
     "share": {
-      "shareText": "Découvre cette chorégraphie de {{style}} « {{name}} » sur Bailapp !",
+      "shareText": "Découvre cette chorégraphie de {{style}} « {{name}} » sur Bailapp :",
       "shared": "Chorégraphie partagée avec succès",
       "linkCopied": "Lien copié dans le presse-papiers",
       "public": "Publique",

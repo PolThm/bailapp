@@ -127,7 +127,7 @@
       "delete": "Delete"
     },
     "share": {
-      "shareText": "Check out this {{style}} choreography « {{name}} » on Bailapp!",
+      "shareText": "Check out this {{style}} choreography « {{name}} » on Bailapp:",
       "shared": "Choreography shared successfully",
       "linkCopied": "Link copied to clipboard",
       "public": "Public",
