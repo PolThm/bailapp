@@ -121,6 +121,7 @@
     },
     "detail": {
       "notFound": "Chorégraphie non trouvée",
+      "backToChoreographies": "Retour à la liste des chorégraphies",
       "edit": "Modifier",
       "share": "Partager",
       "delete": "Supprimer"
@@ -256,7 +257,6 @@
     "signInToContinue": "Connecte-toi pour continuer"
   },
   "common": {
-    "loading": "Chargement...",
     "error": "Une erreur s'est produite",
     "tryAgain": "Réessayer",
     "close": "Fermer",

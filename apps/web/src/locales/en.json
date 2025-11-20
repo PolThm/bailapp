@@ -121,6 +121,7 @@
     },
     "detail": {
       "notFound": "Choreography not found",
+      "backToChoreographies": "Back to choreographies list",
       "edit": "Edit",
       "share": "Share",
       "delete": "Delete"
@@ -257,7 +258,6 @@
     "signInToContinue": "Sign in to continue"
   },
   "common": {
-    "loading": "Loading...",
     "error": "An error occurred",
     "tryAgain": "Try Again",
     "close": "Close",

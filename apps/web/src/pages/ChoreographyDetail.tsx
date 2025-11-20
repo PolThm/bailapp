@@ -36,6 +36,7 @@ import { useChoreographies } from '@/context/ChoreographiesContext';
 import type { ChoreographyMovement, Choreography } from '@/types';
 import { GripVertical } from 'lucide-react';
 import { Toast } from '@/components/Toast';
+import { Loader } from '@/components/Loader';
 
 // Sortable wrapper component
 function SortableMovementItem({
@@ -204,13 +205,7 @@ export function ChoreographyDetail() {
   );
 
 
-  if (isLoadingPublic) {
-    return (
-      <div className="flex flex-col items-center justify-center flex-1">
-        <p className="text-lg text-muted-foreground">{t('common.loading', 'Loading...')}</p>
-      </div>
-    );
-  }
+  if (isLoadingPublic) return <Loader />;
 
   if (!choreography) {
     return (
@@ -219,7 +214,7 @@ export function ChoreographyDetail() {
           {t('choreographies.detail.notFound')}
         </p>
         <Button onClick={() => navigate('/choreographies')} className="mt-4">
-          {t('common.back')}
+          {t('choreographies.detail.backToChoreographies')}
         </Button>
       </div>
     );
