@@ -7,11 +7,12 @@ import { AuthModal } from '@/components/AuthModal';
 import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyCard } from '@/components/ChoreographyCard';
 import { Button } from '@/components/ui/button';
+import { Loader } from '@/components/Loader';
 import { sortByLastOpened } from '@/lib/utils';
 
 export function Choreographies() {
   const { t } = useTranslation();
-  const { choreographies } = useChoreographies();
+  const { choreographies, isLoading } = useChoreographies();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewChoreographyModal, setShowNewChoreographyModal] = useState(false);
 
@@ -42,7 +43,9 @@ export function Choreographies() {
       </div>
 
       {/* Choreographies List or Empty State */}
-      {sortedChoreographies.length === 0 ? (
+      {isLoading ? (
+        <Loader />
+      ) : sortedChoreographies.length === 0 ? (
         <EmptyState
           icon={Music}
           title={t('choreographies.empty.title')}

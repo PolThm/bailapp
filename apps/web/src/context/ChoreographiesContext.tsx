@@ -1,81 +1,102 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getStorageKey, StorageKey } from '@/lib/storageKeys';
-import { getItem, setItem } from '@/lib/indexedDB';
+import { useAuth } from '@/context/AuthContext';
+import {
+  getUserChoreographies,
+  createChoreography,
+  updateChoreography as updateChoreographyInFirestore,
+  deleteChoreography as deleteChoreographyFromFirestore,
+} from '@/lib/services/choreographyService';
 import type { Choreography } from '@/types';
-import { createExampleChoreography, EXAMPLE_CHOREOGRAPHY_ID } from '@/data/mockChoreographies';
+import { createExampleChoreography } from '@/data/mockChoreographies';
 
 interface ChoreographiesContextType {
   choreographies: Choreography[];
-  addChoreography: (choreography: Choreography) => void;
+  addChoreography: (choreography: Choreography) => Promise<string>;
   updateChoreography: (id: string, updates: Partial<Choreography>) => void;
   deleteChoreography: (id: string) => void;
   getChoreography: (id: string) => Choreography | undefined;
+  isLoading: boolean;
 }
 
 const ChoreographiesContext = createContext<ChoreographiesContextType | undefined>(
   undefined
 );
 
-const STORAGE_KEY = getStorageKey(StorageKey.CHOREOGRAPHIES);
-const EXAMPLE_SHOWN_KEY = getStorageKey(StorageKey.EXAMPLE_CHOREOGRAPHY_SHOWN);
-
 export function ChoreographiesProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [choreographies, setChoreographies] = useState<Choreography[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load from IndexedDB on mount
+  // Load choreographies from Firestore (only if authenticated)
   useEffect(() => {
     let cancelled = false;
 
     async function loadChoreographies() {
+      setIsLoading(true);
       try {
-        const stored = await getItem(STORAGE_KEY);
-        const exampleShown = await getItem(EXAMPLE_SHOWN_KEY);
-        if (!cancelled) {
-          const parsedChoreographies = stored ? JSON.parse(stored) : [];
-          // Ensure all choreographies have movements array
-          const migratedChoreographies = parsedChoreographies.map((choreography: Choreography) => ({
-            ...choreography,
-            movements: choreography.movements || [],
-          }));
-          
-          // Check if example choreography already exists in the list
-          const hasExample = migratedChoreographies.some(
-            (choreography: Choreography) => choreography.id === EXAMPLE_CHOREOGRAPHY_ID
-          );
-          
-          // Only create example if:
-          // 1. No choreographies exist AND
-          // 2. Example hasn't been shown before (first visit) AND
-          // 3. Example doesn't already exist in the list
-          // This ensures that if user deletes the example, it stays deleted
-          if (migratedChoreographies.length === 0 && !exampleShown && !hasExample) {
-            const exampleChoreography = createExampleChoreography();
-            migratedChoreographies.push(exampleChoreography);
-            // Mark example as shown so it won't be recreated if deleted
-            await setItem(EXAMPLE_SHOWN_KEY, 'true');
+        if (user && user.uid) {
+          // User is authenticated: load from Firestore
+          try {
+            const loadedChoreographies = await getUserChoreographies(user.uid);
+            
+            // Ensure all choreographies have movements array
+            const migratedChoreographies = loadedChoreographies.map((choreography: Choreography) => ({
+              ...choreography,
+              movements: choreography.movements || [],
+            }));
+            
+            // Only create example if user has no choreographies
+            // This ensures that if user deletes the example, it stays deleted
+            if (migratedChoreographies.length === 0) {
+              const exampleChoreography = createExampleChoreography();
+              // Create example in Firestore
+              try {
+                const exampleId = await createChoreography(
+                  {
+                    name: exampleChoreography.name,
+                    danceStyle: exampleChoreography.danceStyle,
+                    danceSubStyle: exampleChoreography.danceSubStyle,
+                    complexity: exampleChoreography.complexity,
+                    movements: exampleChoreography.movements,
+                  },
+                  user.uid
+                );
+                // Create a new choreography object with the Firestore ID
+                const exampleWithFirestoreId: Choreography = {
+                  ...exampleChoreography,
+                  id: exampleId,
+                };
+                migratedChoreographies.push(exampleWithFirestoreId);
+              } catch (error) {
+                console.error('Failed to create example choreography in Firestore:', error);
+                // Don't add it locally if Firestore creation fails
+              }
+            }
+            
+            if (!cancelled) {
+              setChoreographies(migratedChoreographies);
+              setIsLoading(false);
+            }
+          } catch (error: any) {
+            console.error('Failed to load choreographies from Firestore:', error);
+            if (!cancelled) {
+              // On error, set empty array
+              setChoreographies([]);
+              setIsLoading(false);
+            }
           }
-          
-          setChoreographies(migratedChoreographies);
-          setIsLoaded(true);
+        } else {
+          // User is not authenticated: no choreographies
+          if (!cancelled) {
+            setChoreographies([]);
+            setIsLoading(false);
+          }
         }
       } catch (error) {
         console.error('Failed to load choreographies:', error);
         if (!cancelled) {
-          // On error, check if example should be shown
-          try {
-            const exampleShown = await getItem(EXAMPLE_SHOWN_KEY);
-            if (!exampleShown) {
-              const exampleChoreography = createExampleChoreography();
-              setChoreographies([exampleChoreography]);
-              await setItem(EXAMPLE_SHOWN_KEY, 'true');
-            } else {
-              setChoreographies([]);
-            }
-          } catch {
-            setChoreographies([]);
-          }
-          setIsLoaded(true);
+          setChoreographies([]);
+          setIsLoading(false);
         }
       }
     }
@@ -85,25 +106,56 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user]);
 
-  // Persist to IndexedDB whenever choreographies change
-  useEffect(() => {
-    if (isLoaded && typeof window !== 'undefined') {
-      setItem(STORAGE_KEY, JSON.stringify(choreographies)).catch((error) => {
-        console.error('Failed to save choreographies:', error);
-      });
-    }
-  }, [choreographies, isLoaded]);
-
-  const addChoreography = (choreography: Choreography) => {
+  const addChoreography = async (choreography: Choreography): Promise<string> => {
+    // Optimistic update: update local state immediately
     setChoreographies((prev) => [...prev, choreography]);
+
+    // Sync to Firestore if authenticated
+    if (user && user.uid) {
+      try {
+        // Always create in Firestore and get the Firestore ID
+        const firestoreId = await createChoreography(
+          {
+            name: choreography.name,
+            danceStyle: choreography.danceStyle,
+            danceSubStyle: choreography.danceSubStyle,
+            complexity: choreography.complexity,
+            phrasesCount: choreography.phrasesCount,
+            movements: choreography.movements || [],
+            lastOpenedAt: choreography.lastOpenedAt,
+          },
+          user.uid
+        );
+        // Update the choreography with the Firestore ID
+        setChoreographies((prev) =>
+          prev.map((c) => (c.id === choreography.id ? { ...c, id: firestoreId } : c))
+        );
+        return firestoreId;
+      } catch (error: any) {
+        console.error('Failed to add choreography to Firestore:', error);
+        // Only revert if it's a permissions error (user might have been logged out)
+        if (error?.code === 'permission-denied') {
+          // Revert on error
+          setChoreographies((prev) => prev.filter((c) => c.id !== choreography.id));
+        }
+        throw error;
+      }
+    }
+    // Return the temporary ID if not authenticated
+    return choreography.id;
   };
 
-  const updateChoreography = (id: string, updates: Partial<Choreography>) => {
-    setChoreographies((prev) =>
-      prev.map((choreography) => {
+  const updateChoreography = async (id: string, updates: Partial<Choreography>) => {
+    // Store the previous state for potential revert
+    let previousChoreography: Choreography | undefined;
+    
+    // Optimistic update: update local state immediately
+    setChoreographies((prev) => {
+      return prev.map((choreography) => {
         if (choreography.id === id) {
+          previousChoreography = choreography;
           // Filter out undefined values to avoid overwriting existing values
           const filteredUpdates = Object.fromEntries(
             Object.entries(updates).filter(([_, value]) => value !== undefined)
@@ -111,12 +163,42 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
           return { ...choreography, ...filteredUpdates };
         }
         return choreography;
-      })
-    );
+      });
+    });
+
+    // Sync to Firestore if authenticated (background operation)
+    if (user && user.uid) {
+      updateChoreographyInFirestore(id, updates, user.uid).catch((error: any) => {
+        console.error('Failed to update choreography in Firestore:', error);
+        // Only revert if it's a permissions error (user might have been logged out)
+        if (error?.code === 'permission-denied' && previousChoreography) {
+          // Revert on error
+          setChoreographies((prev) =>
+            prev.map((c) => (c.id === id ? previousChoreography! : c))
+          );
+        }
+      });
+    }
   };
 
-  const deleteChoreography = (id: string) => {
+  const deleteChoreography = async (id: string) => {
+    // Store the previous state for potential revert
+    const previousChoreography = choreographies.find((c) => c.id === id);
+    
+    // Optimistic update: update local state immediately
     setChoreographies((prev) => prev.filter((choreography) => choreography.id !== id));
+
+    // Sync to Firestore if authenticated (background operation)
+    if (user && user.uid) {
+      deleteChoreographyFromFirestore(id).catch((error: any) => {
+        console.error('Failed to delete choreography from Firestore:', error);
+        // Only revert if it's a permissions error (user might have been logged out)
+        if (error?.code === 'permission-denied' && previousChoreography) {
+          // Revert on error
+          setChoreographies((prev) => [...prev, previousChoreography]);
+        }
+      });
+    }
   };
 
   const getChoreography = (id: string) => {
@@ -131,6 +213,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
         updateChoreography,
         deleteChoreography,
         getChoreography,
+        isLoading,
       }}
     >
       {children}

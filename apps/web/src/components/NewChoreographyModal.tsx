@@ -55,7 +55,7 @@ export function NewChoreographyModal({ open, onClose, choreography }: NewChoreog
     }
   }, [open, choreography]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validation
@@ -92,7 +92,7 @@ export function NewChoreographyModal({ open, onClose, choreography }: NewChoreog
     } else {
       // Create new choreography
       const newChoreography = {
-        id: crypto.randomUUID(),
+        id: crypto.randomUUID(), // Temporary ID, will be replaced by Firestore ID
         name: formData.name.trim(),
         danceStyle: formData.danceStyle!,
         danceSubStyle: formData.danceSubStyle,
@@ -102,11 +102,15 @@ export function NewChoreographyModal({ open, onClose, choreography }: NewChoreog
         createdAt: new Date().toISOString(),
       };
 
-      addChoreography(newChoreography);
-
-      // Close and navigate
-      handleClose();
-      navigate(`/choreography/${newChoreography.id}`);
+      try {
+        const firestoreId = await addChoreography(newChoreography);
+        // Close and navigate with the Firestore ID
+        handleClose();
+        navigate(`/choreography/${firestoreId}`);
+      } catch (error) {
+        console.error('Failed to create choreography:', error);
+        // Don't close modal on error so user can retry
+      }
     }
   };
 

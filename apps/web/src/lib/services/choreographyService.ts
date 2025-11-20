@@ -72,18 +72,28 @@ function choreographyToFirestore(
   choreography: Choreography,
   userId: string
 ): Omit<FirestoreChoreography, 'createdAt' | 'updatedAt'> {
-  return {
+  const data: Omit<FirestoreChoreography, 'createdAt' | 'updatedAt'> = {
     userId,
     name: choreography.name,
     danceStyle: choreography.danceStyle,
-    danceSubStyle: choreography.danceSubStyle,
-    complexity: choreography.complexity,
-    phrasesCount: choreography.phrasesCount,
     movements: choreography.movements,
-    lastOpenedAt: choreography.lastOpenedAt
-      ? Timestamp.fromDate(new Date(choreography.lastOpenedAt))
-      : undefined,
   };
+
+  // Only include optional fields if they are defined
+  if (choreography.danceSubStyle !== undefined) {
+    data.danceSubStyle = choreography.danceSubStyle;
+  }
+  if (choreography.complexity !== undefined) {
+    data.complexity = choreography.complexity;
+  }
+  if (choreography.phrasesCount !== undefined) {
+    data.phrasesCount = choreography.phrasesCount;
+  }
+  if (choreography.lastOpenedAt) {
+    data.lastOpenedAt = Timestamp.fromDate(new Date(choreography.lastOpenedAt));
+  }
+
+  return data;
 }
 
 /**
@@ -142,8 +152,12 @@ export async function createChoreography(
       { ...choreography, id: '', createdAt: '' },
       userId
     );
+    // Filter out undefined values before sending to Firestore
+    const cleanData = Object.fromEntries(
+      Object.entries(firestoreData).filter(([_, value]) => value !== undefined)
+    );
     const docRef = await addDoc(collection(db, 'choreographies'), {
-      ...firestoreData,
+      ...cleanData,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -168,6 +182,7 @@ export async function updateChoreography(
       updatedAt: serverTimestamp(),
     };
 
+    // Only include fields that are defined (not undefined)
     if (updates.name !== undefined) updateData.name = updates.name;
     if (updates.danceStyle !== undefined)
       updateData.danceStyle = updates.danceStyle;
@@ -184,7 +199,12 @@ export async function updateChoreography(
         new Date(updates.lastOpenedAt)
       );
 
-    await updateDoc(docRef, updateData);
+    // Filter out undefined values before updating
+    const cleanUpdateData = Object.fromEntries(
+      Object.entries(updateData).filter(([_, value]) => value !== undefined)
+    ) as UpdateData<FirestoreChoreography>;
+
+    await updateDoc(docRef, cleanUpdateData);
   } catch (error) {
     console.error('Error updating choreography:', error);
     throw error;
