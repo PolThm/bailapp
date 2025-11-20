@@ -121,6 +121,7 @@
     },
     "detail": {
       "notFound": "Choreography not found",
+      "notFoundDescription": "This choreography doesn't exist or you don't have access to it. Sign in to view shared choreographies.",
       "backToChoreographies": "Back to choreographies list",
       "edit": "Edit",
       "share": "Share",

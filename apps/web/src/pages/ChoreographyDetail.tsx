@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Plus, Pencil, Music2, Share2, Copy, Menu, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Music2, Share2, Copy, Menu, Trash2, FileQuestion } from 'lucide-react';
 import { useMovementColor } from '@/hooks/useMovementColor';
 import {
   DndContext,
@@ -215,21 +215,15 @@ export function ChoreographyDetail() {
   if (!choreography) {
     return (
       <>
-        <div className="flex flex-col items-center justify-center flex-1 pt-8">
-          <p className="text-lg text-muted-foreground">
-            {t('choreographies.detail.notFound')}
-          </p>
-          <div className="flex flex-col gap-3 items-center mt-4">
-            <Button onClick={() => navigate('/choreographies')}>
-              {t('choreographies.detail.backToChoreographies')}
-            </Button>
-            {!user && (
-              <Button onClick={() => setShowAuthModal(true)} variant="link" className="text-sm text-muted-foreground underline">
-                {t('profile.signIn')}
-              </Button>
-            )}
-          </div>
-        </div>
+        <EmptyState
+          icon={FileQuestion}
+          title={t('choreographies.detail.notFound')}
+          description={t('choreographies.detail.notFoundDescription')}
+          actionLabel={t('choreographies.detail.backToChoreographies')}
+          onAction={() => navigate('/choreographies')}
+          isAuthenticated={!!user}
+          onLogin={() => setShowAuthModal(true)}
+        />
         <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
       </>
     );

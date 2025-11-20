@@ -121,6 +121,7 @@
     },
     "detail": {
       "notFound": "Chorégraphie non trouvée",
+      "notFoundDescription": "Cette chorégraphie n'existe pas ou tu n'y as pas accès. Connecte-toi pour voir les chorégraphies partagées.",
       "backToChoreographies": "Retour à la liste des chorégraphies",
       "edit": "Modifier",
       "share": "Partager",
