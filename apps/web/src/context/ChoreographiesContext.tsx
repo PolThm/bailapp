@@ -15,6 +15,8 @@ interface ChoreographiesContextType {
   updateChoreography: (id: string, updates: Partial<Choreography>) => void;
   deleteChoreography: (id: string) => void;
   getChoreography: (id: string) => Choreography | undefined;
+  togglePublic: (id: string) => void;
+  copyChoreography: (choreography: Choreography) => Promise<string>;
   isLoading: boolean;
 }
 
@@ -205,6 +207,48 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
     return choreographies.find((choreography) => choreography.id === id);
   };
 
+  const togglePublic = async (id: string) => {
+    const choreography = getChoreography(id);
+    if (!choreography) return;
+
+    const newIsPublic = !choreography.isPublic;
+    
+    // Optimistic update
+    setChoreographies((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, isPublic: newIsPublic } : c))
+    );
+
+    // Sync to Firestore
+    if (user && user.uid) {
+      updateChoreographyInFirestore(id, { isPublic: newIsPublic }, user.uid).catch((error: any) => {
+        console.error('Failed to toggle public status in Firestore:', error);
+        // Revert on error
+        setChoreographies((prev) =>
+          prev.map((c) => (c.id === id ? { ...c, isPublic: !newIsPublic } : c))
+        );
+      });
+    }
+  };
+
+  const copyChoreography = async (choreography: Choreography): Promise<string> => {
+    if (!user || !user.uid) {
+      throw new Error('User must be authenticated to copy a choreography');
+    }
+
+    // Create a copy of the choreography with a new ID and current user as owner
+    const copiedChoreography: Choreography = {
+      ...choreography,
+      id: crypto.randomUUID(), // New ID for the copy
+      ownerId: user.uid, // Set current user as owner
+      isPublic: false, // Copy is private by default
+      createdAt: new Date().toISOString(), // New creation date
+      lastOpenedAt: undefined, // Reset last opened
+    };
+
+    // Add to user's choreographies
+    return await addChoreography(copiedChoreography);
+  };
+
   return (
     <ChoreographiesContext.Provider
       value={{
@@ -213,6 +257,8 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
         updateChoreography,
         deleteChoreography,
         getChoreography,
+        togglePublic,
+        copyChoreography,
         isLoading,
       }}
     >

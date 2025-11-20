@@ -26,13 +26,16 @@ export interface FirestoreChoreographyItem {
   movements: ChoreographyMovement[];
   createdAt: Timestamp;
   lastOpenedAt?: Timestamp;
+  isPublic?: boolean;
+  ownerId?: string; // ID of the user who owns this choreography
 }
 
 /**
  * Convert Firestore choreography item to Choreography type
  */
 function firestoreItemToChoreography(
-  item: FirestoreChoreographyItem
+  item: FirestoreChoreographyItem,
+  ownerId?: string
 ): Choreography {
   return {
     id: item.id,
@@ -44,6 +47,8 @@ function firestoreItemToChoreography(
     movements: item.movements || [],
     createdAt: item.createdAt.toDate().toISOString(),
     lastOpenedAt: item.lastOpenedAt?.toDate().toISOString(),
+    isPublic: item.isPublic || false,
+    ownerId: item.ownerId || ownerId,
   };
 }
 
@@ -51,7 +56,8 @@ function firestoreItemToChoreography(
  * Convert Choreography type to Firestore item
  */
 function choreographyToFirestoreItem(
-  choreography: Choreography
+  choreography: Choreography,
+  userId?: string
 ): FirestoreChoreographyItem {
   const item: FirestoreChoreographyItem = {
     id: choreography.id,
@@ -74,6 +80,12 @@ function choreographyToFirestoreItem(
   if (choreography.lastOpenedAt) {
     item.lastOpenedAt = Timestamp.fromDate(new Date(choreography.lastOpenedAt));
   }
+  if (choreography.isPublic !== undefined) {
+    item.isPublic = choreography.isPublic;
+  }
+  if (choreography.ownerId || userId) {
+    item.ownerId = choreography.ownerId || userId;
+  }
 
   return item;
 }
@@ -91,7 +103,7 @@ export async function getUserChoreographies(
       const items = data.choreographies || [];
       // Sort by createdAt descending
       return items
-        .map(firestoreItemToChoreography)
+        .map((item) => firestoreItemToChoreography(item, userId))
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
     return [];
@@ -133,8 +145,10 @@ export async function createChoreography(
       ...choreography,
       id: newId,
       createdAt: new Date().toISOString(),
+      ownerId: userId,
+      isPublic: choreography.isPublic || false,
     };
-    const newItem = choreographyToFirestoreItem(newChoreography);
+    const newItem = choreographyToFirestoreItem(newChoreography, userId);
     
     if (existingDoc.exists()) {
       const data = existingDoc.data() as FirestoreChoreographies;
@@ -193,6 +207,7 @@ export async function updateChoreography(
     if (updates.lastOpenedAt !== undefined) {
       updatedItem.lastOpenedAt = Timestamp.fromDate(new Date(updates.lastOpenedAt));
     }
+    if (updates.isPublic !== undefined) updatedItem.isPublic = updates.isPublic;
     
     // Replace the item in the array
     const updatedChoreographies = [...choreographies];
@@ -275,6 +290,30 @@ export async function updateChoreographyLastOpened(
   } catch (error) {
     console.error('Error updating choreography last opened:', error);
     // Don't throw - this is a background operation
+  }
+}
+
+/**
+ * Get a public choreography by ID and owner ID
+ */
+export async function getPublicChoreography(
+  choreographyId: string,
+  ownerId: string
+): Promise<Choreography | null> {
+  try {
+    const choreographiesDoc = await getDoc(doc(db, 'choreographies', ownerId));
+    if (choreographiesDoc.exists()) {
+      const data = choreographiesDoc.data() as FirestoreChoreographies;
+      const items = data.choreographies || [];
+      const item = items.find((c) => c.id === choreographyId && c.isPublic === true);
+      if (item) {
+        return firestoreItemToChoreography(item, ownerId);
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting public choreography:', error);
+    throw error;
   }
 }
 

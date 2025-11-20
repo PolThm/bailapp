@@ -123,6 +123,14 @@
       "notFound": "Chorégraphie non trouvée",
       "delete": "Supprimer la chorégraphie"
     },
+    "share": {
+      "makePublic": "Rendre publique",
+      "makePrivate": "Rendre privée",
+      "public": "Publique",
+      "private": "Privée",
+      "copyLink": "Copier le lien de partage",
+      "duplicateToMyChoreographies": "Dupliquer dans mes chorégraphies"
+    },
     "delete": {
       "title": "Supprimer la Chorégraphie",
       "message": "Êtes-vous sûr de vouloir supprimer cette chorégraphie ?",

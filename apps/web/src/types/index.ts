@@ -56,5 +56,7 @@ export interface Choreography {
   movements: ChoreographyMovement[];
   createdAt: string;
   lastOpenedAt?: string;
+  isPublic?: boolean;
+  ownerId?: string; // ID of the user who owns this choreography
 }
 

@@ -123,6 +123,14 @@
       "notFound": "Choreography not found",
       "delete": "Delete choreography"
     },
+    "share": {
+      "makePublic": "Make public",
+      "makePrivate": "Make private",
+      "public": "Public",
+      "private": "Private",
+      "copyLink": "Copy share link",
+      "duplicateToMyChoreographies": "Duplicate to my choreographies"
+    },
     "delete": {
       "title": "Delete Choreography",
       "message": "Are you sure you want to delete this choreography?",

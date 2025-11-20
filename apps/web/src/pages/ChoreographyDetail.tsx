@@ -1,7 +1,7 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Plus, Pencil, Music2 } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Music2, Share2, Lock, Globe, Copy } from 'lucide-react';
 import { useMovementColor } from '@/hooks/useMovementColor';
 import {
   DndContext,
@@ -29,9 +29,11 @@ import {
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyMovementItem } from '@/components/ChoreographyMovementItem';
+import { useAuth } from '@/context/AuthContext';
+import { getPublicChoreography } from '@/lib/services/choreographyService';
 import { EmptyState } from '@/components/EmptyState';
 import { useChoreographies } from '@/context/ChoreographiesContext';
-import type { ChoreographyMovement } from '@/types';
+import type { ChoreographyMovement, Choreography } from '@/types';
 import { GripVertical } from 'lucide-react';
 
 // Sortable wrapper component
@@ -133,25 +135,55 @@ function SortableMovementItem({
 
 export function ChoreographyDetail() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const ownerId = searchParams.get('ownerId');
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { getChoreography, deleteChoreography, updateChoreography } = useChoreographies();
+  const { user } = useAuth();
+  const { getChoreography, deleteChoreography, updateChoreography, togglePublic, copyChoreography } = useChoreographies();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [colorUpdateKey, setColorUpdateKey] = useState(0);
+  const [publicChoreography, setPublicChoreography] = useState<Choreography | null>(null);
+  const [isLoadingPublic, setIsLoadingPublic] = useState(false);
 
-  const choreography = id ? getChoreography(id) : undefined;
+  // Determine if we're viewing someone else's public choreography
+  const isViewingPublicChoreography = ownerId && ownerId !== user?.uid;
+  
+  // Get choreography from context (user's own choreographies) or from public
+  const contextChoreography = id ? getChoreography(id) : undefined;
+  const choreography = isViewingPublicChoreography ? publicChoreography : contextChoreography;
   const lastUpdatedIdRef = useRef<string | null>(null);
 
-  // Update lastOpenedAt when choreography is opened (only once per id)
+  // Load public choreography if viewing someone else's
   useEffect(() => {
-    if (choreography && id && lastUpdatedIdRef.current !== id) {
+    if (isViewingPublicChoreography && id && ownerId) {
+      setIsLoadingPublic(true);
+      getPublicChoreography(id, ownerId)
+        .then((choreo) => {
+          setPublicChoreography(choreo);
+        })
+        .catch((error) => {
+          console.error('Error loading public choreography:', error);
+          setPublicChoreography(null);
+        })
+        .finally(() => {
+          setIsLoadingPublic(false);
+        });
+    } else {
+      setPublicChoreography(null);
+    }
+  }, [id, ownerId, isViewingPublicChoreography]);
+
+  // Update lastOpenedAt when choreography is opened (only once per id, and only for own choreographies)
+  useEffect(() => {
+    if (choreography && id && !isViewingPublicChoreography && lastUpdatedIdRef.current !== id) {
       const now = new Date().toISOString();
       updateChoreography(id, { lastOpenedAt: now });
       lastUpdatedIdRef.current = id;
     }
-  }, [id, choreography, updateChoreography]);
+  }, [id, choreography, isViewingPublicChoreography, updateChoreography]);
 
   // Configure sensors for drag & drop
   const sensors = useSensors(
@@ -166,6 +198,14 @@ export function ChoreographyDetail() {
   );
 
 
+  if (isLoadingPublic) {
+    return (
+      <div className="flex flex-col items-center justify-center flex-1">
+        <p className="text-lg text-muted-foreground">{t('common.loading', 'Loading...')}</p>
+      </div>
+    );
+  }
+
   if (!choreography) {
     return (
       <div className="flex flex-col items-center justify-center flex-1">
@@ -179,12 +219,18 @@ export function ChoreographyDetail() {
     );
   }
 
+  // Check if user owns this choreography
+  const isOwner = !isViewingPublicChoreography && user?.uid === choreography.ownerId;
+
   const handleDelete = () => {
-    deleteChoreography(choreography.id);
-    navigate('/choreographies');
+    if (isOwner) {
+      deleteChoreography(choreography.id);
+      navigate('/choreographies');
+    }
   };
 
   const handleAddMovement = () => {
+    if (!isOwner) return;
     const newMovement: ChoreographyMovement = {
       id: crypto.randomUUID(),
       name: '',
@@ -196,7 +242,8 @@ export function ChoreographyDetail() {
   };
 
   const handleUpdateMovementName = (movementId: string, name: string) => {
-    const updatedMovements = choreography.movements.map((m) =>
+    if (!isOwner) return;
+    const updatedMovements = choreography.movements.map((m: ChoreographyMovement) =>
       m.id === movementId ? { ...m, name } : m
     );
     updateChoreography(choreography.id, { movements: updatedMovements });
@@ -204,14 +251,16 @@ export function ChoreographyDetail() {
   };
 
   const handleDeleteMovement = (movementId: string) => {
+    if (!isOwner) return;
     const updatedMovements = choreography.movements
-      .filter((m) => m.id !== movementId)
-      .map((m, index) => ({ ...m, order: index }));
+      .filter((m: ChoreographyMovement) => m.id !== movementId)
+      .map((m: ChoreographyMovement, index: number) => ({ ...m, order: index }));
     updateChoreography(choreography.id, { movements: updatedMovements });
   };
 
   const handleDuplicateMovement = (movementId: string) => {
-    const movement = choreography.movements.find((m) => m.id === movementId);
+    if (!isOwner) return;
+    const movement = choreography.movements.find((m: ChoreographyMovement) => m.id === movementId);
     if (movement) {
       const newMovement: ChoreographyMovement = {
         id: crypto.randomUUID(),
@@ -221,7 +270,7 @@ export function ChoreographyDetail() {
       const updatedMovements = [
         ...choreography.movements.slice(0, movement.order + 1),
         newMovement,
-        ...choreography.movements.slice(movement.order + 1).map((m) => ({
+        ...choreography.movements.slice(movement.order + 1).map((m: ChoreographyMovement) => ({
           ...m,
           order: m.order + 1,
         })),
@@ -236,6 +285,7 @@ export function ChoreographyDetail() {
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (!isOwner) return;
     const { active, over } = event;
 
     if (!over || active.id === over.id) {
@@ -274,13 +324,29 @@ export function ChoreographyDetail() {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-2xl font-bold leading-tight line-clamp-2 flex-1">{choreography.name}</h1>
-          <button
-            onClick={() => setShowEditModal(true)}
-            className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
-            aria-label={t('choreographies.edit.title')}
-          >
-            <Pencil className="h-4 w-4" />
-          </button>
+          {isOwner && (
+            <>
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
+                aria-label={t('choreographies.edit.title')}
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => togglePublic(choreography.id)}
+                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
+                aria-label={choreography.isPublic ? t('choreographies.share.makePrivate') : t('choreographies.share.makePublic')}
+                title={choreography.isPublic ? t('choreographies.share.makePrivate') : t('choreographies.share.makePublic')}
+              >
+                {choreography.isPublic ? (
+                  <Globe className="h-4 w-4 text-primary" />
+                ) : (
+                  <Lock className="h-4 w-4" />
+                )}
+              </button>
+            </>
+          )}
         </div>
         {/* Badges */}
         <div className="flex flex-wrap gap-2">
@@ -312,8 +378,9 @@ export function ChoreographyDetail() {
                   movement={movement}
                   choreography={choreography}
                   isEditing={editingId === movement.id}
-                  onStartEdit={() => setEditingId(movement.id)}
+                  onStartEdit={() => isOwner && setEditingId(movement.id)}
                   onEndEdit={(name) => {
+                    if (!isOwner) return;
                     if (!name.trim()) {
                       // If empty name and it's a new movement (no name originally), delete it
                       if (!movement.name) {
@@ -326,10 +393,10 @@ export function ChoreographyDetail() {
                       handleUpdateMovementName(movement.id, name);
                     }
                   }}
-                  onDelete={() => handleDeleteMovement(movement.id)}
-                  onDuplicate={() => handleDuplicateMovement(movement.id)}
+                  onDelete={() => isOwner && handleDeleteMovement(movement.id)}
+                  onDuplicate={() => isOwner && handleDuplicateMovement(movement.id)}
                   colorUpdateKey={colorUpdateKey}
-                  onColorChange={handleColorChange}
+                  onColorChange={isOwner ? handleColorChange : () => {}}
                 />
               ))}
             </div>
@@ -346,7 +413,7 @@ export function ChoreographyDetail() {
       )}
 
       <div className="flex flex-col gap-2 mt-auto">
-        {sortedMovements.length > 0 && (
+        {isOwner && sortedMovements.length > 0 && (
           <Button
               variant="default"
               onClick={handleAddMovement}
@@ -356,13 +423,48 @@ export function ChoreographyDetail() {
               {t('choreographies.movements.add')}
             </Button>
           )}
-          <Button
-            variant="link"
-            className="w-full underline -mb-4 mt-auto"
-            onClick={() => setShowDeleteModal(true)}
-          >
-            {t('choreographies.detail.delete')}
-          </Button>
+          {isOwner && (
+            <Button
+              variant="link"
+              className="w-full underline -mb-4 mt-auto"
+              onClick={() => setShowDeleteModal(true)}
+            >
+              {t('choreographies.detail.delete')}
+            </Button>
+          )}
+          {isOwner && choreography.isPublic && (
+            <Button
+              variant="outline"
+              className="w-full mt-2"
+              onClick={() => {
+                const shareUrl = `${window.location.origin}/choreography/${choreography.id}?ownerId=${choreography.ownerId}`;
+                navigator.clipboard.writeText(shareUrl);
+                // You could add a toast notification here
+              }}
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              {t('choreographies.share.copyLink')}
+            </Button>
+          )}
+          {isViewingPublicChoreography && choreography && (
+            <Button
+              variant="outline"
+              className="w-full mt-2"
+              onClick={async () => {
+                try {
+                  const newId = await copyChoreography(choreography);
+                  // Navigate to the copied choreography
+                  navigate(`/choreography/${newId}`);
+                } catch (error) {
+                  console.error('Failed to copy choreography:', error);
+                  // You could add an error toast here
+                }
+              }}
+            >
+              <Copy className="h-4 w-4 mr-2" />
+              {t('choreographies.share.duplicateToMyChoreographies')}
+            </Button>
+          )}
       </div>
 
       {/* Edit Modal */}

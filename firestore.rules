@@ -23,8 +23,9 @@ service cloud.firestore {
     
     // Choreographies collection (one document per user)
     match /choreographies/{userId} {
-      // Only the user can read their own choreographies
-      allow read: if isOwner(userId);
+      // Users can read their own choreographies
+      // Anyone can read if the document contains public choreographies (checked in app logic)
+      allow read: if isOwner(userId) || isAuthenticated();
       // Only the user can create/update their own choreographies document
       allow create, update: if isOwner(userId);
       // Users can delete their own choreographies document
