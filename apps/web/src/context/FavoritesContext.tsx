@@ -42,8 +42,22 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         if (user && user.uid) {
           // User is authenticated: load from Firestore
           try {
-            const { figureIds, lastOpenedAt: lastOpenedAtMap, masteryLevels: masteryLevelsMap } = await getUserFavoritesFromFirestore(user.uid);
+            const { favorites: favoritesArray } = await getUserFavoritesFromFirestore(user.uid);
             if (!cancelled) {
+              // Transform array to separate structures for backward compatibility
+              const figureIds = favoritesArray.map((fav) => fav.figureId);
+              const lastOpenedAtMap: Record<string, string> = {};
+              const masteryLevelsMap: Record<string, number> = {};
+              
+              favoritesArray.forEach((fav) => {
+                if (fav.lastOpenedAt) {
+                  lastOpenedAtMap[fav.figureId] = fav.lastOpenedAt;
+                }
+                if (fav.masteryLevel !== null) {
+                  masteryLevelsMap[fav.figureId] = fav.masteryLevel;
+                }
+              });
+              
               setFavorites(figureIds);
               setLastOpenedAt(lastOpenedAtMap);
               setMasteryLevels(masteryLevelsMap);

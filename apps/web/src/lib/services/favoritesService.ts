@@ -15,10 +15,14 @@ export interface FirestoreFavorites {
   updatedAt: Timestamp;
 }
 
+export interface FavoriteItem {
+  figureId: string;
+  lastOpenedAt: string | null; // ISO string or null
+  masteryLevel: number | null; // level or null
+}
+
 export interface UserFavorites {
-  figureIds: string[];
-  lastOpenedAt: Record<string, string>; // { figureId: ISO string }
-  masteryLevels: Record<string, number>; // { figureId: level }
+  favorites: FavoriteItem[];
 }
 
 /**
@@ -31,22 +35,33 @@ export async function getUserFavoritesFromFirestore(
     const favoritesDoc = await getDoc(doc(db, 'favorites', userId));
     if (favoritesDoc.exists()) {
       const data = favoritesDoc.data() as FirestoreFavorites;
+      
       const figureIds = data.figureIds || [];
       const lastOpenedAt = data.lastOpenedAt || {};
-      
-      // Convert Timestamps to ISO strings
-      const lastOpenedAtMap: Record<string, string> = {};
-      for (const [figureId, timestamp] of Object.entries(lastOpenedAt)) {
-        if (timestamp instanceof Timestamp) {
-          lastOpenedAtMap[figureId] = timestamp.toDate().toISOString();
-        }
-      }
-      
       const masteryLevels = data.masteryLevels || {};
       
-      return { figureIds, lastOpenedAt: lastOpenedAtMap, masteryLevels };
+      // Transform to array of objects
+      const favorites: FavoriteItem[] = figureIds.map((figureId) => {
+        let lastOpenedAtValue: string | null = null;
+        if (lastOpenedAt[figureId]) {
+          const timestamp = lastOpenedAt[figureId];
+          if (timestamp instanceof Timestamp) {
+            lastOpenedAtValue = timestamp.toDate().toISOString();
+          }
+        }
+        
+        const masteryLevel = masteryLevels[figureId] ?? null;
+        
+        return {
+          figureId,
+          lastOpenedAt: lastOpenedAtValue,
+          masteryLevel,
+        };
+      });
+      
+      return { favorites };
     }
-    return { figureIds: [], lastOpenedAt: {}, masteryLevels: {} };
+    return { favorites: [] };
   } catch (error) {
     console.error('Error getting user favorites from Firestore:', error);
     throw error;
