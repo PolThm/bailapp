@@ -21,16 +21,14 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
     
-    // Choreographies collection
-    match /choreographies/{choreographyId} {
-      // Anyone can read choreographies
-      allow read: if true;
-      // Only authenticated users can create choreographies
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      // Only the owner can update their choreography
-      allow update: if isOwner(resource.data.userId);
-      // Only the owner can delete their choreography
-      allow delete: if isOwner(resource.data.userId);
+    // Choreographies collection (one document per user)
+    match /choreographies/{userId} {
+      // Only the user can read their own choreographies
+      allow read: if isOwner(userId);
+      // Only the user can create/update their own choreographies document
+      allow create, update: if isOwner(userId);
+      // Users can delete their own choreographies document
+      allow delete: if isOwner(userId);
     }
     
     // Dance moves library (public read, admin write)

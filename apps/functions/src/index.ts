@@ -13,41 +13,41 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 // Example authenticated function
 export const getUserProfile = functions.https.onCall(
   async (data: unknown, context: CallableContext) => {
-    // Check if user is authenticated
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
-        'unauthenticated',
-        'User must be authenticated to get profile'
-      );
-    }
+  // Check if user is authenticated
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      'unauthenticated',
+      'User must be authenticated to get profile'
+    );
+  }
 
-    const uid = context.auth.uid;
+  const uid = context.auth.uid;
 
-    try {
-      // Get user data from Firestore
-      const userDoc = await admin.firestore().collection('users').doc(uid).get();
+  try {
+    // Get user data from Firestore
+    const userDoc = await admin.firestore().collection('users').doc(uid).get();
 
-      if (!userDoc.exists) {
-        return {
-          uid,
-          displayName: context.auth.token.name || 'Anonymous',
-          email: context.auth.token.email || null,
-          profileCreated: false,
-        };
-      }
-
+    if (!userDoc.exists) {
       return {
         uid,
-        ...userDoc.data(),
-        profileCreated: true,
+        displayName: context.auth.token.name || 'Anonymous',
+        email: context.auth.token.email || null,
+        profileCreated: false,
       };
-    } catch (error) {
-      console.error('Error getting user profile:', error);
-      throw new functions.https.HttpsError(
-        'internal',
-        'Failed to get user profile'
-      );
     }
+
+    return {
+      uid,
+      ...userDoc.data(),
+      profileCreated: true,
+    };
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    throw new functions.https.HttpsError(
+      'internal',
+      'Failed to get user profile'
+    );
+  }
   }
 );
 

@@ -105,7 +105,7 @@ export function NewChoreographyModal({ open, onClose, choreography }: NewChoreog
       try {
         const firestoreId = await addChoreography(newChoreography);
         // Close and navigate with the Firestore ID
-        handleClose();
+      handleClose();
         navigate(`/choreography/${firestoreId}`);
       } catch (error) {
         console.error('Failed to create choreography:', error);

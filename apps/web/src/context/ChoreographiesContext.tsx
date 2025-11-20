@@ -39,16 +39,16 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
           try {
             const loadedChoreographies = await getUserChoreographies(user.uid);
             
-            // Ensure all choreographies have movements array
+          // Ensure all choreographies have movements array
             const migratedChoreographies = loadedChoreographies.map((choreography: Choreography) => ({
-              ...choreography,
-              movements: choreography.movements || [],
-            }));
-            
+            ...choreography,
+            movements: choreography.movements || [],
+          }));
+          
             // Only create example if user has no choreographies
-            // This ensures that if user deletes the example, it stays deleted
+          // This ensures that if user deletes the example, it stays deleted
             if (migratedChoreographies.length === 0) {
-              const exampleChoreography = createExampleChoreography();
+            const exampleChoreography = createExampleChoreography();
               // Create example in Firestore
               try {
                 const exampleId = await createChoreography(
@@ -74,7 +74,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
             }
             
             if (!cancelled) {
-              setChoreographies(migratedChoreographies);
+          setChoreographies(migratedChoreographies);
               setIsLoading(false);
             }
           } catch (error: any) {
@@ -95,7 +95,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Failed to load choreographies:', error);
         if (!cancelled) {
-          setChoreographies([]);
+              setChoreographies([]);
           setIsLoading(false);
         }
       }
@@ -190,7 +190,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      deleteChoreographyFromFirestore(id).catch((error: any) => {
+      deleteChoreographyFromFirestore(id, user.uid).catch((error: any) => {
         console.error('Failed to delete choreography from Firestore:', error);
         // Only revert if it's a permissions error (user might have been logged out)
         if (error?.code === 'permission-denied' && previousChoreography) {

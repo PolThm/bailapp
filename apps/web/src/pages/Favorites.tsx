@@ -54,7 +54,7 @@ export function Favorites() {
   const handleAddFigure = () => {
     setShowComingSoonModal(true);
   };
-  
+
   return (
     <>
       {/* Header */}
@@ -81,48 +81,48 @@ export function Favorites() {
         <Loader />
       ) : (
         <>
-          {/* Filters */}
-          {favoriteFiguresData.length > 0 && (
-            <div className="space-y-4 mb-5">
-              <SearchAndFilters
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                selectedStyle={selectedStyle}
-                onStyleChange={setSelectedStyle}
-                advancedFilters={advancedFilters}
-                onAdvancedFiltersClick={() => setShowAdvancedFilters(true)}
-                showImages={showImages}
-                onShowImagesChange={setShowImages}
-              />
-              
-              {/* Results Summary */}
-              {hasActiveFilters && (
-                <ResultsSummary
-                  count={filteredFigures.length}
-                  onClear={clearFilters}
-                />
-              )}
-            </div>
+      {/* Filters */}
+      {favoriteFiguresData.length > 0 && (
+        <div className="space-y-4 mb-5">
+          <SearchAndFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedStyle={selectedStyle}
+            onStyleChange={setSelectedStyle}
+            advancedFilters={advancedFilters}
+            onAdvancedFiltersClick={() => setShowAdvancedFilters(true)}
+            showImages={showImages}
+            onShowImagesChange={setShowImages}
+          />
+          
+          {/* Results Summary */}
+          {hasActiveFilters && (
+            <ResultsSummary
+              count={filteredFigures.length}
+              onClear={clearFilters}
+            />
           )}
+        </div>
+      )}
 
-          {/* Favorites Grid or Empty State */}
-          {filteredFigures.length === 0 ? (
-            <EmptyState
-              icon={favoriteFiguresData.length === 0 ? Heart : Plus}
-              title={favoriteFiguresData.length === 0 ? t('favorites.empty.title') : t('discover.empty.filtered.title')}
-              description={favoriteFiguresData.length === 0 ? t('favorites.empty.description') : t('discover.empty.filtered.description')}
-              actionLabel={favoriteFiguresData.length === 0 ? t('favorites.empty.action') : t('discover.empty.action')}
+      {/* Favorites Grid or Empty State */}
+      {filteredFigures.length === 0 ? (
+        <EmptyState
+          icon={favoriteFiguresData.length === 0 ? Heart : Plus}
+          title={favoriteFiguresData.length === 0 ? t('favorites.empty.title') : t('discover.empty.filtered.title')}
+          description={favoriteFiguresData.length === 0 ? t('favorites.empty.description') : t('discover.empty.filtered.description')}
+          actionLabel={favoriteFiguresData.length === 0 ? t('favorites.empty.action') : t('discover.empty.action')}
               onAction={() => navigate('/discover')}
               isAuthenticated={!!user}
               onLogin={() => setShowAuthModal(true)}
-            />
-          ) : (
-            <div className="grid grid-cols-1 gap-5">
-              {filteredFigures.map((figure) => (
-                <FigureCard key={figure.id} figure={figure} showImage={showImages} showMastery={true} />
-              ))}
-            </div>
-          )}
+        />
+      ) : (
+        <div className="grid grid-cols-1 gap-5">
+          {filteredFigures.map((figure) => (
+            <FigureCard key={figure.id} figure={figure} showImage={showImages} showMastery={true} />
+          ))}
+        </div>
+      )}
         </>
       )}
 

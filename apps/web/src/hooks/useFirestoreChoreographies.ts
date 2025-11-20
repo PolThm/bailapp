@@ -63,7 +63,10 @@ export function useFirestoreChoreographies() {
 
   // Mutation to delete a choreography
   const deleteMutation = useMutation({
-    mutationFn: deleteChoreography,
+    mutationFn: async (choreographyId: string) => {
+      if (!user) throw new Error('User not authenticated');
+      await deleteChoreography(choreographyId, user.uid);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['choreographies', user?.uid] });
     },
@@ -71,7 +74,10 @@ export function useFirestoreChoreographies() {
 
   // Mutation to update last opened timestamp
   const updateLastOpenedMutation = useMutation({
-    mutationFn: updateChoreographyLastOpened,
+    mutationFn: async (choreographyId: string) => {
+      if (!user) throw new Error('User not authenticated');
+      await updateChoreographyLastOpened(choreographyId, user.uid);
+    },
     // Don't invalidate queries for this - it's a background operation
   });
 
@@ -97,23 +103,28 @@ export function useFirestoreChoreographies() {
  * Hook to get a single choreography by ID
  */
 export function useFirestoreChoreography(choreographyId: string | null) {
+  const { user } = useAuth();
   const {
     data: choreography,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['choreography', choreographyId],
+    queryKey: ['choreography', choreographyId, user?.uid],
     queryFn: () => {
       if (!choreographyId) throw new Error('Choreography ID is required');
-      return getChoreography(choreographyId);
+      if (!user) throw new Error('User not authenticated');
+      return getChoreography(choreographyId, user.uid);
     },
-    enabled: !!choreographyId,
+    enabled: !!choreographyId && !!user,
     staleTime: 2 * 60 * 1000,
   });
 
   // Update last opened when viewing
   const updateLastOpenedMutation = useMutation({
-    mutationFn: updateChoreographyLastOpened,
+    mutationFn: async (id: string) => {
+      if (!user) throw new Error('User not authenticated');
+      await updateChoreographyLastOpened(id, user.uid);
+    },
   });
 
   const markAsOpened = () => {

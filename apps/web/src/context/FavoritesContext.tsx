@@ -75,7 +75,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           }
         } else {
           // User is not authenticated: no favorites
-          if (!cancelled) {
+        if (!cancelled) {
             setFavorites([]);
             setLastOpenedAt({});
             setMasteryLevels({});
