@@ -121,20 +121,25 @@
     },
     "detail": {
       "notFound": "Coreografía no encontrada",
-      "delete": "Eliminar coreografía"
+      "edit": "Editar",
+      "share": "Compartir",
+      "delete": "Eliminar"
     },
     "share": {
-      "makePublic": "Hacer pública",
-      "makePrivate": "Hacer privada",
+      "shareText": "Mira esta coreografía {name} ({style})",
+      "shared": "Coreografía compartida con éxito",
+      "linkCopied": "Enlace copiado al portapapeles",
       "public": "Pública",
       "private": "Privada",
-      "copyLink": "Copiar enlace de compartir",
       "duplicateToMyChoreographies": "Duplicar en mis coreografías"
     },
     "delete": {
-      "title": "Eliminar Coreografía",
+      "title": "Eliminar coreografía",
       "message": "¿Estás seguro de que quieres eliminar esta coreografía?",
       "confirm": "Eliminar"
+    },
+    "menu": {
+      "title": "Menú"
     },
     "movements": {
       "add": "Agregar un movimiento",
@@ -191,6 +196,7 @@
     "importedBy": "Importado por",
     "visibility": "Visibilidad",
     "shareText": "Descubre este increíble movimiento de {{style}} en Bailapp: {{title}}",
+    "linkCopied": "Enlace copiado al portapapeles",
     "mastery": {
       "title": "Dominio del movimiento",
       "enter": "Ingresar mi nivel de dominio",

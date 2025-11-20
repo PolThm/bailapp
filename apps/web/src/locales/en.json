@@ -117,24 +117,29 @@
       }
     },
     "edit": {
-      "title": "Edit Choreography"
+      "title": "Edit choreography"
     },
     "detail": {
       "notFound": "Choreography not found",
-      "delete": "Delete choreography"
+      "edit": "Edit",
+      "share": "Share",
+      "delete": "Delete"
     },
     "share": {
-      "makePublic": "Make public",
-      "makePrivate": "Make private",
+      "shareText": "Check out this {name} choreography ({style})",
+      "shared": "Choreography shared successfully",
+      "linkCopied": "Link copied to clipboard",
       "public": "Public",
       "private": "Private",
-      "copyLink": "Copy share link",
       "duplicateToMyChoreographies": "Duplicate to my choreographies"
     },
     "delete": {
-      "title": "Delete Choreography",
+      "title": "Delete choreography",
       "message": "Are you sure you want to delete this choreography?",
       "confirm": "Delete"
+    },
+    "menu": {
+      "title": "Menu"
     },
     "movements": {
       "add": "Add a movement",
@@ -191,6 +196,7 @@
     "importedBy": "Imported by",
     "visibility": "Visibility",
     "shareText": "Check out this awesome {{style}} move on Bailapp: {{title}}",
+    "linkCopied": "Link copied to clipboard",
     "mastery": {
       "title": "Movement Mastery",
       "enter": "Enter my mastery level",

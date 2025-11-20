@@ -17,6 +17,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { MasteryLevelModal } from '@/components/MasteryLevelModal';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
+import { Toast } from '@/components/Toast';
 
 export function FigureDetail() {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +29,7 @@ export function FigureDetail() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMasteryModal, setShowMasteryModal] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 
   const figure = id ? getFigure(id) : undefined;
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
@@ -85,7 +87,7 @@ export function FigureDetail() {
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
-      // TODO: Show toast notification
+      setToast({ message: t('figure.linkCopied'), type: 'success' });
     }
   };
 
@@ -284,6 +286,13 @@ export function FigureDetail() {
         currentLevel={masteryLevel}
         onSave={setMasteryLevel}
       />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </>
   );
 }

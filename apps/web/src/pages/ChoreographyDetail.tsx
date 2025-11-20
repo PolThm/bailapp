@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Plus, Pencil, Music2, Share2, Lock, Globe, Copy } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Music2, Share2, Copy, Menu, Trash2 } from 'lucide-react';
 import { useMovementColor } from '@/hooks/useMovementColor';
 import {
   DndContext,
@@ -35,6 +35,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { useChoreographies } from '@/context/ChoreographiesContext';
 import type { ChoreographyMovement, Choreography } from '@/types';
 import { GripVertical } from 'lucide-react';
+import { Toast } from '@/components/Toast';
 
 // Sortable wrapper component
 function SortableMovementItem({
@@ -145,8 +146,10 @@ export function ChoreographyDetail() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [colorUpdateKey, setColorUpdateKey] = useState(0);
+  const [showMenu, setShowMenu] = useState(false);
   const [publicChoreography, setPublicChoreography] = useState<Choreography | null>(null);
   const [isLoadingPublic, setIsLoadingPublic] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 
   // Determine if we're viewing someone else's public choreography
   const isViewingPublicChoreography = ownerId && ownerId !== user?.uid;
@@ -284,6 +287,39 @@ export function ChoreographyDetail() {
     setColorUpdateKey(prev => prev + 1);
   };
 
+  const handleShare = async () => {
+    // First, make the choreography public if it's not already
+    if (!choreography.isPublic) {
+      togglePublic(choreography.id);
+    }
+
+    const shareUrl = `${window.location.origin}/choreography/${choreography.id}?ownerId=${choreography.ownerId || user?.uid}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: choreography.name,
+          text: t('choreographies.share.shareText', {
+            name: choreography.name,
+            style: t(`badges.danceStyle.${choreography.danceStyle}`)
+          }),
+          url: shareUrl,
+        });
+        setToast({ message: t('choreographies.share.shared'), type: 'success' });
+      } catch (err) {
+        // User cancelled or error occurred
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Share error:', err);
+        }
+      }
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(shareUrl);
+      setToast({ message: t('choreographies.share.linkCopied'), type: 'success' });
+    }
+    setShowMenu(false);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     if (!isOwner) return;
     const { active, over } = event;
@@ -325,27 +361,55 @@ export function ChoreographyDetail() {
           </button>
           <h1 className="text-2xl font-bold leading-tight line-clamp-2 flex-1">{choreography.name}</h1>
           {isOwner && (
-            <>
+            <div className="relative">
               <button
-                onClick={() => setShowEditModal(true)}
+                onClick={() => setShowMenu(!showMenu)}
                 className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
-                aria-label={t('choreographies.edit.title')}
+                aria-label={t('choreographies.menu.title')}
               >
-                <Pencil className="h-4 w-4" />
+                <Menu className="h-4 w-4" />
               </button>
-              <button
-                onClick={() => togglePublic(choreography.id)}
-                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
-                aria-label={choreography.isPublic ? t('choreographies.share.makePrivate') : t('choreographies.share.makePublic')}
-                title={choreography.isPublic ? t('choreographies.share.makePrivate') : t('choreographies.share.makePublic')}
-              >
-                {choreography.isPublic ? (
-                  <Globe className="h-4 w-4 text-primary" />
-                ) : (
-                  <Lock className="h-4 w-4" />
-                )}
-              </button>
-            </>
+              {showMenu && (
+                <>
+                  {/* Overlay to close menu on click outside */}
+                  <div
+                    className="fixed inset-0 z-[50]"
+                    onClick={() => setShowMenu(false)}
+                  />
+                  {/* Menu dropdown */}
+                  <div className="absolute right-0 top-full mt-2 rounded-md border bg-popover shadow-lg z-[60] py-1">
+                    <button
+                      onClick={() => {
+                        setShowEditModal(true);
+                        setShowMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
+                    >
+                      <Pencil className="h-4 w-4" />
+                      {t('choreographies.detail.edit')}
+                    </button>
+                    <button
+                      onClick={handleShare}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
+                    >
+                      <Share2 className="h-4 w-4" />
+                      {t('choreographies.detail.share')}
+                    </button>
+                    <div className="my-1 h-px bg-border" />
+                    <button
+                      onClick={() => {
+                        setShowDeleteModal(true);
+                        setShowMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent text-destructive flex items-center gap-3"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {t('choreographies.detail.delete')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           )}
         </div>
         {/* Badges */}
@@ -423,29 +487,6 @@ export function ChoreographyDetail() {
               {t('choreographies.movements.add')}
             </Button>
           )}
-          {isOwner && (
-            <Button
-              variant="link"
-              className="w-full underline -mb-4 mt-auto"
-              onClick={() => setShowDeleteModal(true)}
-            >
-              {t('choreographies.detail.delete')}
-            </Button>
-          )}
-          {isOwner && choreography.isPublic && (
-            <Button
-              variant="outline"
-              className="w-full mt-2"
-              onClick={() => {
-                const shareUrl = `${window.location.origin}/choreography/${choreography.id}?ownerId=${choreography.ownerId}`;
-                navigator.clipboard.writeText(shareUrl);
-                // You could add a toast notification here
-              }}
-            >
-              <Share2 className="h-4 w-4 mr-2" />
-              {t('choreographies.share.copyLink')}
-            </Button>
-          )}
           {isViewingPublicChoreography && choreography && (
             <Button
               variant="outline"
@@ -485,6 +526,13 @@ export function ChoreographyDetail() {
         onConfirm={handleDelete}
         destructive={true}
       />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </>
   );
 }

@@ -121,20 +121,25 @@
     },
     "detail": {
       "notFound": "Chorégraphie non trouvée",
-      "delete": "Supprimer la chorégraphie"
+      "edit": "Modifier",
+      "share": "Partager",
+      "delete": "Supprimer"
     },
     "share": {
-      "makePublic": "Rendre publique",
-      "makePrivate": "Rendre privée",
+      "shareText": "Découvre cette chorégraphie {name} ({style})",
+      "shared": "Chorégraphie partagée avec succès",
+      "linkCopied": "Lien copié dans le presse-papiers",
       "public": "Publique",
       "private": "Privée",
-      "copyLink": "Copier le lien de partage",
       "duplicateToMyChoreographies": "Dupliquer dans mes chorégraphies"
     },
     "delete": {
-      "title": "Supprimer la Chorégraphie",
+      "title": "Supprimer la chorégraphie",
       "message": "Êtes-vous sûr de vouloir supprimer cette chorégraphie ?",
       "confirm": "Supprimer"
+    },
+    "menu": {
+      "title": "Menu"
     },
     "movements": {
       "add": "Ajouter un mouvement",
