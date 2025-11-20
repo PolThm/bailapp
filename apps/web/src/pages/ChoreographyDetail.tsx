@@ -48,6 +48,7 @@ function SortableMovementItem({
   onDuplicate,
   colorUpdateKey,
   onColorChange,
+  isReadOnly,
 }: {
   movement: ChoreographyMovement;
   isEditing: boolean;
@@ -58,6 +59,7 @@ function SortableMovementItem({
   onDuplicate: () => void;
   colorUpdateKey: number;
   onColorChange: () => void;
+  isReadOnly?: boolean;
 }) {
   const {
     attributes,
@@ -127,6 +129,7 @@ function SortableMovementItem({
             onDelete={onDelete}
             onDuplicate={onDuplicate}
             onColorChange={onColorChange}
+            isReadOnly={isReadOnly}
           />
         </div>
       </div>
@@ -461,6 +464,7 @@ export function ChoreographyDetail() {
                   onDuplicate={() => isOwner && handleDuplicateMovement(movement.id)}
                   colorUpdateKey={colorUpdateKey}
                   onColorChange={isOwner ? handleColorChange : () => {}}
+                  isReadOnly={!isOwner}
                 />
               ))}
             </div>
@@ -491,6 +495,7 @@ export function ChoreographyDetail() {
             <Button
               variant="outline"
               className="w-full mt-2"
+              size="lg"
               onClick={async () => {
                 try {
                   const newId = await copyChoreography(choreography);

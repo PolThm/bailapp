@@ -19,6 +19,7 @@ interface ChoreographyMovementItemProps {
   onDelete: () => void;
   onDuplicate: () => void;
   onColorChange?: () => void;
+  isReadOnly?: boolean;
 }
 
 export function ChoreographyMovementItem({
@@ -31,6 +32,7 @@ export function ChoreographyMovementItem({
   onDelete,
   onDuplicate,
   onColorChange,
+  isReadOnly = false,
 }: ChoreographyMovementItemProps) {
   const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -106,7 +108,7 @@ export function ChoreographyMovementItem({
   }, [showMenu, showSuggestions]);
 
   const handleNameClick = () => {
-    if (!isEditing) {
+    if (!isEditing && !isReadOnly) {
       onStartEdit();
     }
   };
@@ -253,7 +255,9 @@ export function ChoreographyMovementItem({
         ) : (
           <div
             onClick={handleNameClick}
-            className="flex-1 cursor-text hover:bg-muted/50 rounded px-2 py-1 -mx-2 -my-1 min-h-[32px] flex items-start"
+            className={`flex-1 rounded px-2 py-1 -mx-2 -my-1 min-h-[32px] flex items-start ${
+              isReadOnly ? '' : 'cursor-text hover:bg-muted/50'
+            }`}
           >
             {movement.name ? (
               <span className="line-clamp-5 break-words">
@@ -268,14 +272,15 @@ export function ChoreographyMovementItem({
         )}
 
         {/* Menu Button */}
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-1.5 hover:bg-muted rounded-full transition-colors"
-            aria-label={t('choreographies.movements.menu')}
-          >
-            <MoreVertical className="h-5 w-5 text-muted-foreground" />
-          </button>
+        {!isReadOnly && (
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-1.5 hover:bg-muted rounded-full transition-colors"
+              aria-label={t('choreographies.movements.menu')}
+            >
+              <MoreVertical className="h-5 w-5 text-muted-foreground" />
+            </button>
 
           {/* Menu Dropdown */}
           {showMenu && (
@@ -306,7 +311,8 @@ export function ChoreographyMovementItem({
               </button>
             </div>
           )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}
