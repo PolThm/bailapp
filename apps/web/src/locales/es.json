@@ -127,7 +127,7 @@
       "delete": "Eliminar"
     },
     "share": {
-      "shareText": "Mira esta coreografía {name} ({style})",
+      "shareText": "Mira esta coreografía {{name}} ({{style}})",
       "shared": "Coreografía compartida con éxito",
       "linkCopied": "Enlace copiado al portapapeles",
       "public": "Pública",
