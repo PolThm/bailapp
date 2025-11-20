@@ -24,7 +24,7 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
 
   return (
     <>
-      {/* Modal positioned above navbar (z-50) */}
+      {/* Overlay positioned above app content */}
       <div
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange?.(false)}
