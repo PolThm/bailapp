@@ -31,6 +31,7 @@ import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyMovementItem } from '@/components/ChoreographyMovementItem';
 import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/context/AuthContext';
+import type { User } from 'firebase/auth';
 import { getPublicChoreography } from '@/lib/services/choreographyService';
 import { EmptyState } from '@/components/EmptyState';
 import { useChoreographies } from '@/context/ChoreographiesContext';
@@ -165,6 +166,7 @@ export function ChoreographyDetail() {
   const contextChoreography = id ? getChoreography(id) : undefined;
   const choreography = isViewingPublicChoreography ? publicChoreography : contextChoreography;
   const lastUpdatedIdRef = useRef<string | null>(null);
+  const previousUserRef = useRef<User | null>(user);
 
   // Load public choreography if viewing someone else's
   useEffect(() => {
@@ -185,6 +187,21 @@ export function ChoreographyDetail() {
       setPublicChoreography(null);
     }
   }, [id, ownerId, isViewingPublicChoreography]);
+
+  // Redirect to choreographies list if user signs in while viewing example choreography
+  useEffect(() => {
+    // Check if user just signed in (was null, now is not null)
+    const justSignedIn = !previousUserRef.current && user;
+    
+    if (id === EXAMPLE_CHOREOGRAPHY_ID && justSignedIn) {
+      // User just signed in while viewing example choreography
+      // Redirect to choreographies list to avoid "not found" error
+      navigate('/choreographies', { replace: true });
+    }
+    
+    // Update previous user ref
+    previousUserRef.current = user;
+  }, [id, user, navigate]);
 
   // Update lastOpenedAt when choreography is opened (only once per id, and only for own choreographies)
   // Skip for example choreography if user is not authenticated
@@ -251,6 +268,11 @@ export function ChoreographyDetail() {
   };
 
   const handleAddMovement = () => {
+    // For example choreography, show auth modal if user is not authenticated
+    if (isExampleChoreography && !user) {
+      setShowAuthModal(true);
+      return;
+    }
     if (!isOwner) return;
     const newMovement: ChoreographyMovement = {
       id: crypto.randomUUID(),
@@ -496,7 +518,7 @@ export function ChoreographyDetail() {
       )}
 
       <div className="flex flex-col gap-2 mt-auto">
-        {isOwner && sortedMovements.length > 0 && (
+        {(isOwner || (isExampleChoreography && !user)) && sortedMovements.length > 0 && (
           <Button
               variant="default"
               onClick={handleAddMovement}
@@ -554,6 +576,9 @@ export function ChoreographyDetail() {
           onClose={() => setToast(null)}
         />
       )}
+      
+      {/* Auth Modal */}
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   );
 }
