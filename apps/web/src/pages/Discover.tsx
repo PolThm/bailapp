@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
@@ -36,6 +36,9 @@ export function Discover() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(getStorageKey(StorageKey.DISCOVER_SHOW_IMAGES), true);
   const [shuffleKey, setShuffleKey] = useState(0);
+  // Store the order of figure IDs to maintain stable order when figures are updated
+  const figureOrderRef = useRef<Map<string, number>>(new Map());
+  const previousFilteredIdsRef = useRef<string>('');
   
   const {
     selectedStyle,
@@ -49,21 +52,45 @@ export function Discover() {
     clearFilters,
   } = useFigureFilters(figures);
 
-  // Shuffle figures when arriving on the page (only if no filters are active)
+  // Shuffle figures when arriving on the page or when filters change (only if no filters are active)
   useEffect(() => {
     if (!hasActiveFilters) {
       setShuffleKey(Date.now());
     }
   }, [location.pathname, hasActiveFilters]);
 
-  // Shuffle filtered figures only when there are no active filters
+  // Maintain stable order of figures - only reshuffle when filters change or on initial load
   const shuffledFigures = useMemo(() => {
+    const currentFilteredIds = filteredFigures.map(f => f.id).join(',');
+    const filtersChanged = currentFilteredIds !== previousFilteredIdsRef.current;
+    
     if (hasActiveFilters) {
       // Don't shuffle when filters are active - keep consistent results
+      previousFilteredIdsRef.current = currentFilteredIds;
       return filteredFigures;
     }
-    // Shuffle when no filters are active
-    return shuffleArray(filteredFigures);
+    
+    // Only reshuffle if filters changed or it's a new page load
+    if (filtersChanged || figureOrderRef.current.size === 0) {
+      const shuffled = shuffleArray(filteredFigures);
+      // Store the order by ID
+      shuffled.forEach((figure, index) => {
+        figureOrderRef.current.set(figure.id, index);
+      });
+      previousFilteredIdsRef.current = currentFilteredIds;
+      return shuffled;
+    }
+    
+    // Maintain the existing order even if figures are updated
+    const orderedFigures = [...filteredFigures].sort((a, b) => {
+      const orderA = figureOrderRef.current.get(a.id) ?? Infinity;
+      const orderB = figureOrderRef.current.get(b.id) ?? Infinity;
+      return orderA - orderB;
+    });
+    
+    // Add any new figures that weren't in the original order at the end
+    const newFigures = filteredFigures.filter(f => !figureOrderRef.current.has(f.id));
+    return [...orderedFigures, ...newFigures];
   }, [filteredFigures, hasActiveFilters, shuffleKey]);
 
   const handleAddFigure = () => {
