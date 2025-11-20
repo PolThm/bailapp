@@ -8,7 +8,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.1.45';
+const APP_VERSION = '0.1.46';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -45,8 +45,8 @@ export function Profile() {
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardContent className="min-h-[80px] flex">
+          <Card onClick={() => setShowAuthModal(true)}>
+            <CardContent className="min-h-[80px] flex cursor-pointer">
               <div className="flex items-center gap-3 pt-4">
                 <div className="flex-1">
                   <p className="font-semibold">{t('profile.signInRequired')}</p>
