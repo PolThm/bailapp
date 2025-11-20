@@ -9,14 +9,20 @@ import { ChoreographyCard } from '@/components/ChoreographyCard';
 import { Button } from '@/components/ui/button';
 import { Loader } from '@/components/Loader';
 import { sortByLastOpened } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 export function Choreographies() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const { choreographies, isLoading } = useChoreographies();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewChoreographyModal, setShowNewChoreographyModal] = useState(false);
 
   const handleNewChoreography = () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     setShowNewChoreographyModal(true);
   };
 
@@ -52,6 +58,8 @@ export function Choreographies() {
           description={t('choreographies.empty.description')}
           actionLabel={t('choreographies.empty.action')}
           onAction={handleNewChoreography}
+          isAuthenticated={!!user}
+          onLogin={() => setShowAuthModal(true)}
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 mt-6">

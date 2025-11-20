@@ -29,6 +29,7 @@ import {
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyMovementItem } from '@/components/ChoreographyMovementItem';
+import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/context/AuthContext';
 import { getPublicChoreography } from '@/lib/services/choreographyService';
 import { EmptyState } from '@/components/EmptyState';
@@ -154,6 +155,7 @@ export function ChoreographyDetail() {
   const [publicChoreography, setPublicChoreography] = useState<Choreography | null>(null);
   const [isLoadingPublic, setIsLoadingPublic] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Determine if we're viewing someone else's public choreography
   const isViewingPublicChoreography = ownerId && ownerId !== user?.uid;
@@ -212,14 +214,24 @@ export function ChoreographyDetail() {
 
   if (!choreography) {
     return (
-      <div className="flex flex-col items-center justify-center flex-1">
-        <p className="text-lg text-muted-foreground">
-          {t('choreographies.detail.notFound')}
-        </p>
-        <Button onClick={() => navigate('/choreographies')} className="mt-4">
-          {t('choreographies.detail.backToChoreographies')}
-        </Button>
-      </div>
+      <>
+        <div className="flex flex-col items-center justify-center flex-1 pt-8">
+          <p className="text-lg text-muted-foreground">
+            {t('choreographies.detail.notFound')}
+          </p>
+          <div className="flex flex-col gap-3 items-center mt-4">
+            <Button onClick={() => navigate('/choreographies')}>
+              {t('choreographies.detail.backToChoreographies')}
+            </Button>
+            {!user && (
+              <Button onClick={() => setShowAuthModal(true)} variant="link" className="text-sm text-muted-foreground underline">
+                {t('profile.signIn')}
+              </Button>
+            )}
+          </div>
+        </div>
+        <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      </>
     );
   }
 
