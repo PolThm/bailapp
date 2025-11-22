@@ -155,7 +155,7 @@ export function FigureDetail() {
               variant="outline"
               size="icon"
               onClick={handleShare}
-              className="min-w-[48px] min-h-[48px]"
+              className="min-w-[48px] min-h-[48px] flex-1"
             >
               <Share2 className="h-5 w-5" />
             </Button>
