@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { Home, Compass, Heart, Music, User } from 'lucide-react';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { usePullToRefreshContext } from '@/context/PullToRefreshContext';
+import { useVideoFullscreen } from '@/context/VideoFullscreenContext';
 import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
   const { refreshHandler } = usePullToRefreshContext();
+  const { isVideoFullscreen } = useVideoFullscreen();
   const mainRef = useRef<HTMLElement | null>(null);
 
   // Scroll to top when route changes
@@ -48,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav className="z-50 border-t bg-background/95 backdrop-blur">
+      <nav className={`z-50 border-t bg-background/95 backdrop-blur ${isVideoFullscreen ? 'hidden' : ''}`}>
         <div className="grid grid-cols-5 gap-1 p-2 max-w-6xl mx-auto">
           <Link
             to="/"

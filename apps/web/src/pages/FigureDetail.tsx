@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import { Heart, Share2, Clock } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useFavorites } from '@/context/FavoritesContext';
@@ -18,6 +17,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { MasteryLevelModal } from '@/components/MasteryLevelModal';
 import { HeaderBackTitle } from '@/components/HeaderBackTitle';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
+import { useVideoFullscreen } from '@/context/VideoFullscreenContext';
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
 import { Toast } from '@/components/Toast';
 
@@ -28,6 +28,7 @@ export function FigureDetail() {
   const { getFigure } = useFigures();
   const { isFavorite, toggleFavorite, updateLastOpened } = useFavorites();
   const { user } = useAuth();
+  const { setIsVideoFullscreen } = useVideoFullscreen();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMasteryModal, setShowMasteryModal] = useState(false);
@@ -75,7 +76,8 @@ export function FigureDetail() {
   // Reset fullscreen exit flag when figure changes
   useEffect(() => {
     setIsFullscreenExited(false);
-  }, [id]);
+    setIsVideoFullscreen(false);
+  }, [id, setIsVideoFullscreen]);
 
   // Detect when user exits fullscreen from YouTube player
   useEffect(() => {
@@ -92,6 +94,7 @@ export function FigureDetail() {
         // User exited fullscreen, disable landscape fullscreen mode
         setIsFullscreenExited(true);
         setIsLandscape(false);
+        setIsVideoFullscreen(false);
       } else if (isInFullscreen) {
         // User entered fullscreen, reset the exit flag
         setIsFullscreenExited(false);
@@ -299,52 +302,36 @@ export function FigureDetail() {
     return 'text-orange-500 dark:text-orange-400';
   };
 
-  // Render overlay in portal for landscape mode to escape Layout's stacking context
-  // The iframe itself stays in normal flow to prevent reload
-  const landscapeOverlay = isLandscape && embedUrl ? (
-    createPortal(
-      <div 
-        className="fixed inset-0 z-[55] bg-black"
-      />
-      ,
-      document.body
-    )
-  ) : null;
-
   return (
     <>
       {/* Header with back icon and title */}
-      {!isLandscape && <HeaderBackTitle title={figure.shortTitle} className="pb-2" />}
+      <HeaderBackTitle title={figure.shortTitle} className="pb-2" />
 
-      {/* Landscape overlay portal */}
-      {landscapeOverlay}
-
-      {/* Video Player - iframe always mounted here to prevent reload */}
-      {embedUrl && (
-        <div 
-          className={`${
-            isLandscape 
-              ? 'fixed inset-0 z-[60] mb-0 rounded-none' 
-              : 'aspect-video w-full mb-6 bg-black rounded-lg mx-auto sm:w-96 lg:w-full relative max-w-4xl'
-          }`}
-        >
-          <iframe
-            ref={iframeRef}
-            id={`youtube-player-${videoId}`}
-            src={embedUrl}
-            title={figure.fullTitle}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className={`w-full h-full ${isLandscape ? '' : 'rounded-lg'}`}
-            style={{ border: 0, display: 'block' }}
-          />
-        </div>
-      )}
-
-      {!isLandscape && (
-        <div className="max-w-4xl mx-auto w-full">
-          {/* Details Section */}
-          <div className="space-y-6">
+      <div className={`max-w-4xl mx-auto w-full ${isLandscape ? 'fixed inset-0 z-[55] bg-black' : ''}`}>
+        {/* Video Player */}
+        {embedUrl && (
+          <div
+            className={`${
+              isLandscape
+                ? 'fixed inset-0 w-full h-full mb-0'
+                : 'aspect-video w-full mb-6 bg-black rounded-lg mx-auto sm:w-96 lg:w-full'
+            }`}
+          >
+            <iframe
+              ref={iframeRef}
+              id={`youtube-player-${videoId}`}
+              src={embedUrl}
+              title={figure.fullTitle}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className={`w-full h-full ${isLandscape ? '' : 'rounded-lg'}`}
+              style={{ border: 0, display: 'block' }}
+            />
+          </div>
+        )}
+  
+        {/* Details Section */}
+        <div className={`space-y-6 ${isLandscape ? 'hidden' : ''}`}>
   
           {/* Action Buttons */}
           <div className="flex gap-2">
@@ -501,8 +488,7 @@ export function FigureDetail() {
             </CardContent>
           </Card>
         </div>
-        </div>
-      )}
+      </div>
 
       {/* Auth Dialog */}
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
