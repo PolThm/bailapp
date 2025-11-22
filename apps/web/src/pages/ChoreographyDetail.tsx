@@ -486,7 +486,7 @@ export function ChoreographyDetail() {
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={movementIds} strategy={verticalListSortingStrategy}>
-            <div className="space-y-2 my-6">
+            <div className="space-y-2 my-6 max-w-lg mx-auto w-full">
               {sortedMovements.map((movement) => (
                 <SortableMovementItem
                   key={`${movement.id}-${colorUpdateKey}`}
@@ -533,7 +533,7 @@ export function ChoreographyDetail() {
           <Button
               variant="default"
               onClick={handleAddMovement}
-              className="w-full"
+              className="w-full mx-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
               {t('choreographies.movements.add')}
@@ -542,7 +542,7 @@ export function ChoreographyDetail() {
           {isViewingPublicChoreography && choreography && (
             <Button
               variant="outline"
-              className="w-full mt-2"
+              className="w-full mt-2 mx-auto"
               size="lg"
               onClick={async () => {
                 try {
