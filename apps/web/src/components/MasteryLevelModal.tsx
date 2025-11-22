@@ -89,7 +89,7 @@ export function MasteryLevelModal({
                 step="10"
                 value={level}
                 onChange={handleInputChange}
-                className="text-center text-lg font-semibold"
+                className="text-center text-lg font-semibold sm:w-56"
               />
               <span className="text-muted-foreground">%</span>
             </div>
@@ -107,7 +107,7 @@ export function MasteryLevelModal({
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} className="w-full mx-auto">
             {t('common.save')}
           </Button>
         </DialogFooter>

@@ -205,19 +205,21 @@ export function FigureDetail() {
                 </CardContent>
               </Card>
             ) : (
-              <Button
-                variant="default"
-                className="w-full"
-                onClick={() => {
-                  if (!user) {
-                    setShowAuthModal(true);
-                  } else {
-                    setShowMasteryModal(true);
-                  }
-                }}
-              >
-                {t('figure.mastery.enter')}
-              </Button>
+              <div className='flex justify-center'>
+                <Button
+                  variant="default"
+                  className="w-full"
+                  onClick={() => {
+                    if (!user) {
+                      setShowAuthModal(true);
+                    } else {
+                      setShowMasteryModal(true);
+                    }
+                  }}
+                >
+                  {t('figure.mastery.enter')}
+                </Button>
+              </div>
             )}
           </>
         )}
