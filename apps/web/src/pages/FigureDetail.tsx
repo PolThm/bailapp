@@ -31,6 +31,7 @@ export function FigureDetail() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMasteryModal, setShowMasteryModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+  const [isLandscape, setIsLandscape] = useState(false);
 
   const figure = id ? getFigure(id) : undefined;
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
@@ -44,6 +45,24 @@ export function FigureDetail() {
       lastUpdatedIdRef.current = id;
     }
   }, [id, figure, isFavorite, updateLastOpened]);
+
+  // Detect landscape orientation on mobile
+  useEffect(() => {
+    const checkOrientation = () => {
+      const isMobile = window.innerWidth < 768; // sm breakpoint
+      const isLandscapeMode = window.innerWidth > window.innerHeight;
+      setIsLandscape(isMobile && isLandscapeMode);
+    };
+
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
 
   if (!figure) {
     return (
@@ -238,10 +257,16 @@ export function FigureDetail() {
       {/* Header with back icon and title */}
       <HeaderBackTitle title={figure.shortTitle} className="pb-2" />
 
-      <div className="max-w-4xl mx-auto w-full">
+      <div className={`max-w-4xl mx-auto w-full ${isLandscape ? 'fixed inset-0 z-[55] bg-black' : ''}`}>
         {/* Video Player */}
         {embedUrl && (
-          <div className="aspect-video w-full mb-6 bg-black rounded-lg mx-auto sm:w-96 lg:w-full">
+          <div
+            className={`${
+              isLandscape
+                ? 'fixed inset-0 w-full h-full mb-0'
+                : 'aspect-video w-full mb-6 bg-black rounded-lg mx-auto sm:w-96 lg:w-full'
+            }`}
+          >
             <iframe
               ref={iframeRef}
               id={`youtube-player-${videoId}`}
@@ -249,14 +274,14 @@ export function FigureDetail() {
               title={figure.fullTitle}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="w-full h-full rounded-lg"
+              className={`w-full h-full ${isLandscape ? '' : 'rounded-lg'}`}
               style={{ border: 0, display: 'block' }}
             />
           </div>
         )}
   
         {/* Details Section */}
-        <div className="space-y-6">
+        <div className={`space-y-6 ${isLandscape ? 'hidden' : ''}`}>
   
           {/* Action Buttons */}
           <div className="flex gap-2">
