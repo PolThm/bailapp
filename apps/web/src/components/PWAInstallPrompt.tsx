@@ -47,12 +47,12 @@ export function PWAInstallPrompt() {
   return (
     <>
       {/* Install Prompt Snackbar */}
-      <div className={`fixed bottom-24 left-4 right-4 z-50 flex justify-center transition-all duration-500 max-w-[350px] mx-auto ${
+      <div className={`fixed bottom-24 left-4 right-4 z-50 flex justify-center transition-all max-w-lg duration-500 mx-auto ${
         isExiting 
           ? 'animate-out slide-out-to-bottom fade-out' 
           : 'animate-in slide-in-from-bottom fade-in'
       }`}>
-        <Card className="bg-primary border-primary max-w-sm w-full shadow-xl cursor-pointer">
+        <Card className="bg-primary border-primary w-full shadow-xl cursor-pointer">
           <CardContent 
             className="p-4"
             onClick={handleInstallClick}
@@ -80,7 +80,7 @@ export function PWAInstallPrompt() {
                 }}
                 variant="ghost"
                 size="icon"
-                className="flex-shrink-0 text-primary-foreground hover:text-foreground hover:bg-white/20"
+                className="flex-shrink-0 text-primary-foreground hover:text-foreground hover:bg-white/20 sm:w-10"
               >
                 <X className="h-4" />
               </Button>
@@ -171,6 +171,7 @@ export function PWAInstallPrompt() {
             <Button
               variant="outline"
               onClick={() => setShowManualInstructions(false)}
+              className="w-full mx-auto"
             >
               {t('pwa.install.instructions.close')}
             </Button>
