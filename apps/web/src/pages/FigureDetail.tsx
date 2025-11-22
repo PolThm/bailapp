@@ -263,7 +263,7 @@ export function FigureDetail() {
             <Button
               variant="outline"
               onClick={handleToggleFavorite}
-              className="flex-1 min-h-[48px]"
+              className="flex-1 min-h-[48px] w-full"
             >
               <Heart className={`h-5 w-5 mr-2 ${isFav ? 'fill-current text-red-500' : ''}`} />
               {isFav ? t('figure.removeFromFavorites') : t('figure.addToFavorites')}
@@ -272,7 +272,7 @@ export function FigureDetail() {
               variant="outline"
               size="icon"
               onClick={handleShare}
-              className="min-w-[48px] min-h-[48px] flex-1"
+              className="min-h-[48px] min-w-[48px]"
             >
               <Share2 className="h-5 w-5" />
             </Button>
@@ -332,7 +332,7 @@ export function FigureDetail() {
                               setShowMasteryModal(true);
                             }
                           }}
-                          className="ml-auto"
+                          className="ml-auto w-40 sm:w-56"
                         >
                           {t('common.update')}
                         </Button>
