@@ -57,7 +57,7 @@ export function SearchAndFilters({
         <Button
           variant="outline"
           onClick={() => onShowImagesChange(!showImages)}
-          className="h-11 w-11 p-0 flex items-center justify-center flex-shrink-0"
+          className="h-11 w-11 p-0 flex items-center justify-center flex-shrink-0 sm:w-11"
           aria-label={showImages ? 'Hide images' : 'Show images'}
           title={showImages ? 'Hide images' : 'Show images'}
         >
@@ -98,7 +98,7 @@ export function SearchAndFilters({
         <Button
           variant="outline"
           onClick={onAdvancedFiltersClick}
-          className="h-11 flex items-center gap-2"
+          className="h-11 flex items-center gap-2 w-36"
         >
           <SlidersHorizontal className="h-4 w-4" />
           {t('discover.advancedFilters.button')}
