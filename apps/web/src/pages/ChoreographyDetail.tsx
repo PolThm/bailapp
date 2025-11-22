@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Plus, Pencil, Music2, Share2, Copy, Menu, Trash2, FileQuestion } from 'lucide-react';
+import { Plus, Pencil, Music2, Share2, Copy, Menu, Trash2, FileQuestion } from 'lucide-react';
 import { useMovementColor } from '@/hooks/useMovementColor';
 import {
   DndContext,
@@ -30,6 +30,7 @@ import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyMovementItem } from '@/components/ChoreographyMovementItem';
 import { AuthModal } from '@/components/AuthModal';
+import { HeaderBackTitle } from '@/components/HeaderBackTitle';
 import { useAuth } from '@/context/AuthContext';
 import type { User } from 'firebase/auth';
 import { getPublicChoreography } from '@/lib/services/choreographyService';
@@ -401,81 +402,74 @@ export function ChoreographyDetail() {
   return (
     <>
       {/* Header with back icon and title */}
-      <div>
-        <div className="flex items-center gap-3 mb-2">
-          <button
-            onClick={() => navigate(-1)}
-            className="h-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
-            aria-label={t('common.back')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <h1 className="text-2xl font-bold leading-tight line-clamp-2 flex-1">{choreography.name}</h1>
-          {isOwner && (
-            <div className="relative">
-              <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
-                aria-label={t('choreographies.menu.title')}
-              >
-                <Menu className="h-4 w-4" />
-              </button>
-              {showMenu && (
-                <>
-                  {/* Overlay to close menu on click outside */}
-                  <div
-                    className="fixed inset-0 z-[50]"
-                    onClick={() => setShowMenu(false)}
-                  />
-                  {/* Menu dropdown */}
-                  <div className="absolute right-0 top-full mt-2 rounded-md border bg-popover shadow-lg z-[60] py-1">
-                    <button
-                      onClick={() => {
-                        setShowEditModal(true);
-                        setShowMenu(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
-                    >
-                      <Pencil className="h-4 w-4" />
-                      {t('choreographies.detail.edit')}
-                    </button>
-                    <button
-                      onClick={handleShare}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
-                    >
-                      <Share2 className="h-4 w-4" />
-                      {t('choreographies.detail.share')}
-                    </button>
-                    <div className="my-1 h-px bg-border" />
-                    <button
-                      onClick={() => {
-                        setShowDeleteModal(true);
-                        setShowMenu(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-accent text-destructive flex items-center gap-3"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      {t('choreographies.detail.delete')}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-        {/* Badges */}
-        <div className="flex flex-wrap gap-2">
-          <DanceStyleBadge style={choreography.danceStyle} />
-          {choreography.danceSubStyle && (
-            <DanceSubStyleBadge
-              style={choreography.danceStyle}
-              subStyle={choreography.danceSubStyle}
-            />
-          )}
-          {choreography.complexity && (
-            <ComplexityBadge complexity={choreography.complexity} />
-          )}
-        </div>
+      <HeaderBackTitle
+        title={choreography.name}
+        titleClassName="flex-1"
+      >
+        {isOwner && (
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
+              aria-label={t('choreographies.menu.title')}
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+            {showMenu && (
+              <>
+                {/* Overlay to close menu on click outside */}
+                <div
+                  className="fixed inset-0 z-[50]"
+                  onClick={() => setShowMenu(false)}
+                />
+                {/* Menu dropdown */}
+                <div className="absolute right-0 top-full mt-2 rounded-md border bg-popover shadow-lg z-[60] py-1">
+                  <button
+                    onClick={() => {
+                      setShowEditModal(true);
+                      setShowMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    {t('choreographies.detail.edit')}
+                  </button>
+                  <button
+                    onClick={handleShare}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    {t('choreographies.detail.share')}
+                  </button>
+                  <div className="my-1 h-px bg-border" />
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(true);
+                      setShowMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-accent text-destructive flex items-center gap-3"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t('choreographies.detail.delete')}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </HeaderBackTitle>
+      {/* Badges */}
+      <div className="flex flex-wrap gap-2">
+        <DanceStyleBadge style={choreography.danceStyle} />
+        {choreography.danceSubStyle && (
+          <DanceSubStyleBadge
+            style={choreography.danceStyle}
+            subStyle={choreography.danceSubStyle}
+          />
+        )}
+        {choreography.complexity && (
+          <ComplexityBadge complexity={choreography.complexity} />
+        )}
       </div>
 
       {/* Movements List */}

@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Heart, Share2, Clock } from 'lucide-react';
+import { Heart, Share2, Clock } from 'lucide-react';
 import { useFigures } from '@/context/FiguresContext';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useAuth } from '@/context/AuthContext';
@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/badge';
 import { AuthModal } from '@/components/AuthModal';
 import { MasteryLevelModal } from '@/components/MasteryLevelModal';
+import { HeaderBackTitle } from '@/components/HeaderBackTitle';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
 import { Toast } from '@/components/Toast';
@@ -110,18 +111,7 @@ export function FigureDetail() {
   return (
     <>
       {/* Header with back icon and title */}
-      <div className="pb-2">
-        <div className="flex items-center gap-3 mb-2">
-          <button
-            onClick={() => navigate(-1)}
-            className="h-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
-            aria-label={t('common.back')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <h1 className="text-2xl font-bold leading-tight line-clamp-2">{figure.shortTitle}</h1>
-        </div>
-      </div>
+      <HeaderBackTitle title={figure.shortTitle} className="pb-2" />
 
       <div className="max-w-4xl mx-auto w-full">
         {/* Video Player */}
