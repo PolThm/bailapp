@@ -35,7 +35,7 @@ export function ComingSoonModal({
           {description || t('comingSoon.description')}
         </DialogDescription>
         <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={onClose} className="w-full">
+          <Button variant="outline" onClick={onClose} className="w-full mx-auto">
             {t('common.close')}
           </Button>
         </DialogFooter>

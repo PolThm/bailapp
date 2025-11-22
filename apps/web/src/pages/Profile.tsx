@@ -8,7 +8,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.2.20';
+const APP_VERSION = '0.2.21';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -25,7 +25,7 @@ export function Profile() {
       {/* Header */}
       <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
       <div className="flex flex-col flex-1 max-w-lg mx-auto w-full">
-        <div className="flex flex-col flex-1 gap-4">
+        <div className="flex flex-col flex-1 gap-4 pt-4">
           {/* Authentication Section */}
           {user ? (
             <Card>
@@ -106,12 +106,12 @@ export function Profile() {
             </CardContent>
           </Card>
   
-          <div className="mt-auto mx-auto">
+          <div className="mt-auto mx-auto flex flex-col w-full">
             {user ? (
               <Button
                 variant="outline"
                 onClick={() => setShowLogoutConfirm(true)}
-                className="w-full min-h-[48px]"
+                className="w-full min-h-[48px] mx-auto"
               >
                 <LogOut className="h-5 w-5 mr-2" />
                 {t('profile.signOut')}
@@ -119,7 +119,7 @@ export function Profile() {
             ) : (
               <Button
                 onClick={() => setShowAuthModal(true)}
-                className="w-full mt-auto"
+                className="w-full mt-auto mx-auto"
                 size="lg"
               >
                 <LogIn className="h-5 w-5 mr-2" />
