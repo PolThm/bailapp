@@ -44,12 +44,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
           pullDistance={pullDistance}
           threshold={80}
         />
-        <div className="flex flex-1 flex-col w-full max-w-7xl mx-auto">{children}</div>
+        <div className="flex flex-1 flex-col w-full max-w-6xl mx-auto">{children}</div>
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
       <nav className="z-50 border-t bg-background/95 backdrop-blur">
-        <div className="grid grid-cols-5 gap-1 p-2">
+        <div className="grid grid-cols-5 gap-1 p-2 max-w-6xl mx-auto">
           <Link
             to="/"
             className={`flex flex-col items-center justify-center py-2 px-1 rounded-lg active:scale-95 transition-all touch-manipulation min-h-[56px] ${
