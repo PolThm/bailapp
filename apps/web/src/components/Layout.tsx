@@ -14,6 +14,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { isVideoFullscreen } = useVideoFullscreen();
   const mainRef = useRef<HTMLElement | null>(null);
 
+  // Log when isVideoFullscreen changes
+  useEffect(() => {
+    console.log('[Layout] isVideoFullscreen changed to:', isVideoFullscreen);
+  }, [isVideoFullscreen]);
+
   // Scroll to top when route changes
   useEffect(() => mainRef.current?.scrollTo(0, 0), [location.pathname]);
 

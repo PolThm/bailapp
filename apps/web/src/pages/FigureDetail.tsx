@@ -55,11 +55,26 @@ export function FigureDetail() {
       const isMobile = window.innerWidth < 768; // sm breakpoint
       const isLandscapeMode = window.innerWidth > window.innerHeight;
       // Only enable landscape fullscreen if not explicitly exited by user
-      setIsLandscape(isMobile && isLandscapeMode && !isFullscreenExited);
+      const shouldBeFullscreen = isMobile && isLandscapeMode && !isFullscreenExited;
+      
+      console.log('[FigureDetail] Orientation check:', {
+        isMobile,
+        isLandscapeMode,
+        isFullscreenExited,
+        shouldBeFullscreen,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+      
+      setIsLandscape(shouldBeFullscreen);
+      setIsVideoFullscreen(shouldBeFullscreen);
+      console.log('[FigureDetail] Setting isVideoFullscreen to:', shouldBeFullscreen);
       
       // Reset exit flag when switching back to portrait
       if (!isLandscapeMode) {
         setIsFullscreenExited(false);
+        setIsVideoFullscreen(false);
+        console.log('[FigureDetail] Portrait mode - resetting fullscreen');
       }
     };
 
@@ -71,10 +86,11 @@ export function FigureDetail() {
       window.removeEventListener('resize', checkOrientation);
       window.removeEventListener('orientationchange', checkOrientation);
     };
-  }, [isFullscreenExited]);
+  }, [isFullscreenExited, setIsVideoFullscreen]);
 
   // Reset fullscreen exit flag when figure changes
   useEffect(() => {
+    console.log('[FigureDetail] Figure changed, resetting fullscreen state');
     setIsFullscreenExited(false);
     setIsVideoFullscreen(false);
   }, [id, setIsVideoFullscreen]);
@@ -92,11 +108,14 @@ export function FigureDetail() {
 
       if (!isInFullscreen && isLandscape) {
         // User exited fullscreen, disable landscape fullscreen mode
+        console.log('[FigureDetail] User exited fullscreen, disabling landscape mode');
         setIsFullscreenExited(true);
         setIsLandscape(false);
         setIsVideoFullscreen(false);
+        console.log('[FigureDetail] Setting isVideoFullscreen to: false (user exit)');
       } else if (isInFullscreen) {
         // User entered fullscreen, reset the exit flag
+        console.log('[FigureDetail] User entered fullscreen');
         setIsFullscreenExited(false);
       }
     };
