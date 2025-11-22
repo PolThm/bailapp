@@ -8,7 +8,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.2.10';
+const APP_VERSION = '0.2.11';
 
 export function Profile() {
   const { t, i18n } = useTranslation();
@@ -24,7 +24,7 @@ export function Profile() {
     <>
       {/* Header */}
       <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
-      <div className="flex flex-col flex-1 max-w-lg mx-auto">
+      <div className="flex flex-col flex-1 max-w-lg mx-auto w-full">
         <div className="flex flex-col flex-1 gap-4">
           {/* Authentication Section */}
           {user ? (
@@ -72,7 +72,7 @@ export function Profile() {
                 <Button
                   variant={i18n.language === 'en' ? 'default' : 'outline'}
                   onClick={() => changeLanguage('en')}
-                  className="min-h-[48px] justify-start"
+                  className="min-h-[48px] justify-start mx-auto"
                 >
                   <span className="text-xl mr-3">🇬🇧</span>
                   <span className="flex-1 text-left">English</span>
@@ -83,7 +83,7 @@ export function Profile() {
                 <Button
                   variant={i18n.language === 'fr' ? 'default' : 'outline'}
                   onClick={() => changeLanguage('fr')}
-                  className="min-h-[48px] justify-start"
+                  className="min-h-[48px] justify-start mx-auto"
                 >
                   <span className="text-xl mr-3">🇫🇷</span>
                   <span className="flex-1 text-left">Français</span>
@@ -94,7 +94,7 @@ export function Profile() {
                 <Button
                   variant={i18n.language === 'es' ? 'default' : 'outline'}
                   onClick={() => changeLanguage('es')}
-                  className="min-h-[48px] justify-start"
+                  className="min-h-[48px] justify-start mx-auto"
                 >
                   <span className="text-xl mr-3">🇪🇸</span>
                   <span className="flex-1 text-left">Español</span>
