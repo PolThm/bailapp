@@ -162,18 +162,36 @@ export function FigureDetail() {
           </div>
   
           {/* Badges */}
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex flex-wrap gap-2">
-                <DanceStyleBadge style={figure.danceStyle} />
-                {figure.danceSubStyle && (
-                  <DanceSubStyleBadge style={figure.danceStyle} subStyle={figure.danceSubStyle} />
-                )}
-                <FigureTypeBadge type={figure.figureType} />
-                <ComplexityBadge complexity={figure.complexity} />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex flex-1 justify-between gap-3">
+            <Card className="w-full">
+              <CardContent className="pt-4">
+                <div className="flex flex-wrap gap-2">
+                  <DanceStyleBadge style={figure.danceStyle} />
+                  {figure.danceSubStyle && (
+                    <DanceSubStyleBadge style={figure.danceStyle} subStyle={figure.danceSubStyle} />
+                  )}
+                  <FigureTypeBadge type={figure.figureType} />
+                  <ComplexityBadge complexity={figure.complexity} />
+                </div>
+              </CardContent>
+            </Card>
+            {isFav && !hasMasteryLevel && (
+              <Button
+                variant="default"
+                size="lg"
+                className="hidden sm:flex sm:w-60 sm:h-[52px]"
+                onClick={() => {
+                  if (!user) {
+                    setShowAuthModal(true);
+                  } else {
+                    setShowMasteryModal(true);
+                  }
+                }}
+              >
+                {t('figure.mastery.enter')}
+              </Button>
+            )}
+          </div>
   
           {/* Mastery Level Section - Only show if figure is favorited */}
           {isFav && (
@@ -206,7 +224,7 @@ export function FigureDetail() {
                   </CardContent>
                 </Card>
               ) : (
-                <div className='flex justify-center'>
+                <div className='flex justify-center sm:hidden'>
                   <Button
                     variant="default"
                     className="w-full"
