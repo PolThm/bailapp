@@ -37,11 +37,16 @@ export function getYouTubeThumbnail(videoId: string, quality: 'default' | 'mediu
 export function getYouTubeEmbedUrl(
   videoId: string,
   startTime?: string,
-  endTime?: string
+  endTime?: string,
+  enableJsApi?: boolean
 ): string {
   let url = `https://www.youtube.com/embed/${videoId}?`;
 
   const params: string[] = [];
+
+  if (enableJsApi) {
+    params.push('enablejsapi=1');
+  }
 
   if (startTime) {
     const startSeconds = parseTimeToSeconds(startTime);

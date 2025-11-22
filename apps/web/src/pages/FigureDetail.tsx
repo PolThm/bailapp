@@ -57,9 +57,134 @@ export function FigureDetail() {
   }
 
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const playerRef = useRef<any>(null);
+  // Create embed URL without end time to allow pausing instead of stopping
+  // Enable JS API to control the player
   const embedUrl = videoId
-    ? getYouTubeEmbedUrl(videoId, figure.startTime, figure.endTime)
+    ? getYouTubeEmbedUrl(videoId, figure.startTime, undefined, true)
     : null;
+  const endTimeSeconds = figure.endTime
+    ? (() => {
+        const parts = figure.endTime.split(':').map((p) => parseInt(p, 10));
+        if (parts.some(isNaN)) return null;
+        if (parts.length === 2) return parts[0] * 60 + parts[1];
+        if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+        return null;
+      })()
+    : null;
+
+  // Load YouTube IFrame API and handle pause at end time
+  useEffect(() => {
+    if (!videoId || !embedUrl || !endTimeSeconds) return;
+
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    const initializePlayer = () => {
+      if (!iframeRef.current) return;
+
+      // Use iframe ID or create one
+      const iframeId = `youtube-player-${videoId}`;
+      if (!iframeRef.current.id) {
+        iframeRef.current.id = iframeId;
+      }
+
+      try {
+        playerRef.current = new (window as any).YT.Player(iframeId, {
+          events: {
+            onReady: () => {
+              // Start checking time when player is ready
+              intervalId = setInterval(() => {
+                if (playerRef.current && endTimeSeconds !== null) {
+                  try {
+                    const currentTime = playerRef.current.getCurrentTime();
+                    const playerState = playerRef.current.getPlayerState();
+                    // Only pause if video is playing and we've reached the end time
+                    if (
+                      playerState === (window as any).YT.PlayerState.PLAYING &&
+                      currentTime >= endTimeSeconds
+                    ) {
+                      playerRef.current.pauseVideo();
+                      if (intervalId) {
+                        clearInterval(intervalId);
+                        intervalId = null;
+                      }
+                    }
+                  } catch (e) {
+                    // Ignore errors
+                  }
+                }
+              }, 100); // Check every 100ms
+            },
+            onStateChange: (event: any) => {
+              // Clean up interval when video is paused or stopped
+              if (
+                event.data === (window as any).YT.PlayerState.PAUSED ||
+                event.data === (window as any).YT.PlayerState.ENDED
+              ) {
+                if (intervalId) {
+                  clearInterval(intervalId);
+                  intervalId = null;
+                }
+              } else if (event.data === (window as any).YT.PlayerState.PLAYING) {
+                // Restart interval when video starts playing
+                if (!intervalId) {
+                  intervalId = setInterval(() => {
+                    if (playerRef.current && endTimeSeconds !== null) {
+                      try {
+                        const currentTime = playerRef.current.getCurrentTime();
+                        if (currentTime >= endTimeSeconds) {
+                          playerRef.current.pauseVideo();
+                          if (intervalId) {
+                            clearInterval(intervalId);
+                            intervalId = null;
+                          }
+                        }
+                      } catch (e) {
+                        // Ignore errors
+                      }
+                    }
+                  }, 100);
+                }
+              }
+            },
+          },
+        });
+      } catch (e) {
+        // Ignore initialization errors
+      }
+    };
+
+    // Load YouTube IFrame API if not already loaded
+    if (!(window as any).YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+      (window as any).onYouTubeIframeAPIReady = () => {
+        initializePlayer();
+      };
+    } else if ((window as any).YT && (window as any).YT.Player) {
+      // API already loaded, initialize player directly
+      // Wait a bit for iframe to be ready
+      setTimeout(initializePlayer, 100);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      if (playerRef.current) {
+        try {
+          playerRef.current.destroy();
+        } catch (e) {
+          // Ignore errors on cleanup
+        }
+        playerRef.current = null;
+      }
+    };
+  }, [videoId, embedUrl, endTimeSeconds]);
 
   const isFav = isFavorite(figure.id);
 
@@ -118,6 +243,8 @@ export function FigureDetail() {
         {embedUrl && (
           <div className="aspect-video w-full mb-6 bg-black rounded-lg mx-auto sm:w-96 lg:w-full">
             <iframe
+              ref={iframeRef}
+              id={`youtube-player-${videoId}`}
               src={embedUrl}
               title={figure.fullTitle}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
