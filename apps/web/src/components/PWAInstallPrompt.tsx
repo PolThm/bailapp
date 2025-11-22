@@ -57,12 +57,12 @@ export function PWAInstallPrompt() {
             className="p-4"
             onClick={handleInstallClick}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between w-full">
               {/* Download Button */}
               <Button
                 variant="secondary"
                 size="icon"
-                className="flex-shrink-0 bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                className="flex-shrink-0 bg-primary-foreground text-primary hover:bg-primary-foreground/90 sm:w-10"
               >
                 <Download className="h-4 w-4" />
               </Button>
