@@ -62,7 +62,7 @@ export function Choreographies() {
           onLogin={() => setShowAuthModal(true)}
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 mt-6">
+        <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-5">
           {sortedChoreographies.map((choreography) => (
             <ChoreographyCard key={choreography.id} choreography={choreography} />
           ))}
@@ -71,7 +71,7 @@ export function Choreographies() {
 
       {/* Add Button at Bottom */}
       {sortedChoreographies.length > 0 && (
-        <div className="mt-auto pt-6">
+        <div className="mt-auto pt-6 mx-auto">
           <Button
             onClick={handleNewChoreography}
             className="w-full"
