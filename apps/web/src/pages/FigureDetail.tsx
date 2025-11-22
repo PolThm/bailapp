@@ -32,6 +32,7 @@ export function FigureDetail() {
   const [showMasteryModal, setShowMasteryModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
   const [isLandscape, setIsLandscape] = useState(false);
+  const [isFullscreenExited, setIsFullscreenExited] = useState(false);
 
   const figure = id ? getFigure(id) : undefined;
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
@@ -51,7 +52,13 @@ export function FigureDetail() {
     const checkOrientation = () => {
       const isMobile = window.innerWidth < 768; // sm breakpoint
       const isLandscapeMode = window.innerWidth > window.innerHeight;
-      setIsLandscape(isMobile && isLandscapeMode);
+      // Only enable landscape fullscreen if not explicitly exited by user
+      setIsLandscape(isMobile && isLandscapeMode && !isFullscreenExited);
+      
+      // Reset exit flag when switching back to portrait
+      if (!isLandscapeMode) {
+        setIsFullscreenExited(false);
+      }
     };
 
     checkOrientation();
@@ -62,7 +69,46 @@ export function FigureDetail() {
       window.removeEventListener('resize', checkOrientation);
       window.removeEventListener('orientationchange', checkOrientation);
     };
-  }, []);
+  }, [isFullscreenExited]);
+
+  // Reset fullscreen exit flag when figure changes
+  useEffect(() => {
+    setIsFullscreenExited(false);
+  }, [id]);
+
+  // Detect when user exits fullscreen from YouTube player
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      // Check if we're no longer in fullscreen
+      const isInFullscreen = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+
+      if (!isInFullscreen && isLandscape) {
+        // User exited fullscreen, disable landscape fullscreen mode
+        setIsFullscreenExited(true);
+        setIsLandscape(false);
+      } else if (isInFullscreen) {
+        // User entered fullscreen, reset the exit flag
+        setIsFullscreenExited(false);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, [isLandscape]);
 
   if (!figure) {
     return (
