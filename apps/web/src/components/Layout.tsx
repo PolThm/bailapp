@@ -32,7 +32,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex flex-col h-screen max-w-sm mx-auto sm:border p-safe-area overflow-hidden">
+    <div className="flex flex-col h-screen sm:border p-safe-area overflow-hidden">
       {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
       <main 
         ref={mainRef}
@@ -44,7 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           pullDistance={pullDistance}
           threshold={80}
         />
-        {children}
+        <div className="flex flex-1 flex-col w-full max-w-7xl mx-auto">{children}</div>
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
