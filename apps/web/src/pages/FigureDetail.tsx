@@ -299,23 +299,14 @@ export function FigureDetail() {
     return 'text-orange-500 dark:text-orange-400';
   };
 
-  // Render fullscreen video in portal to escape Layout's stacking context (like dialogs)
-  const fullscreenVideo = isLandscape && embedUrl ? (
+  // Render overlay in portal for landscape mode to escape Layout's stacking context
+  // The iframe itself stays in normal flow to prevent reload
+  const landscapeOverlay = isLandscape && embedUrl ? (
     createPortal(
-      <div className="fixed inset-0 z-[55] bg-black">
-        <div className="fixed inset-0 w-full h-full">
-          <iframe
-            ref={iframeRef}
-            id={`youtube-player-${videoId}`}
-            src={embedUrl}
-            title={figure.fullTitle}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-full"
-            style={{ border: 0, display: 'block' }}
-          />
-        </div>
-      </div>,
+      <div 
+        className="fixed inset-0 z-[55] bg-black"
+      />
+      ,
       document.body
     )
   ) : null;
@@ -325,27 +316,33 @@ export function FigureDetail() {
       {/* Header with back icon and title */}
       {!isLandscape && <HeaderBackTitle title={figure.shortTitle} className="pb-2" />}
 
-      {/* Fullscreen video portal */}
-      {fullscreenVideo}
+      {/* Landscape overlay portal */}
+      {landscapeOverlay}
+
+      {/* Video Player - iframe always mounted here to prevent reload */}
+      {embedUrl && (
+        <div 
+          className={`${
+            isLandscape 
+              ? 'fixed inset-0 z-[60] mb-0 rounded-none' 
+              : 'aspect-video w-full mb-6 bg-black rounded-lg mx-auto sm:w-96 lg:w-full relative max-w-4xl'
+          }`}
+        >
+          <iframe
+            ref={iframeRef}
+            id={`youtube-player-${videoId}`}
+            src={embedUrl}
+            title={figure.fullTitle}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className={`w-full h-full ${isLandscape ? '' : 'rounded-lg'}`}
+            style={{ border: 0, display: 'block' }}
+          />
+        </div>
+      )}
 
       {!isLandscape && (
         <div className="max-w-4xl mx-auto w-full">
-          {/* Video Player */}
-          {embedUrl && (
-            <div className="aspect-video w-full mb-6 bg-black rounded-lg mx-auto sm:w-96 lg:w-full">
-              <iframe
-                ref={iframeRef}
-                id={`youtube-player-${videoId}`}
-                src={embedUrl}
-                title={figure.fullTitle}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full rounded-lg"
-                style={{ border: 0, display: 'block' }}
-              />
-            </div>
-          )}
-  
           {/* Details Section */}
           <div className="space-y-6">
   
