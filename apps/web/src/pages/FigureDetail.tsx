@@ -123,159 +123,161 @@ export function FigureDetail() {
         </div>
       </div>
 
-      {/* Video Player */}
-      {embedUrl && (
-        <div className="aspect-video w-full mb-6 bg-black rounded-lg">
-          <iframe
-            src={embedUrl}
-            title={figure.fullTitle}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-full rounded-lg"
-            style={{ border: 0, display: 'block' }}
-          />
-        </div>
-      )}
-
-      {/* Details Section */}
-      <div className="space-y-6">
-
-        {/* Action Buttons */}
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleToggleFavorite}
-            className="flex-1 min-h-[48px]"
-          >
-            <Heart className={`h-5 w-5 mr-2 ${isFav ? 'fill-current text-red-500' : ''}`} />
-            {isFav ? t('figure.removeFromFavorites') : t('figure.addToFavorites')}
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleShare}
-            className="min-w-[48px] min-h-[48px]"
-          >
-            <Share2 className="h-5 w-5" />
-          </Button>
-        </div>
-
-        {/* Badges */}
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex flex-wrap gap-2">
-              <DanceStyleBadge style={figure.danceStyle} />
-              {figure.danceSubStyle && (
-                <DanceSubStyleBadge style={figure.danceStyle} subStyle={figure.danceSubStyle} />
-              )}
-              <FigureTypeBadge type={figure.figureType} />
-              <ComplexityBadge complexity={figure.complexity} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Mastery Level Section - Only show if figure is favorited */}
-        {isFav && (
-          <>
-            {hasMasteryLevel ? (
-              <Card>
-                <CardContent className="pt-4">
-                  <div className="space-y-2">
-                    <h2 className="font-semibold">{t('figure.mastery.title')}</h2>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-2xl font-bold ${getMasteryColor(masteryLevel!)}`}>
-                        {masteryLevel}%
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (!user) {
-                            setShowAuthModal(true);
-                          } else {
-                            setShowMasteryModal(true);
-                          }
-                        }}
-                        className="ml-auto"
-                      >
-                        {t('common.update')}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className='flex justify-center'>
-                <Button
-                  variant="default"
-                  className="w-full"
-                  onClick={() => {
-                    if (!user) {
-                      setShowAuthModal(true);
-                    } else {
-                      setShowMasteryModal(true);
-                    }
-                  }}
-                >
-                  {t('figure.mastery.enter')}
-                </Button>
-              </div>
-            )}
-          </>
+      <div className="max-w-4xl mx-auto w-full">
+        {/* Video Player */}
+        {embedUrl && (
+          <div className="aspect-video w-full mb-6 bg-black rounded-lg mx-auto sm:w-96 lg:w-full">
+            <iframe
+              src={embedUrl}
+              title={figure.fullTitle}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full rounded-lg"
+              style={{ border: 0, display: 'block' }}
+            />
+          </div>
         )}
-
-        {/* Description */}
-        {figure.description && (
+  
+        {/* Details Section */}
+        <div className="space-y-6">
+  
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleToggleFavorite}
+              className="flex-1 min-h-[48px]"
+            >
+              <Heart className={`h-5 w-5 mr-2 ${isFav ? 'fill-current text-red-500' : ''}`} />
+              {isFav ? t('figure.removeFromFavorites') : t('figure.addToFavorites')}
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleShare}
+              className="min-w-[48px] min-h-[48px]"
+            >
+              <Share2 className="h-5 w-5" />
+            </Button>
+          </div>
+  
+          {/* Badges */}
           <Card>
-            <CardContent className="pt-4 space-y-1">
-              <h2 className="font-semibold">{t('figure.fullTitle')}</h2>
-              <h1 className="text-sm text-muted-foreground leading-relaxed">{figure.fullTitle}</h1>
-              <h2 className="font-semibold pt-1">{t('figure.description')}</h2>
-              <p className={`text-sm text-muted-foreground leading-relaxed ${!showFullDescription ? 'line-clamp-3' : ''}`}>
-                {figure.description}
-              </p>
-              {isDescriptionLong && (
-                <button
-                  onClick={() => setShowFullDescription(!showFullDescription)}
-                  className="text-sm text-primary hover:underline"
-                >
-                  {showFullDescription ? t('figure.showLess') : t('figure.showMore')}
-                </button>
-              )}
+            <CardContent className="pt-4">
+              <div className="flex flex-wrap gap-2">
+                <DanceStyleBadge style={figure.danceStyle} />
+                {figure.danceSubStyle && (
+                  <DanceSubStyleBadge style={figure.danceStyle} subStyle={figure.danceSubStyle} />
+                )}
+                <FigureTypeBadge type={figure.figureType} />
+                <ComplexityBadge complexity={figure.complexity} />
+              </div>
             </CardContent>
           </Card>
-        )}
-
-        {/* Meta Information */}
-        <Card>
-          <CardContent className="pt-4 space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('figure.duration')}</span>
-              <span className="font-medium flex items-center gap-1.5">
-                <Clock className="h-4 w-4" />
-                {t('figure.phrases', { count: figure.phrasesCount })}
-              </span>
-            </div>
-            {figure.videoAuthor && (
+  
+          {/* Mastery Level Section - Only show if figure is favorited */}
+          {isFav && (
+            <>
+              {hasMasteryLevel ? (
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="space-y-2">
+                      <h2 className="font-semibold">{t('figure.mastery.title')}</h2>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-2xl font-bold ${getMasteryColor(masteryLevel!)}`}>
+                          {masteryLevel}%
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (!user) {
+                              setShowAuthModal(true);
+                            } else {
+                              setShowMasteryModal(true);
+                            }
+                          }}
+                          className="ml-auto"
+                        >
+                          {t('common.update')}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className='flex justify-center'>
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    onClick={() => {
+                      if (!user) {
+                        setShowAuthModal(true);
+                      } else {
+                        setShowMasteryModal(true);
+                      }
+                    }}
+                  >
+                    {t('figure.mastery.enter')}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+  
+          {/* Description */}
+          {figure.description && (
+            <Card>
+              <CardContent className="pt-4 space-y-1">
+                <h2 className="font-semibold">{t('figure.fullTitle')}</h2>
+                <h1 className="text-sm text-muted-foreground leading-relaxed">{figure.fullTitle}</h1>
+                <h2 className="font-semibold pt-1">{t('figure.description')}</h2>
+                <p className={`text-sm text-muted-foreground leading-relaxed ${!showFullDescription ? 'line-clamp-3' : ''}`}>
+                  {figure.description}
+                </p>
+                {isDescriptionLong && (
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {showFullDescription ? t('figure.showLess') : t('figure.showMore')}
+                  </button>
+                )}
+              </CardContent>
+            </Card>
+          )}
+  
+          {/* Meta Information */}
+          <Card>
+            <CardContent className="pt-4 space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{t('figure.videoAuthor')}</span>
-                <span className="font-medium">{figure.videoAuthor}</span>
+                <span className="text-muted-foreground">{t('figure.duration')}</span>
+                <span className="font-medium flex items-center gap-1.5">
+                  <Clock className="h-4 w-4" />
+                  {t('figure.phrases', { count: figure.phrasesCount })}
+                </span>
               </div>
-            )}
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('figure.videoLanguage')}</span>
-              <span className="font-medium">{t(`badges.videoLanguage.${figure.videoLanguage}`)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('figure.visibility')}</span>
-              <span className="font-medium">{t(`badges.visibility.${figure.visibility}`)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('figure.importedBy')}</span>
-              <span className="font-medium">{figure.importedBy}</span>
-            </div>
-          </CardContent>
-        </Card>
+              {figure.videoAuthor && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">{t('figure.videoAuthor')}</span>
+                  <span className="font-medium">{figure.videoAuthor}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t('figure.videoLanguage')}</span>
+                <span className="font-medium">{t(`badges.videoLanguage.${figure.videoLanguage}`)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t('figure.visibility')}</span>
+                <span className="font-medium">{t(`badges.visibility.${figure.visibility}`)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t('figure.importedBy')}</span>
+                <span className="font-medium">{figure.importedBy}</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Auth Dialog */}
