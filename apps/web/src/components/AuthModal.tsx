@@ -35,7 +35,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
         </DialogHeader>
         <DialogDescription className="mt-2">{t('auth.signInToSave')}</DialogDescription>
         <div className="flex flex-col gap-4 py-4">
-          <Button onClick={handleSignIn} className="w-full">
+          <Button onClick={handleSignIn} className="w-full mx-auto">
             {t('auth.signInWithGoogle')}
           </Button>
         </div>
