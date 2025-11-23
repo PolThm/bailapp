@@ -58,7 +58,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex flex-col h-screen sm:border p-safe-area overflow-hidden">
+    <div className={`flex flex-col h-screen sm:border overflow-hidden ${!isLandscapeMobile ? 'p-safe-area' : ''}`}>
       {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
       <main 
         ref={mainRef}
