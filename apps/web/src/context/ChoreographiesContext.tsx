@@ -21,6 +21,7 @@ interface ChoreographiesContextType {
   togglePublic: (id: string) => void;
   copyChoreography: (choreography: Choreography) => Promise<string>;
   isLoading: boolean;
+  reloadChoreographies: () => Promise<void>;
 }
 
 const ChoreographiesContext = createContext<ChoreographiesContextType | undefined>(
@@ -32,6 +33,30 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
   const { shouldUseCache } = useOfflineStatus();
   const [choreographies, setChoreographies] = useState<Choreography[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Function to reload choreographies from Firestore
+  const reloadChoreographies = async () => {
+    if (!user || !user.uid) return;
+    
+    const cacheKey = `choreographies_${user.uid}`;
+    try {
+      const loadedChoreographies = await getUserChoreographies(user.uid);
+      const migratedChoreographies = loadedChoreographies.map((choreography: Choreography) => ({
+        ...choreography,
+        movements: choreography.movements || [],
+      }));
+      
+      setChoreographies(migratedChoreographies);
+      await setCachedData(cacheKey, migratedChoreographies);
+    } catch (error: any) {
+      console.error('Failed to reload choreographies from Firestore:', error);
+      // On error, try to load from cache
+      const cachedChoreographies = await getCachedData<Choreography[]>(cacheKey);
+      if (cachedChoreographies) {
+        setChoreographies(cachedChoreographies);
+      }
+    }
+  };
 
   // Load choreographies from Firestore (only if authenticated)
   useEffect(() => {
@@ -308,9 +333,19 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
   const deleteChoreography = async (id: string) => {
     // Store the previous state for potential revert
     const previousChoreography = choreographies.find((c) => c.id === id);
+    let updatedChoreographies: Choreography[] = [];
     
     // Optimistic update: update local state immediately
-    setChoreographies((prev) => prev.filter((choreography) => choreography.id !== id));
+    setChoreographies((prev) => {
+      updatedChoreographies = prev.filter((choreography) => choreography.id !== id);
+      return updatedChoreographies;
+    });
+
+    // Update cache immediately with the new state (without deleted choreography)
+    if (user && user.uid) {
+      const cacheKey = `choreographies_${user.uid}`;
+      await setCachedData(cacheKey, updatedChoreographies);
+    }
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
@@ -333,7 +368,13 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
             });
           } else if (error?.code === 'permission-denied' && previousChoreography) {
             // Revert on permission error
-            setChoreographies((prev) => [...prev, previousChoreography]);
+            const revertedChoreographies = [...updatedChoreographies, previousChoreography];
+            setChoreographies(revertedChoreographies);
+            // Also revert cache
+            if (user && user.uid) {
+              const cacheKey = `choreographies_${user.uid}`;
+              await setCachedData(cacheKey, revertedChoreographies);
+            }
           }
         });
       }
@@ -431,6 +472,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
         togglePublic,
         copyChoreography,
         isLoading,
+        reloadChoreographies,
       }}
     >
       {children}

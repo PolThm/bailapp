@@ -13,6 +13,8 @@ import {
   deleteChoreography,
 } from '@/lib/services/choreographyService';
 import { useChoreographies } from '@/context/ChoreographiesContext';
+import { setCachedData } from '@/lib/cache';
+import { useAuth } from '@/context/AuthContext';
 import type { SyncOperation } from '@/lib/syncQueue';
 
 interface MergedSyncOperation extends SyncOperation {
@@ -24,7 +26,8 @@ interface MergedSyncOperation extends SyncOperation {
  */
 export function useSyncQueue() {
   const { shouldUseCache } = useOfflineStatus();
-  const { getChoreography } = useChoreographies();
+  const { getChoreography, choreographies, reloadChoreographies } = useChoreographies();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (shouldUseCache) return;
@@ -39,9 +42,22 @@ export function useSyncQueue() {
       // Use current local state to ensure we sync the latest state
       const mergedQueue = mergeChoreographyUpdates(queue, getChoreography);
       
+      let hasChoreographyOps = false;
+      let hasDeletions = false;
+      
       for (const operation of mergedQueue) {
         try {
           await executeOperation(operation);
+          // Track if we had any choreography operations
+          if (operation.type === 'createChoreography' || 
+              operation.type === 'updateChoreography' || 
+              operation.type === 'deleteChoreography' || 
+              operation.type === 'toggleChoreographyPublic') {
+            hasChoreographyOps = true;
+            if (operation.type === 'deleteChoreography') {
+              hasDeletions = true;
+            }
+          }
           // Remove all original operations that were merged into this one
           if (operation.originalOperationIds) {
             for (const originalId of operation.originalOperationIds) {
@@ -62,12 +78,27 @@ export function useSyncQueue() {
           }
         }
       }
+      
+      // After successful sync of choreography operations, reload from Firestore
+      // This ensures we have the latest state from Firestore (especially important for deletions)
+      if (hasChoreographyOps && hasDeletions) {
+        // Small delay to ensure Firestore has processed the deletion
+        setTimeout(() => {
+          reloadChoreographies();
+        }, 500);
+      } else if (hasChoreographyOps) {
+        // For other operations, just update cache with current local state
+        if (user && user.uid) {
+          const cacheKey = `choreographies_${user.uid}`;
+          await setCachedData(cacheKey, choreographies);
+        }
+      }
     };
 
     // Small delay to ensure network is stable
     const timeout = setTimeout(syncQueue, 1000);
     return () => clearTimeout(timeout);
-  }, [shouldUseCache, getChoreography]);
+  }, [shouldUseCache, getChoreography, choreographies, user, reloadChoreographies]);
 }
 
 /**
