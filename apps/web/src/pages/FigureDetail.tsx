@@ -33,7 +33,15 @@ export function FigureDetail() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMasteryModal, setShowMasteryModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
-  const [isLandscape, setIsLandscape] = useState(false);
+  // Initialize landscape state based on current orientation
+  const [isLandscape, setIsLandscape] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const isMobile = window.innerWidth < 768;
+      const isLandscapeMode = window.innerWidth > window.innerHeight;
+      return isMobile && isLandscapeMode;
+    }
+    return false;
+  });
   const [isFullscreenExited, setIsFullscreenExited] = useState(false);
 
   const figure = id ? getFigure(id) : undefined;
@@ -48,6 +56,11 @@ export function FigureDetail() {
       lastUpdatedIdRef.current = id;
     }
   }, [id, figure, isFavorite, updateLastOpened]);
+
+  // Sync initial video fullscreen state on mount
+  useEffect(() => {
+    setIsVideoFullscreen(isLandscape);
+  }, [isLandscape, setIsVideoFullscreen]);
 
   // Detect landscape orientation on mobile
   useEffect(() => {
@@ -76,10 +89,15 @@ export function FigureDetail() {
     };
   }, [isFullscreenExited, setIsVideoFullscreen]);
 
-  // Reset fullscreen exit flag when figure changes
+  // Reset fullscreen exit flag when figure changes and check initial orientation
   useEffect(() => {
     setIsFullscreenExited(false);
-    setIsVideoFullscreen(false);
+    // Check orientation immediately when figure changes
+    const isMobile = window.innerWidth < 768;
+    const isLandscapeMode = window.innerWidth > window.innerHeight;
+    const shouldBeFullscreen = isMobile && isLandscapeMode;
+    setIsLandscape(shouldBeFullscreen);
+    setIsVideoFullscreen(shouldBeFullscreen);
   }, [id, setIsVideoFullscreen]);
 
   // Detect when user exits fullscreen from YouTube player
