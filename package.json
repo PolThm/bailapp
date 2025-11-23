@@ -1,6 +1,6 @@
 {
   "name": "bailapp",
-  "version": "0.2.47",
+  "version": "0.2.48",
   "private": true,
   "description": "Bailapp - A PWA app for creating choreographies and learning dance moves",
   "workspaces": [
