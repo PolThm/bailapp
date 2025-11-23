@@ -12,13 +12,19 @@ import {
   updateChoreography,
   deleteChoreography,
 } from '@/lib/services/choreographyService';
+import { useChoreographies } from '@/context/ChoreographiesContext';
 import type { SyncOperation } from '@/lib/syncQueue';
+
+interface MergedSyncOperation extends SyncOperation {
+  originalOperationIds?: string[];
+}
 
 /**
  * Hook to sync pending operations when back online
  */
 export function useSyncQueue() {
   const { shouldUseCache } = useOfflineStatus();
+  const { getChoreography } = useChoreographies();
 
   useEffect(() => {
     if (shouldUseCache) return;
@@ -27,15 +33,33 @@ export function useSyncQueue() {
     const syncQueue = async () => {
       const queue = await getSyncQueue();
       
-      for (const operation of queue) {
+      if (queue.length === 0) return;
+      
+      // Group and merge updateChoreography operations for the same choreography
+      // Use current local state to ensure we sync the latest state
+      const mergedQueue = mergeChoreographyUpdates(queue, getChoreography);
+      
+      for (const operation of mergedQueue) {
         try {
           await executeOperation(operation);
-          // Remove from queue on success
-          await removeFromSyncQueue(operation.id);
+          // Remove all original operations that were merged into this one
+          if (operation.originalOperationIds) {
+            for (const originalId of operation.originalOperationIds) {
+              await removeFromSyncQueue(originalId);
+            }
+          } else {
+            await removeFromSyncQueue(operation.id);
+          }
         } catch (error) {
           console.error(`Failed to sync operation ${operation.id}:`, error);
-          // Increment retry count
-          await incrementRetryCount(operation.id);
+          // Increment retry count for all original operations
+          if (operation.originalOperationIds) {
+            for (const originalId of operation.originalOperationIds) {
+              await incrementRetryCount(originalId);
+            }
+          } else {
+            await incrementRetryCount(operation.id);
+          }
         }
       }
     };
@@ -43,10 +67,107 @@ export function useSyncQueue() {
     // Small delay to ensure network is stable
     const timeout = setTimeout(syncQueue, 1000);
     return () => clearTimeout(timeout);
-  }, [shouldUseCache]);
+  }, [shouldUseCache, getChoreography]);
 }
 
-async function executeOperation(operation: SyncOperation): Promise<void> {
+/**
+ * Merge multiple updateChoreography operations for the same choreography into one
+ * Uses current local state to ensure we sync the latest complete state
+ */
+function mergeChoreographyUpdates(
+  queue: SyncOperation[],
+  getChoreography: (id: string) => import('@/types').Choreography | undefined
+): MergedSyncOperation[] {
+  const merged: MergedSyncOperation[] = [];
+  const choreographyUpdates = new Map<string, {
+    operations: SyncOperation[];
+    mergedUpdates: any;
+  }>();
+
+  // First pass: group updateChoreography operations by choreographyId
+  for (const operation of queue) {
+    if (operation.type === 'updateChoreography' || operation.type === 'toggleChoreographyPublic') {
+      const choreographyId = operation.data.choreographyId;
+      if (!choreographyUpdates.has(choreographyId)) {
+        choreographyUpdates.set(choreographyId, {
+          operations: [],
+          mergedUpdates: {},
+        });
+      }
+      const group = choreographyUpdates.get(choreographyId)!;
+      group.operations.push(operation);
+      
+      // Merge updates (later operations override earlier ones)
+      if (operation.type === 'toggleChoreographyPublic') {
+        group.mergedUpdates.isPublic = operation.data.isPublic;
+      } else {
+        Object.assign(group.mergedUpdates, operation.data.updates);
+      }
+    } else {
+      // Non-update operations are added as-is
+      merged.push(operation);
+    }
+  }
+
+  // Second pass: create merged operations for each choreography
+  // Use current local state to ensure we sync the latest complete state
+  for (const [choreographyId, group] of choreographyUpdates.entries()) {
+    if (group.operations.length > 0) {
+      const firstOperation = group.operations[0];
+      
+      // Get current local state of the choreography
+      const currentChoreography = getChoreography(choreographyId);
+      
+      // If we have the current local state, use it to ensure we sync the complete latest state
+      // Otherwise, use the merged updates from the queue
+      let finalUpdates = group.mergedUpdates;
+      if (currentChoreography) {
+        // Use current local state for critical fields that might have changed
+        // This ensures we sync the latest state, not just the merged partial updates
+        finalUpdates = {
+          ...group.mergedUpdates,
+          // Always use current movements if they exist in local state
+          movements: currentChoreography.movements,
+          // Use current name if it was updated
+          name: group.mergedUpdates.name ?? currentChoreography.name,
+          // Use current danceStyle if it was updated
+          danceStyle: group.mergedUpdates.danceStyle ?? currentChoreography.danceStyle,
+          danceSubStyle: group.mergedUpdates.danceSubStyle ?? currentChoreography.danceSubStyle,
+          complexity: group.mergedUpdates.complexity ?? currentChoreography.complexity,
+          phrasesCount: group.mergedUpdates.phrasesCount ?? currentChoreography.phrasesCount,
+          // isPublic is handled separately in toggleChoreographyPublic
+          isPublic: group.mergedUpdates.isPublic !== undefined ? group.mergedUpdates.isPublic : currentChoreography.isPublic,
+        };
+      }
+      
+      const mergedOperation: MergedSyncOperation = {
+        ...firstOperation,
+        id: firstOperation.id, // Use first operation's ID
+        type: 'updateChoreography',
+        data: {
+          choreographyId,
+          updates: finalUpdates,
+        },
+        originalOperationIds: group.operations.map(op => op.id),
+      };
+      merged.push(mergedOperation);
+    }
+  }
+
+  // Sort merged operations to maintain order (creates first, then updates, then deletes)
+  merged.sort((a, b) => {
+    const order = { createChoreography: 0, updateChoreography: 1, toggleChoreographyPublic: 1, deleteChoreography: 2 };
+    const aOrder = order[a.type as keyof typeof order] ?? 3;
+    const bOrder = order[b.type as keyof typeof order] ?? 3;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    // If same type, maintain original order by timestamp
+    return a.timestamp - b.timestamp;
+  });
+
+  return merged;
+}
+
+async function executeOperation(operation: MergedSyncOperation): Promise<void> {
   switch (operation.type) {
     case 'addFavorite':
       await addToFavoritesInFirestore(operation.userId, operation.data.figureId);

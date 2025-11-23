@@ -10,7 +10,7 @@ import type { Choreography } from '@/types';
 import { createExampleChoreography } from '@/data/mockChoreographies';
 import { getCachedData, setCachedData } from '@/lib/cache';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-import { addToSyncQueue } from '@/lib/syncQueue';
+import { addToSyncQueue, getSyncQueue } from '@/lib/syncQueue';
 
 interface ChoreographiesContextType {
   choreographies: Choreography[];
@@ -42,6 +42,28 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
       try {
         if (user && user.uid) {
           const cacheKey = `choreographies_${user.uid}`;
+          
+          // Check if there are pending sync operations
+          // If yes, don't reload from Firestore yet to avoid overwriting local changes
+          const queue = await getSyncQueue();
+          const hasPendingChoreographyOps = queue.some(
+            op => op.type === 'createChoreography' || 
+                   op.type === 'updateChoreography' || 
+                   op.type === 'deleteChoreography' || 
+                   op.type === 'toggleChoreographyPublic'
+          );
+          
+          // If we have pending operations and we're coming back online, 
+          // keep using local state until sync completes
+          if (hasPendingChoreographyOps && !shouldUseCache) {
+            // Load from cache to ensure we have the latest local state
+            const cachedChoreographies = await getCachedData<Choreography[]>(cacheKey);
+            if (cachedChoreographies && !cancelled) {
+              setChoreographies(cachedChoreographies);
+              setIsLoading(false);
+              return;
+            }
+          }
           
           // User is authenticated: load from Firestore
           try {
@@ -132,7 +154,17 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
   const addChoreography = async (choreography: Choreography): Promise<string> => {
     // Optimistic update: update local state immediately
-    setChoreographies((prev) => [...prev, choreography]);
+    let updatedChoreographies: Choreography[] = [];
+    setChoreographies((prev) => {
+      updatedChoreographies = [...prev, choreography];
+      return updatedChoreographies;
+    });
+
+    // Update cache immediately with the new state
+    if (user && user.uid) {
+      const cacheKey = `choreographies_${user.uid}`;
+      await setCachedData(cacheKey, updatedChoreographies);
+    }
 
     // Sync to Firestore if authenticated
     if (user && user.uid) {
@@ -211,10 +243,11 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
   const updateChoreography = async (id: string, updates: Partial<Choreography>) => {
     // Store the previous state for potential revert
     let previousChoreography: Choreography | undefined;
+    let updatedChoreographies: Choreography[] = [];
     
     // Optimistic update: update local state immediately
     setChoreographies((prev) => {
-      return prev.map((choreography) => {
+      updatedChoreographies = prev.map((choreography) => {
         if (choreography.id === id) {
           previousChoreography = choreography;
           // Filter out undefined values to avoid overwriting existing values
@@ -225,7 +258,14 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
         }
         return choreography;
       });
+      return updatedChoreographies;
     });
+
+    // Update cache immediately with the new state
+    if (user && user.uid) {
+      const cacheKey = `choreographies_${user.uid}`;
+      await setCachedData(cacheKey, updatedChoreographies);
+    }
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
@@ -251,6 +291,14 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
             setChoreographies((prev) =>
               prev.map((c) => (c.id === id ? previousChoreography! : c))
             );
+            // Also revert cache
+            if (user && user.uid) {
+              const cacheKey = `choreographies_${user.uid}`;
+              const revertedChoreographies = updatedChoreographies.map((c) => 
+                c.id === id ? previousChoreography! : c
+              );
+              await setCachedData(cacheKey, revertedChoreographies);
+            }
           }
         });
       }
@@ -301,11 +349,19 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
     if (!choreography) return;
 
     const newIsPublic = !choreography.isPublic;
+    let updatedChoreographies: Choreography[] = [];
     
     // Optimistic update
-    setChoreographies((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, isPublic: newIsPublic } : c))
-    );
+    setChoreographies((prev) => {
+      updatedChoreographies = prev.map((c) => (c.id === id ? { ...c, isPublic: newIsPublic } : c));
+      return updatedChoreographies;
+    });
+
+    // Update cache immediately with the new state
+    if (user && user.uid) {
+      const cacheKey = `choreographies_${user.uid}`;
+      await setCachedData(cacheKey, updatedChoreographies);
+    }
 
     // Sync to Firestore
     if (user && user.uid) {
@@ -328,9 +384,15 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
             });
           } else {
             // Revert on other errors
-            setChoreographies((prev) =>
-              prev.map((c) => (c.id === id ? { ...c, isPublic: !newIsPublic } : c))
+            const revertedChoreographies = updatedChoreographies.map((c) =>
+              c.id === id ? { ...c, isPublic: !newIsPublic } : c
             );
+            setChoreographies(revertedChoreographies);
+            // Also revert cache
+            if (user && user.uid) {
+              const cacheKey = `choreographies_${user.uid}`;
+              await setCachedData(cacheKey, revertedChoreographies);
+            }
           }
         });
       }
