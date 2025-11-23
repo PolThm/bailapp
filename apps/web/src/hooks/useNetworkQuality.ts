@@ -30,20 +30,8 @@ export function useNetworkQuality(): NetworkQuality {
   useEffect(() => {
     const connection = getConnection();
     
-    console.log('[useNetworkQuality] Initial connection check', {
-      connectionAvailable: !!connection,
-      connection: connection ? {
-        effectiveType: connection.effectiveType,
-        downlink: connection.downlink,
-        rtt: connection.rtt,
-        type: connection.type,
-        saveData: connection.saveData,
-      } : null,
-    });
-    
     if (!connection) {
       // API not available, assume good connection
-      console.log('[useNetworkQuality] Connection API not available - assuming good connection');
       setNetworkQuality({
         isSlow: false,
         slowLevel: 'none',
@@ -58,25 +46,13 @@ export function useNetworkQuality(): NetworkQuality {
 
     // Set initial quality
     const initialQuality = calculateNetworkQuality(connection);
-    console.log('[useNetworkQuality] Initial network quality calculated', initialQuality);
     setNetworkQuality(initialQuality);
 
     // Listen for connection changes
     const handleConnectionChange = () => {
-      console.log('[useNetworkQuality] Connection change detected');
       const updatedConnection = getConnection();
       if (updatedConnection) {
         const updatedQuality = calculateNetworkQuality(updatedConnection);
-        console.log('[useNetworkQuality] Updated network quality', {
-          connection: {
-            effectiveType: updatedConnection.effectiveType,
-            downlink: updatedConnection.downlink,
-            rtt: updatedConnection.rtt,
-            type: updatedConnection.type,
-            saveData: updatedConnection.saveData,
-          },
-          quality: updatedQuality,
-        });
         setNetworkQuality(updatedQuality);
       }
     };
@@ -106,7 +82,6 @@ function getConnection(): (NetworkConnection & { addEventListener: (event: strin
 
 function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQuality {
   if (!connection) {
-    console.log('[useNetworkQuality] No connection provided - returning default');
     return {
       isSlow: false,
       slowLevel: 'none',
@@ -128,27 +103,22 @@ function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQ
   // Priority: downlink > effectiveType > type
   let slowLevel: SlowConnectionLevel = 'none';
   let isSlow = false;
-  let slowReason = '';
 
   // Override: if saveData is enabled, consider it very slow
   if (saveData) {
     slowLevel = 'very';
     isSlow = true;
-    slowReason = 'saveData is enabled';
   } else if (downlink !== undefined) {
     // Primary classification: use downlink speed (most reliable indicator)
     if (downlink < 5) {
       slowLevel = 'very';
       isSlow = true;
-      slowReason = `downlink is ${downlink} Mbps (< 5 Mbps)`;
     } else if (downlink < 6) {
       slowLevel = 'moderate';
       isSlow = true;
-      slowReason = `downlink is ${downlink} Mbps (< 6 Mbps)`;
     } else if (downlink < 8) {
       slowLevel = 'slight';
       isSlow = true;
-      slowReason = `downlink is ${downlink} Mbps (6-8 Mbps)`;
     } else {
       // downlink >= 8 Mbps: good connection
       slowLevel = 'none';
@@ -159,11 +129,9 @@ function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQ
     if (effectiveType === 'slow-2g' || effectiveType === '2g') {
       slowLevel = 'very';
       isSlow = true;
-      slowReason = `effectiveType is ${effectiveType}`;
     } else if (effectiveType === '3g') {
       slowLevel = 'moderate';
       isSlow = true;
-      slowReason = `effectiveType is ${effectiveType}`;
     } else if (effectiveType === '4g') {
       // 4g is generally good, but without downlink we can't be sure
       // Assume good connection
@@ -176,7 +144,6 @@ function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQ
       // Cellular without 4g indication: assume moderate
       slowLevel = 'moderate';
       isSlow = true;
-      slowReason = `type is ${type} and effectiveType is not 4g`;
     } else if (type === 'wifi' || type === 'ethernet') {
       // WiFi and ethernet are generally good
       slowLevel = 'none';
@@ -185,7 +152,7 @@ function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQ
     // Other types (bluetooth, wimax, etc.) default to 'none' (good)
   }
 
-  const quality = {
+  return {
     isSlow,
     slowLevel,
     effectiveType: effectiveType || null,
@@ -194,19 +161,5 @@ function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQ
     type: type || null,
     saveData,
   };
-
-  console.log('[useNetworkQuality] Calculated network quality', {
-    input: {
-      effectiveType,
-      downlink,
-      rtt,
-      type,
-      saveData,
-    },
-    output: quality,
-    slowReason: isSlow ? slowReason : 'Connection is good',
-  });
-
-  return quality;
 }
 
