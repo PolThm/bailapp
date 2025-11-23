@@ -1,18 +1,42 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, Compass, Heart, Music, User } from 'lucide-react';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { usePullToRefreshContext } from '@/context/PullToRefreshContext';
-import { useVideoFullscreen } from '@/context/VideoFullscreenContext';
 import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
   const { refreshHandler } = usePullToRefreshContext();
-  const { isVideoFullscreen } = useVideoFullscreen();
   const mainRef = useRef<HTMLElement | null>(null);
+  const [isLandscapeMobile, setIsLandscapeMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const isMobile = window.innerWidth < 768; // sm breakpoint
+      const isLandscapeMode = window.innerWidth > window.innerHeight;
+      return isMobile && isLandscapeMode;
+    }
+    return false;
+  });
+
+  // Detect landscape orientation on mobile
+  useEffect(() => {
+    const checkOrientation = () => {
+      const isMobile = window.innerWidth < 768; // sm breakpoint
+      const isLandscapeMode = window.innerWidth > window.innerHeight;
+      setIsLandscapeMobile(isMobile && isLandscapeMode);
+    };
+
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
 
   // Scroll to top when route changes
   useEffect(() => mainRef.current?.scrollTo(0, 0), [location.pathname]);
@@ -38,7 +62,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
       <main 
         ref={mainRef}
-        className="flex flex-col px-4 py-5 h-[calc(100dvh-72px)] overflow-y-auto relative"
+        className={`flex flex-col px-4 py-5 overflow-y-auto relative ${
+          isLandscapeMobile ? 'h-[100dvh]' : 'h-[calc(100dvh-72px)]'
+        }`}
       >
         <PullToRefreshIndicator
           isPulling={isPulling}
@@ -50,7 +76,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav className={`z-50 border-t bg-background/95 backdrop-blur ${isVideoFullscreen ? 'hidden' : ''}`}>
+      <nav className={`z-50 border-t bg-background/95 backdrop-blur ${isLandscapeMobile ? 'hidden' : ''}`}>
         <div className="grid grid-cols-5 gap-1 p-2 max-w-6xl mx-auto">
           <Link
             to="/"

@@ -6,7 +6,6 @@ import { FavoritesProvider } from '@/context/FavoritesContext';
 import { FiguresProvider } from '@/context/FiguresContext';
 import { ChoreographiesProvider } from '@/context/ChoreographiesContext';
 import { PullToRefreshProvider } from '@/context/PullToRefreshContext';
-import { VideoFullscreenProvider } from '@/context/VideoFullscreenContext';
 import { Layout } from '@/components/Layout';
 import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
@@ -78,9 +77,7 @@ function App() {
           <FiguresProvider>
             <ChoreographiesProvider>
               <PullToRefreshProvider>
-                <VideoFullscreenProvider>
-                  <AppContent />
-                </VideoFullscreenProvider>
+                <AppContent />
               </PullToRefreshProvider>
             </ChoreographiesProvider>
           </FiguresProvider>
