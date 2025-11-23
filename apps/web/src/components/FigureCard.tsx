@@ -12,7 +12,7 @@ import { useFavorites } from '@/context/FavoritesContext';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { useNetworkQuality } from '@/hooks/useNetworkQuality';
 import type { Figure } from '@/types';
-import { Clock, Heart, BicepsFlexed } from 'lucide-react';
+import { Clock, Heart, BicepsFlexed, ImageOff } from 'lucide-react';
 
 interface FigureCardProps {
   figure: Figure;
@@ -26,6 +26,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   const networkQuality = useNetworkQuality();
   const [showPreview, setShowPreview] = useState(false);
   const [previewReady, setPreviewReady] = useState(false);
+  const [thumbnailError, setThumbnailError] = useState(false);
   const thumbnailRef = useRef<HTMLDivElement | null>(null);
   const previewLoadedRef = useRef(false);
   const showPreviewRef = useRef(false);
@@ -261,14 +262,21 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
             onMouseLeave={handleMouseLeave}
           >
             {/* Always show thumbnail as background */}
-            <img
-              src={thumbnail}
-              alt={figure.shortTitle}
-              className={`w-full h-full object-cover relative ${
-                showPreview && previewReady ? 'opacity-0 z-0' : 'opacity-100 z-10'
-              }`}
-              loading="lazy"
-            />
+            {thumbnailError ? (
+              <div className="w-full h-full flex items-center justify-center bg-muted relative z-10">
+                <ImageOff className="h-12 w-12 text-muted-foreground" />
+              </div>
+            ) : (
+              <img
+                src={thumbnail}
+                alt={figure.shortTitle}
+                className={`w-full h-full object-cover relative ${
+                  showPreview && previewReady ? 'opacity-0 z-0' : 'opacity-100 z-10'
+                }`}
+                loading="lazy"
+                onError={() => setThumbnailError(true)}
+              />
+            )}
             {/* Iframe - keep at normal size but hidden until ready */}
             {showPreview && previewUrl && (
               <div
@@ -349,7 +357,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     readyTimeoutRef.current = null;
                   }
                 }}
-                />
+              />
               </div>
             )}
             {/* Duration badge if time range specified */}
