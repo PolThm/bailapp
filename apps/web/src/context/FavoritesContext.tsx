@@ -9,7 +9,7 @@ import {
 } from '@/lib/services/favoritesService';
 import { getCachedData, setCachedData } from '@/lib/cache';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-import { addToSyncQueue } from '@/lib/syncQueue';
+import { addToSyncQueue, getSyncQueue } from '@/lib/syncQueue';
 import type { UserFavorites } from '@/lib/services/favoritesService';
 
 interface FavoritesContextType {
@@ -46,6 +46,43 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       try {
         if (user && user.uid) {
           const cacheKey = `favorites_${user.uid}`;
+          
+          // Check if there are pending sync operations
+          // If yes, don't reload from Firestore yet to avoid overwriting local changes
+          const queue = await getSyncQueue();
+          const hasPendingFavoriteOps = queue.some(
+            op => op.type === 'addFavorite' || 
+                   op.type === 'removeFavorite' || 
+                   op.type === 'updateFavoriteLastOpened' || 
+                   op.type === 'updateFavoriteMasteryLevel'
+          );
+          
+          // If we have pending operations and we're coming back online, 
+          // keep using local state until sync completes
+          if (hasPendingFavoriteOps && !shouldUseCache) {
+            // Load from cache to ensure we have the latest local state
+            const cachedData = await getCachedData<UserFavorites>(cacheKey);
+            if (cachedData && !cancelled) {
+              const figureIds = cachedData.favorites.map((fav) => fav.figureId);
+              const lastOpenedAtMap: Record<string, string> = {};
+              const masteryLevelsMap: Record<string, number> = {};
+              
+              cachedData.favorites.forEach((fav) => {
+                if (fav.lastOpenedAt) {
+                  lastOpenedAtMap[fav.figureId] = fav.lastOpenedAt;
+                }
+                if (fav.masteryLevel !== null) {
+                  masteryLevelsMap[fav.figureId] = fav.masteryLevel;
+                }
+              });
+              
+              setFavorites(figureIds);
+              setLastOpenedAt(lastOpenedAtMap);
+              setMasteryLevels(masteryLevelsMap);
+              setIsLoading(false);
+              return;
+            }
+          }
           
           // Try to load from Firestore first
           try {
@@ -140,17 +177,37 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   const addToFavorites = async (id: string) => {
     // Optimistic update: update local state immediately
+    let updatedFavorites: string[] = [];
     setFavorites((prev) => {
-      if (prev.includes(id)) return prev;
-      return [...prev, id];
+      if (prev.includes(id)) {
+        updatedFavorites = prev;
+        return prev;
+      }
+      updatedFavorites = [...prev, id];
+      return updatedFavorites;
     });
 
     // Set lastOpenedAt to now when adding to favorites
     const now = new Date().toISOString();
-    setLastOpenedAt((prev) => ({
-      ...prev,
-      [id]: now,
-    }));
+    let updatedLastOpenedAt: Record<string, string> = {};
+    setLastOpenedAt((prev) => {
+      updatedLastOpenedAt = {
+        ...prev,
+        [id]: now,
+      };
+      return updatedLastOpenedAt;
+    });
+
+    // Update cache immediately with the new state
+    if (user && user.uid) {
+      const cacheKey = `favorites_${user.uid}`;
+      const favoritesArray = updatedFavorites.map((figureId) => ({
+        figureId,
+        lastOpenedAt: updatedLastOpenedAt[figureId] || null,
+        masteryLevel: masteryLevels[figureId] || null,
+      }));
+      await setCachedData(cacheKey, { favorites: favoritesArray });
+    }
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
@@ -179,6 +236,19 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
               delete newMap[id];
               return newMap;
             });
+            // Also revert cache
+            if (user && user.uid) {
+              const cacheKey = `favorites_${user.uid}`;
+              const revertedFavorites = updatedFavorites.filter((favId) => favId !== id);
+              const revertedLastOpenedAt = { ...updatedLastOpenedAt };
+              delete revertedLastOpenedAt[id];
+              const favoritesArray = revertedFavorites.map((figureId) => ({
+                figureId,
+                lastOpenedAt: revertedLastOpenedAt[figureId] || null,
+                masteryLevel: null as number | null,
+              }));
+              await setCachedData(cacheKey, { favorites: favoritesArray });
+            }
           }
         });
       }
@@ -186,8 +256,28 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   };
 
   const removeFromFavorites = async (id: string) => {
+    // Store previous state for potential revert
+    const previousFavorites = favorites;
+    const previousLastOpenedAt = lastOpenedAt;
+    const previousMasteryLevels = masteryLevels;
+    
     // Optimistic update: update local state immediately
-    setFavorites((prev) => prev.filter((favId) => favId !== id));
+    let updatedFavorites: string[] = [];
+    setFavorites((prev) => {
+      updatedFavorites = prev.filter((favId) => favId !== id);
+      return updatedFavorites;
+    });
+
+    // Update cache immediately with the new state
+    if (user && user.uid) {
+      const cacheKey = `favorites_${user.uid}`;
+      const favoritesArray = updatedFavorites.map((figureId) => ({
+        figureId,
+        lastOpenedAt: previousLastOpenedAt[figureId] || null,
+        masteryLevel: previousMasteryLevels[figureId] || null,
+      }));
+      await setCachedData(cacheKey, { favorites: favoritesArray });
+    }
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
@@ -210,10 +300,19 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
             });
           } else if (error?.code === 'permission-denied') {
             // Revert on permission error
-            setFavorites((prev) => {
-              if (prev.includes(id)) return prev;
-              return [...prev, id];
-            });
+            setFavorites(previousFavorites);
+            setLastOpenedAt(previousLastOpenedAt);
+            setMasteryLevels(previousMasteryLevels);
+            // Also revert cache
+            if (user && user.uid) {
+              const cacheKey = `favorites_${user.uid}`;
+              const favoritesArray = previousFavorites.map((figureId) => ({
+                figureId,
+                lastOpenedAt: previousLastOpenedAt[figureId] || null,
+                masteryLevel: previousMasteryLevels[figureId] || null,
+              }));
+              await setCachedData(cacheKey, { favorites: favoritesArray });
+            }
           }
         });
       }
@@ -237,10 +336,25 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     if (!isFavorite(id)) return;
 
     // Optimistic update: update local state immediately
-    setLastOpenedAt((prev) => ({
-      ...prev,
-      [id]: lastOpenedAtValue,
-    }));
+    let updatedLastOpenedAt: Record<string, string> = {};
+    setLastOpenedAt((prev) => {
+      updatedLastOpenedAt = {
+        ...prev,
+        [id]: lastOpenedAtValue,
+      };
+      return updatedLastOpenedAt;
+    });
+
+    // Update cache immediately with the new state
+    if (user && user.uid) {
+      const cacheKey = `favorites_${user.uid}`;
+      const favoritesArray = favorites.map((figureId) => ({
+        figureId,
+        lastOpenedAt: updatedLastOpenedAt[figureId] || null,
+        masteryLevel: masteryLevels[figureId] || null,
+      }));
+      await setCachedData(cacheKey, { favorites: favoritesArray });
+    }
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
@@ -268,6 +382,18 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
               delete newMap[id];
               return newMap;
             });
+            // Also revert cache
+            if (user && user.uid) {
+              const cacheKey = `favorites_${user.uid}`;
+              const revertedLastOpenedAt = { ...updatedLastOpenedAt };
+              delete revertedLastOpenedAt[id];
+              const favoritesArray = favorites.map((figureId) => ({
+                figureId,
+                lastOpenedAt: revertedLastOpenedAt[figureId] || null,
+                masteryLevel: masteryLevels[figureId] || null,
+              }));
+              await setCachedData(cacheKey, { favorites: favoritesArray });
+            }
           }
         });
       }
@@ -279,10 +405,25 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     if (!isFavorite(id)) return;
 
     // Optimistic update: update local state immediately
-    setMasteryLevels((prev) => ({
-      ...prev,
-      [id]: level,
-    }));
+    let updatedMasteryLevels: Record<string, number> = {};
+    setMasteryLevels((prev) => {
+      updatedMasteryLevels = {
+        ...prev,
+        [id]: level,
+      };
+      return updatedMasteryLevels;
+    });
+
+    // Update cache immediately with the new state
+    if (user && user.uid) {
+      const cacheKey = `favorites_${user.uid}`;
+      const favoritesArray = favorites.map((figureId) => ({
+        figureId,
+        lastOpenedAt: lastOpenedAt[figureId] || null,
+        masteryLevel: updatedMasteryLevels[figureId] || null,
+      }));
+      await setCachedData(cacheKey, { favorites: favoritesArray });
+    }
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
@@ -310,6 +451,18 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
               delete newMap[id];
               return newMap;
             });
+            // Also revert cache
+            if (user && user.uid) {
+              const cacheKey = `favorites_${user.uid}`;
+              const revertedMasteryLevels = { ...updatedMasteryLevels };
+              delete revertedMasteryLevels[id];
+              const favoritesArray = favorites.map((figureId) => ({
+                figureId,
+                lastOpenedAt: lastOpenedAt[figureId] || null,
+                masteryLevel: revertedMasteryLevels[figureId] || null,
+              }));
+              await setCachedData(cacheKey, { favorites: favoritesArray });
+            }
           }
         });
       }
