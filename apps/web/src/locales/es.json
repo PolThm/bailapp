@@ -268,7 +268,15 @@
     "update": "Actualizar",
     "addNew": "Agregar",
     "addChoreography": "Agregar coreografía",
-    "addFigure": "Agregar figura"
+    "addFigure": "Agregar figura",
+    "offline": {
+      "title": "Estás desconectado",
+      "message": "Algunas funciones pueden no funcionar correctamente. Tus datos se sincronizarán cuando vuelvas a estar en línea.",
+      "verySlowConnection": {
+        "title": "Conexión muy lenta",
+        "message": "Tu conexión es muy lenta. Algunas funciones pueden no funcionar correctamente."
+      }
+    }
   },
   "modal": {
     "newChoreographyTitle": "Nueva coreografía",

@@ -7,6 +7,10 @@ import {
   updateFavoriteLastOpenedInFirestore,
   updateFavoriteMasteryLevelInFirestore,
 } from '@/lib/services/favoritesService';
+import { getCachedData, setCachedData } from '@/lib/cache';
+import { useOfflineStatus } from '@/hooks/useOfflineStatus';
+import { addToSyncQueue } from '@/lib/syncQueue';
+import type { UserFavorites } from '@/lib/services/favoritesService';
 
 interface FavoritesContextType {
   favorites: string[];
@@ -27,6 +31,7 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const { isOffline } = useOfflineStatus();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [lastOpenedAt, setLastOpenedAt] = useState<Record<string, string>>({});
   const [masteryLevels, setMasteryLevels] = useState<Record<string, number>>({});
@@ -40,7 +45,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       try {
         if (user && user.uid) {
-          // User is authenticated: load from Firestore
+          const cacheKey = `favorites_${user.uid}`;
+          
+          // Try to load from Firestore first
           try {
             const { favorites: favoritesArray } = await getUserFavoritesFromFirestore(user.uid);
             if (!cancelled) {
@@ -61,12 +68,41 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
               setFavorites(figureIds);
               setLastOpenedAt(lastOpenedAtMap);
               setMasteryLevels(masteryLevelsMap);
+              
+              // Cache the data for offline use
+              await setCachedData(cacheKey, { favorites: favoritesArray });
               setIsLoading(false);
             }
           } catch (error: any) {
             console.error('Failed to load favorites from Firestore:', error);
+            
+            // If offline or network error, try to load from cache
+            if (isOffline || error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+              const cachedData = await getCachedData<UserFavorites>(cacheKey);
+              if (cachedData && !cancelled) {
+                const figureIds = cachedData.favorites.map((fav) => fav.figureId);
+                const lastOpenedAtMap: Record<string, string> = {};
+                const masteryLevelsMap: Record<string, number> = {};
+                
+                cachedData.favorites.forEach((fav) => {
+                  if (fav.lastOpenedAt) {
+                    lastOpenedAtMap[fav.figureId] = fav.lastOpenedAt;
+                  }
+                  if (fav.masteryLevel !== null) {
+                    masteryLevelsMap[fav.figureId] = fav.masteryLevel;
+                  }
+                });
+                
+                setFavorites(figureIds);
+                setLastOpenedAt(lastOpenedAtMap);
+                setMasteryLevels(masteryLevelsMap);
+                setIsLoading(false);
+                return;
+              }
+            }
+            
+            // On error and no cache, set empty array
             if (!cancelled) {
-              // On error, set empty array
               setFavorites([]);
               setLastOpenedAt({});
               setMasteryLevels({});
@@ -98,7 +134,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, isOffline]);
 
   // No need to persist to IndexedDB - Firestore is the source of truth
 
@@ -118,19 +154,34 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      addToFavoritesInFirestore(user.uid, id).catch((error: any) => {
-        console.error('Failed to add to favorites in Firestore:', error);
-        // Only revert if it's a permissions error (user might have been logged out)
-        if (error?.code === 'permission-denied') {
-          // Revert on error
-          setFavorites((prev) => prev.filter((favId) => favId !== id));
-          setLastOpenedAt((prev) => {
-            const newMap = { ...prev };
-            delete newMap[id];
-            return newMap;
-          });
-        }
-      });
+      if (isOffline) {
+        // Queue for sync when back online
+        await addToSyncQueue({
+          type: 'addFavorite',
+          userId: user.uid,
+          data: { figureId: id },
+        });
+      } else {
+        addToFavoritesInFirestore(user.uid, id).catch(async (error: any) => {
+          console.error('Failed to add to favorites in Firestore:', error);
+          // If network error, queue for later
+          if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            await addToSyncQueue({
+              type: 'addFavorite',
+              userId: user.uid,
+              data: { figureId: id },
+            });
+          } else if (error?.code === 'permission-denied') {
+            // Revert on permission error
+            setFavorites((prev) => prev.filter((favId) => favId !== id));
+            setLastOpenedAt((prev) => {
+              const newMap = { ...prev };
+              delete newMap[id];
+              return newMap;
+            });
+          }
+        });
+      }
     }
   };
 
@@ -140,17 +191,32 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      removeFromFavoritesInFirestore(user.uid, id).catch((error: any) => {
-        console.error('Failed to remove from favorites in Firestore:', error);
-        // Only revert if it's a permissions error (user might have been logged out)
-        if (error?.code === 'permission-denied') {
-          // Revert on error
-          setFavorites((prev) => {
-            if (prev.includes(id)) return prev;
-            return [...prev, id];
-          });
-        }
-      });
+      if (isOffline) {
+        // Queue for sync when back online
+        await addToSyncQueue({
+          type: 'removeFavorite',
+          userId: user.uid,
+          data: { figureId: id },
+        });
+      } else {
+        removeFromFavoritesInFirestore(user.uid, id).catch(async (error: any) => {
+          console.error('Failed to remove from favorites in Firestore:', error);
+          // If network error, queue for later
+          if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            await addToSyncQueue({
+              type: 'removeFavorite',
+              userId: user.uid,
+              data: { figureId: id },
+            });
+          } else if (error?.code === 'permission-denied') {
+            // Revert on permission error
+            setFavorites((prev) => {
+              if (prev.includes(id)) return prev;
+              return [...prev, id];
+            });
+          }
+        });
+      }
     }
   };
 
@@ -178,18 +244,33 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      updateFavoriteLastOpenedInFirestore(user.uid, id, lastOpenedAtValue).catch((error: any) => {
-        console.error('Failed to update favorite lastOpenedAt in Firestore:', error);
-        // Only revert if it's a permissions error (user might have been logged out)
-        if (error?.code === 'permission-denied') {
-          // Revert on error
-          setLastOpenedAt((prev) => {
-            const newMap = { ...prev };
-            delete newMap[id];
-            return newMap;
-          });
-        }
-      });
+      if (isOffline) {
+        // Queue for sync when back online
+        await addToSyncQueue({
+          type: 'updateFavoriteLastOpened',
+          userId: user.uid,
+          data: { figureId: id, lastOpenedAt: lastOpenedAtValue },
+        });
+      } else {
+        updateFavoriteLastOpenedInFirestore(user.uid, id, lastOpenedAtValue).catch(async (error: any) => {
+          console.error('Failed to update favorite lastOpenedAt in Firestore:', error);
+          // If network error, queue for later
+          if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            await addToSyncQueue({
+              type: 'updateFavoriteLastOpened',
+              userId: user.uid,
+              data: { figureId: id, lastOpenedAt: lastOpenedAtValue },
+            });
+          } else if (error?.code === 'permission-denied') {
+            // Revert on permission error
+            setLastOpenedAt((prev) => {
+              const newMap = { ...prev };
+              delete newMap[id];
+              return newMap;
+            });
+          }
+        });
+      }
     }
   };
 
@@ -205,18 +286,33 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      updateFavoriteMasteryLevelInFirestore(user.uid, id, level).catch((error: any) => {
-        console.error('Failed to update favorite mastery level in Firestore:', error);
-        // Only revert if it's a permissions error (user might have been logged out)
-        if (error?.code === 'permission-denied') {
-          // Revert on error
-          setMasteryLevels((prev) => {
-            const newMap = { ...prev };
-            delete newMap[id];
-            return newMap;
-          });
-        }
-      });
+      if (isOffline) {
+        // Queue for sync when back online
+        await addToSyncQueue({
+          type: 'updateFavoriteMasteryLevel',
+          userId: user.uid,
+          data: { figureId: id, level },
+        });
+      } else {
+        updateFavoriteMasteryLevelInFirestore(user.uid, id, level).catch(async (error: any) => {
+          console.error('Failed to update favorite mastery level in Firestore:', error);
+          // If network error, queue for later
+          if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            await addToSyncQueue({
+              type: 'updateFavoriteMasteryLevel',
+              userId: user.uid,
+              data: { figureId: id, level },
+            });
+          } else if (error?.code === 'permission-denied') {
+            // Revert on permission error
+            setMasteryLevels((prev) => {
+              const newMap = { ...prev };
+              delete newMap[id];
+              return newMap;
+            });
+          }
+        });
+      }
     }
   };
 

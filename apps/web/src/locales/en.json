@@ -268,7 +268,15 @@
     "update": "Update",
     "addNew": "Add New",
     "addChoreography": "Add Choreography",
-    "addFigure": "Add Figure"
+    "addFigure": "Add Figure",
+    "offline": {
+      "title": "You are offline",
+      "message": "Some features may not work properly. Your data will sync when you're back online.",
+      "verySlowConnection": {
+        "title": "Very slow connection",
+        "message": "Your connection is very slow. Some features may not work properly."
+      }
+    }
   },
   "modal": {
     "newChoreographyTitle": "New Choreography",

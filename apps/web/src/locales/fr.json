@@ -137,7 +137,7 @@
     },
     "delete": {
       "title": "Supprimer la chorégraphie",
-      "message": "Êtes-vous sûr de vouloir supprimer cette chorégraphie ?",
+      "message": "Es-tu sûr de vouloir supprimer cette chorégraphie ?",
       "confirm": "Supprimer"
     },
     "menu": {
@@ -151,7 +151,7 @@
       "changeColor": "Changer couleur",
       "delete": "Supprimer",
       "deleteTitle": "Supprimer le Mouvement",
-      "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce mouvement ?",
+      "deleteMessage": "Es-tu sûr de vouloir supprimer ce mouvement ?",
       "deleteConfirm": "Supprimer",
       "empty": {
         "title": "Aucun mouvement pour l'instant",
@@ -267,7 +267,15 @@
     "addNew": "Ajouter",
     "addChoreography": "Ajouter une chorégraphie",
     "addFigure": "Ajouter une figure",
-    "update": "Mettre à jour"
+    "update": "Mettre à jour",
+    "offline": {
+      "title": "Tu es hors ligne",
+      "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement. Tes données seront synchronisées lorsque tu seras de nouveau en ligne.",
+      "verySlowConnection": {
+        "title": "Connexion très lente",
+        "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement."
+      }
+    }
   },
   "modal": {
     "newChoreographyTitle": "Nouvelle chorégraphie",

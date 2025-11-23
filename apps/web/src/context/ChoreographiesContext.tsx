@@ -8,6 +8,9 @@ import {
 } from '@/lib/services/choreographyService';
 import type { Choreography } from '@/types';
 import { createExampleChoreography } from '@/data/mockChoreographies';
+import { getCachedData, setCachedData } from '@/lib/cache';
+import { useOfflineStatus } from '@/hooks/useOfflineStatus';
+import { addToSyncQueue } from '@/lib/syncQueue';
 
 interface ChoreographiesContextType {
   choreographies: Choreography[];
@@ -26,6 +29,7 @@ const ChoreographiesContext = createContext<ChoreographiesContextType | undefine
 
 export function ChoreographiesProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const { isOffline } = useOfflineStatus();
   const [choreographies, setChoreographies] = useState<Choreography[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,16 +41,18 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       try {
         if (user && user.uid) {
+          const cacheKey = `choreographies_${user.uid}`;
+          
           // User is authenticated: load from Firestore
           try {
             const loadedChoreographies = await getUserChoreographies(user.uid);
             
           // Ensure all choreographies have movements array
             const migratedChoreographies = loadedChoreographies.map((choreography: Choreography) => ({
-            ...choreography,
-            movements: choreography.movements || [],
-          }));
-          
+              ...choreography,
+              movements: choreography.movements || [],
+            }));
+            
             // Only create example if user has no choreographies
           // This ensures that if user deletes the example, it stays deleted
             if (migratedChoreographies.length === 0) {
@@ -77,12 +83,25 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
             
             if (!cancelled) {
           setChoreographies(migratedChoreographies);
+              // Cache the data for offline use
+              await setCachedData(cacheKey, migratedChoreographies);
               setIsLoading(false);
             }
           } catch (error: any) {
             console.error('Failed to load choreographies from Firestore:', error);
+            
+            // If offline or network error, try to load from cache
+            if (isOffline || error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+              const cachedChoreographies = await getCachedData<Choreography[]>(cacheKey);
+              if (cachedChoreographies && !cancelled) {
+                setChoreographies(cachedChoreographies);
+                setIsLoading(false);
+                return;
+              }
+            }
+            
+            // On error and no cache, set empty array
             if (!cancelled) {
-              // On error, set empty array
               setChoreographies([]);
               setIsLoading(false);
             }
@@ -109,7 +128,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, isOffline]);
 
   const addChoreography = async (choreography: Choreography): Promise<string> => {
     // Optimistic update: update local state immediately
@@ -117,6 +136,26 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated
     if (user && user.uid) {
+      if (isOffline) {
+        // Queue for sync when back online
+        await addToSyncQueue({
+          type: 'createChoreography',
+          userId: user.uid,
+          data: {
+            choreography: {
+              name: choreography.name,
+              danceStyle: choreography.danceStyle,
+              danceSubStyle: choreography.danceSubStyle,
+              complexity: choreography.complexity,
+              phrasesCount: choreography.phrasesCount,
+              movements: choreography.movements || [],
+              lastOpenedAt: choreography.lastOpenedAt,
+            },
+          },
+        });
+        return choreography.id;
+      }
+      
       try {
         // Always create in Firestore and get the Firestore ID
         const firestoreId = await createChoreography(
@@ -138,6 +177,25 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
         return firestoreId;
       } catch (error: any) {
         console.error('Failed to add choreography to Firestore:', error);
+        // If network error, queue for later
+        if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+          await addToSyncQueue({
+            type: 'createChoreography',
+            userId: user.uid,
+            data: {
+              choreography: {
+                name: choreography.name,
+                danceStyle: choreography.danceStyle,
+                danceSubStyle: choreography.danceSubStyle,
+                complexity: choreography.complexity,
+                phrasesCount: choreography.phrasesCount,
+                movements: choreography.movements || [],
+                lastOpenedAt: choreography.lastOpenedAt,
+              },
+            },
+          });
+          return choreography.id;
+        }
         // Only revert if it's a permissions error (user might have been logged out)
         if (error?.code === 'permission-denied') {
           // Revert on error
@@ -171,16 +229,31 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      updateChoreographyInFirestore(id, updates, user.uid).catch((error: any) => {
-        console.error('Failed to update choreography in Firestore:', error);
-        // Only revert if it's a permissions error (user might have been logged out)
-        if (error?.code === 'permission-denied' && previousChoreography) {
-          // Revert on error
-          setChoreographies((prev) =>
-            prev.map((c) => (c.id === id ? previousChoreography! : c))
-          );
-        }
-      });
+      if (isOffline) {
+        // Queue for sync when back online
+        await addToSyncQueue({
+          type: 'updateChoreography',
+          userId: user.uid,
+          data: { choreographyId: id, updates },
+        });
+      } else {
+        updateChoreographyInFirestore(id, updates, user.uid).catch(async (error: any) => {
+          console.error('Failed to update choreography in Firestore:', error);
+          // If network error, queue for later
+          if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            await addToSyncQueue({
+              type: 'updateChoreography',
+              userId: user.uid,
+              data: { choreographyId: id, updates },
+            });
+          } else if (error?.code === 'permission-denied' && previousChoreography) {
+            // Revert on permission error
+            setChoreographies((prev) =>
+              prev.map((c) => (c.id === id ? previousChoreography! : c))
+            );
+          }
+        });
+      }
     }
   };
 
@@ -193,14 +266,29 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      deleteChoreographyFromFirestore(id, user.uid).catch((error: any) => {
-        console.error('Failed to delete choreography from Firestore:', error);
-        // Only revert if it's a permissions error (user might have been logged out)
-        if (error?.code === 'permission-denied' && previousChoreography) {
-          // Revert on error
-          setChoreographies((prev) => [...prev, previousChoreography]);
-        }
-      });
+      if (isOffline) {
+        // Queue for sync when back online
+        await addToSyncQueue({
+          type: 'deleteChoreography',
+          userId: user.uid,
+          data: { choreographyId: id },
+        });
+      } else {
+        deleteChoreographyFromFirestore(id, user.uid).catch(async (error: any) => {
+          console.error('Failed to delete choreography from Firestore:', error);
+          // If network error, queue for later
+          if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            await addToSyncQueue({
+              type: 'deleteChoreography',
+              userId: user.uid,
+              data: { choreographyId: id },
+            });
+          } else if (error?.code === 'permission-denied' && previousChoreography) {
+            // Revert on permission error
+            setChoreographies((prev) => [...prev, previousChoreography]);
+          }
+        });
+      }
     }
   };
 
@@ -221,13 +309,31 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore
     if (user && user.uid) {
-      updateChoreographyInFirestore(id, { isPublic: newIsPublic }, user.uid).catch((error: any) => {
-        console.error('Failed to toggle public status in Firestore:', error);
-        // Revert on error
-        setChoreographies((prev) =>
-          prev.map((c) => (c.id === id ? { ...c, isPublic: !newIsPublic } : c))
-        );
-      });
+      if (isOffline) {
+        // Queue for sync when back online
+        await addToSyncQueue({
+          type: 'toggleChoreographyPublic',
+          userId: user.uid,
+          data: { choreographyId: id, isPublic: newIsPublic },
+        });
+      } else {
+        updateChoreographyInFirestore(id, { isPublic: newIsPublic }, user.uid).catch(async (error: any) => {
+          console.error('Failed to toggle public status in Firestore:', error);
+          // If network error, queue for later
+          if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            await addToSyncQueue({
+              type: 'toggleChoreographyPublic',
+              userId: user.uid,
+              data: { choreographyId: id, isPublic: newIsPublic },
+            });
+          } else {
+            // Revert on other errors
+            setChoreographies((prev) =>
+              prev.map((c) => (c.id === id ? { ...c, isPublic: !newIsPublic } : c))
+            );
+          }
+        });
+      }
     }
   };
 

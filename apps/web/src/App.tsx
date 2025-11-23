@@ -10,6 +10,8 @@ import { Layout } from '@/components/Layout';
 import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 import { SplashScreen } from '@/components/SplashScreen';
+import { OfflineNotification } from '@/components/OfflineNotification';
+import { useSyncQueue } from '@/hooks/useSyncQueue';
 import { Home } from '@/pages/Home';
 import { Discover } from '@/pages/Discover';
 import { Favorites } from '@/pages/Favorites';
@@ -34,6 +36,7 @@ const isProduction = import.meta.env.PROD;
 function AppContent() {
   const { loading } = useAuth();
   const [showSplash, setShowSplash] = useState(isProduction);
+  useSyncQueue(); // Sync pending operations when back online
 
   useEffect(() => {
     // Close splash screen when auth is loaded
@@ -54,6 +57,7 @@ function AppContent() {
     <BrowserRouter>
       <PWAUpdateNotification />
       {isProduction && <PWAInstallPrompt />}
+      <OfflineNotification />
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />

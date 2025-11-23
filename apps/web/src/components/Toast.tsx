@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { X, CheckCircle2, Info, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -12,12 +12,22 @@ interface ToastProps {
 }
 
 export function Toast({ message, type = 'info', duration = 3000, onClose }: ToastProps) {
+  const [isExiting, setIsExiting] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      onClose();
+      handleClose();
     }, duration);
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration]);
+
+  const handleClose = () => {
+    setIsExiting(true);
+    // Wait for exit animation to complete before calling onClose
+    setTimeout(() => {
+      onClose();
+    }, 300); // Match animation duration
+  };
 
   const icons = {
     success: CheckCircle2,
@@ -30,8 +40,12 @@ export function Toast({ message, type = 'info', duration = 3000, onClose }: Toas
   return (
     <div
       className={cn(
-        'fixed bottom-4 left-4 right-4 z-[100] mx-auto max-w-sm animate-in slide-in-from-bottom-5 duration-300',
-        'bg-popover border rounded-lg shadow-lg p-4 flex items-center gap-3'
+        'fixed bottom-4 left-4 right-4 z-[100] mx-auto max-w-sm',
+        'bg-popover border rounded-lg shadow-lg p-4 flex items-center gap-3',
+        'transition-all duration-300',
+        isExiting
+          ? 'animate-out slide-out-to-bottom-5 fade-out-0'
+          : 'animate-in slide-in-from-bottom-5 fade-in-0'
       )}
     >
       <Icon
@@ -44,7 +58,7 @@ export function Toast({ message, type = 'info', duration = 3000, onClose }: Toas
       />
       <p className="flex-1 text-sm">{message}</p>
       <button
-        onClick={onClose}
+        onClick={handleClose}
         className="p-1 hover:bg-accent rounded transition-colors"
         aria-label="Close"
       >
