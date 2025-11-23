@@ -341,10 +341,6 @@
       }
     }
   },
-  "orientation": {
-    "title": "Rotation Required",
-    "message": "Please rotate your device to portrait mode to use the app"
-  },
   "comingSoon": {
     "title": "Coming Soon",
     "description": "We're working on it! You'll be able to add your own figures soon."

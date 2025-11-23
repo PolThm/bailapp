@@ -16,7 +16,6 @@ export default defineConfig({
         theme_color: '#EF4444',
         background_color: '#ffffff',
         display: 'standalone',
-        orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
         categories: ['entertainment', 'lifestyle', 'education'],
