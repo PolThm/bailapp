@@ -275,7 +275,8 @@
       "verySlowConnection": {
         "title": "Very slow connection",
         "message": "Some features may not work properly."
-      }
+      },
+      "backOnline": "Connection restored!"
     }
   },
   "modal": {
