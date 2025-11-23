@@ -10,6 +10,7 @@ import {
 import { getYouTubeVideoId, getYouTubeThumbnail, getYouTubePreviewUrl } from '@/utils/youtube';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
+import { useNetworkQuality } from '@/hooks/useNetworkQuality';
 import type { Figure } from '@/types';
 import { Clock, Heart, BicepsFlexed } from 'lucide-react';
 
@@ -22,6 +23,7 @@ interface FigureCardProps {
 export function FigureCard({ figure, showImage = true, showMastery = false }: FigureCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { masteryLevel, hasMasteryLevel } = useMasteryLevel(figure.id);
+  const networkQuality = useNetworkQuality();
   const [showPreview, setShowPreview] = useState(false);
   const [previewReady, setPreviewReady] = useState(false);
   const thumbnailRef = useRef<HTMLDivElement | null>(null);
@@ -38,28 +40,6 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
     : null;
   
   const isFav = isFavorite(figure.id);
-
-  // Check if connection is slow (only 5g or wifi are considered good)
-  const isSlowConnection = (): boolean => {
-    // Check if navigator.connection is available (Chrome/Edge)
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
-    if (connection) {
-      const effectiveType = connection.effectiveType;
-      // Only 5g, or wifi are considered good connections
-      // Everything else (slow-2g, 2g, 3g, 4g) is considered slow
-      if (effectiveType === '5g') {
-        return false; // Good connection
-      }
-      // Check if on wifi (connection.type === 'wifi' or no cellular connection)
-      if (connection.type === 'wifi' || (!connection.type && !effectiveType)) {
-        return false; // Good connection (wifi or unknown - assume good)
-      }
-      // All other cases are slow connections
-      return true;
-    }
-    // If connection API is not available, assume good connection
-    return false;
-  };
 
   // Check if screen size is desktop (md or larger)
   const [isDesktop, setIsDesktop] = useState(() => {
@@ -326,16 +306,33 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                   if (isDesktop) {
                     // On desktop, show faster for better UX on hover
                     setPreviewReady(true);
-                  } else if (isSlowConnection()) {
-                    // For slow connections on mobile, wait before revealing
-                    readyTimeoutRef.current = setTimeout(() => {
-                      setPreviewReady(true);
-                    }, 2000);
                   } else {
-                    // For good connections on mobile, wait for YouTube to fully initialize
-                    readyTimeoutRef.current = setTimeout(() => {
-                      setPreviewReady(true);
-                    }, 800);
+                    // For mobile, adjust delay based on connection quality
+                    const delay = (() => {
+                      switch (networkQuality.slowLevel) {
+                        case 'slight':
+                          return 2000; // 2 seconds for slightly slow connections
+                        case 'moderate':
+                          return 4000; // 4 seconds for moderately slow connections
+                        case 'very':
+                          // Don't show preview for very slow connections
+                          return null;
+                        default:
+                          // Good connection, wait for YouTube to fully initialize
+                          return 800;
+                      }
+                    })();
+
+                    if (delay !== null) {
+                      readyTimeoutRef.current = setTimeout(() => {
+                        setPreviewReady(true);
+                      }, delay);
+                    } else {
+                      // Very slow connection - don't show preview, keep thumbnail
+                      setShowPreview(false);
+                      showPreviewRef.current = false;
+                      setPreviewReady(false);
+                    }
                   }
                 }}
                 onError={() => {
