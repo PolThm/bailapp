@@ -29,7 +29,7 @@ const ChoreographiesContext = createContext<ChoreographiesContextType | undefine
 
 export function ChoreographiesProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const { isOffline } = useOfflineStatus();
+  const { shouldUseCache } = useOfflineStatus();
   const [choreographies, setChoreographies] = useState<Choreography[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -90,8 +90,8 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
           } catch (error: any) {
             console.error('Failed to load choreographies from Firestore:', error);
             
-            // If offline or network error, try to load from cache
-            if (isOffline || error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            // If should use cache or network error, try to load from cache
+            if (shouldUseCache || error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
               const cachedChoreographies = await getCachedData<Choreography[]>(cacheKey);
               if (cachedChoreographies && !cancelled) {
                 setChoreographies(cachedChoreographies);
@@ -128,7 +128,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [user, isOffline]);
+  }, [user, shouldUseCache]);
 
   const addChoreography = async (choreography: Choreography): Promise<string> => {
     // Optimistic update: update local state immediately
@@ -136,7 +136,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated
     if (user && user.uid) {
-      if (isOffline) {
+      if (shouldUseCache) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'createChoreography',
@@ -229,7 +229,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      if (isOffline) {
+      if (shouldUseCache) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'updateChoreography',
@@ -266,7 +266,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      if (isOffline) {
+      if (shouldUseCache) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'deleteChoreography',
@@ -309,7 +309,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore
     if (user && user.uid) {
-      if (isOffline) {
+      if (shouldUseCache) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'toggleChoreographyPublic',

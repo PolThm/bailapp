@@ -18,10 +18,10 @@ import type { SyncOperation } from '@/lib/syncQueue';
  * Hook to sync pending operations when back online
  */
 export function useSyncQueue() {
-  const { isOffline } = useOfflineStatus();
+  const { shouldUseCache } = useOfflineStatus();
 
   useEffect(() => {
-    if (isOffline) return;
+    if (shouldUseCache) return;
 
     // Sync queue when back online
     const syncQueue = async () => {
@@ -43,7 +43,7 @@ export function useSyncQueue() {
     // Small delay to ensure network is stable
     const timeout = setTimeout(syncQueue, 1000);
     return () => clearTimeout(timeout);
-  }, [isOffline]);
+  }, [shouldUseCache]);
 }
 
 async function executeOperation(operation: SyncOperation): Promise<void> {

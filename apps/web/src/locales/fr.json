@@ -270,10 +270,10 @@
     "update": "Mettre à jour",
     "offline": {
       "title": "Tu es hors ligne",
-      "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement. Tes données seront synchronisées lorsque tu seras de nouveau en ligne.",
+      "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement",
       "verySlowConnection": {
         "title": "Connexion très lente",
-        "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement."
+        "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement"
       }
     }
   },

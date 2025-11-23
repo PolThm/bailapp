@@ -31,7 +31,7 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const { isOffline } = useOfflineStatus();
+  const { shouldUseCache } = useOfflineStatus();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [lastOpenedAt, setLastOpenedAt] = useState<Record<string, string>>({});
   const [masteryLevels, setMasteryLevels] = useState<Record<string, number>>({});
@@ -76,8 +76,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           } catch (error: any) {
             console.error('Failed to load favorites from Firestore:', error);
             
-            // If offline or network error, try to load from cache
-            if (isOffline || error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
+            // If should use cache or network error, try to load from cache
+            if (shouldUseCache || error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
               const cachedData = await getCachedData<UserFavorites>(cacheKey);
               if (cachedData && !cancelled) {
                 const figureIds = cachedData.favorites.map((fav) => fav.figureId);
@@ -134,7 +134,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [user, isOffline]);
+  }, [user, shouldUseCache]);
 
   // No need to persist to IndexedDB - Firestore is the source of truth
 
@@ -154,7 +154,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      if (isOffline) {
+      if (shouldUseCache) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'addFavorite',
@@ -191,7 +191,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      if (isOffline) {
+      if (shouldUseCache) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'removeFavorite',
@@ -244,7 +244,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      if (isOffline) {
+      if (shouldUseCache) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'updateFavoriteLastOpened',
@@ -286,7 +286,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
     // Sync to Firestore if authenticated (background operation)
     if (user && user.uid) {
-      if (isOffline) {
+      if (shouldUseCache) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'updateFavoriteMasteryLevel',

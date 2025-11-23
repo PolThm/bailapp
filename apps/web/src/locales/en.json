@@ -271,10 +271,10 @@
     "addFigure": "Add Figure",
     "offline": {
       "title": "You are offline",
-      "message": "Some features may not work properly. Your data will sync when you're back online.",
+      "message": "Some features may not work properly",
       "verySlowConnection": {
         "title": "Very slow connection",
-        "message": "Your connection is very slow. Some features may not work properly."
+        "message": "Some features may not work properly"
       }
     }
   },

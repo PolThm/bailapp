@@ -4,6 +4,7 @@ import { useNetworkQuality } from './useNetworkQuality';
 interface OfflineStatus {
   isOffline: boolean;
   isVerySlowConnection: boolean;
+  shouldUseCache: boolean; // Use cache for moderate or worse connections
   shouldShowWarning: boolean;
 }
 
@@ -31,11 +32,14 @@ export function useOfflineStatus(): OfflineStatus {
 
   const isOffline = !isOnline;
   const isVerySlowConnection = networkQuality.slowLevel === 'very';
-  const shouldShowWarning = isOffline || isVerySlowConnection;
+  // Use cache for moderate, slight, or very slow connections, or when offline
+  const shouldUseCache = isOffline || ['moderate', 'slight', 'very'].includes(networkQuality.slowLevel);
+  const shouldShowWarning = isOffline || ['moderate', 'slight', 'very'].includes(networkQuality.slowLevel);
 
   return {
     isOffline,
     isVerySlowConnection,
+    shouldUseCache,
     shouldShowWarning,
   };
 }
