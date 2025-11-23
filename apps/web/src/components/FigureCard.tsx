@@ -61,9 +61,75 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
     return false;
   };
 
-  // Detect when thumbnail touches the center of screen
+  // Check if screen size is desktop (md or larger)
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768; // md breakpoint
+    }
+    return false;
+  });
+
   useEffect(() => {
-    if (!thumbnailRef.current || !previewUrl) return;
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => {
+      window.removeEventListener('resize', checkScreenSize);
+    };
+  }, []);
+
+  // Handle hover for preview (desktop only)
+  const handleMouseEnter = () => {
+    if (!previewUrl || !isDesktop) return;
+
+    // Only reset loaded state if preview wasn't already showing
+    if (!showPreviewRef.current) {
+      setPreviewReady(false);
+      previewLoadedRef.current = false;
+      
+      // Set a timeout to cancel preview if it doesn't load within 3 seconds
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+      }
+      loadTimeoutRef.current = setTimeout(() => {
+        if (!previewLoadedRef.current) {
+          // Preview didn't load in time, cancel it and keep showing thumbnail
+          setShowPreview(false);
+          showPreviewRef.current = false;
+          setPreviewReady(false);
+        }
+      }, 3000); // Timeout for slow connections
+    }
+    setShowPreview(true);
+    showPreviewRef.current = true;
+  };
+
+  const handleMouseLeave = () => {
+    if (!isDesktop) return;
+
+    // Stop preview
+    setShowPreview(false);
+    showPreviewRef.current = false;
+    setPreviewReady(false); // Reset ready state
+    previewLoadedRef.current = false; // Reset ref
+    // Clear load timeout when preview is cancelled
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+    if (readyTimeoutRef.current) {
+      clearTimeout(readyTimeoutRef.current);
+      readyTimeoutRef.current = null;
+    }
+  };
+
+  // Detect when thumbnail touches the center of screen (mobile only)
+  useEffect(() => {
+    if (!thumbnailRef.current || !previewUrl || isDesktop) return;
 
     const thumbnailElement = thumbnailRef.current;
     let rafId: number | null = null;
@@ -179,7 +245,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
         clearTimeout(readyTimeoutRef.current);
       }
     };
-  }, [previewUrl]);
+  }, [previewUrl, isDesktop]);
   
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -211,6 +277,8 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
           <div
             ref={thumbnailRef}
             className="relative w-full aspect-video bg-muted overflow-hidden"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             {/* Always show thumbnail as background */}
             <img
@@ -251,17 +319,20 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                     clearTimeout(loadTimeoutRef.current);
                     loadTimeoutRef.current = null;
                   }
-                  // Wait before revealing the video to avoid black screen (only for slow connections)
+                  // Wait before revealing the video to avoid black screen
                   if (readyTimeoutRef.current) {
                     clearTimeout(readyTimeoutRef.current);
                   }
-                  if (isSlowConnection()) {
-                    // For slow connections, wait before revealing
+                  if (isDesktop) {
+                    // On desktop, show faster for better UX on hover
+                    setPreviewReady(true);
+                  } else if (isSlowConnection()) {
+                    // For slow connections on mobile, wait before revealing
                     readyTimeoutRef.current = setTimeout(() => {
                       setPreviewReady(true);
                     }, 2000);
                   } else {
-                    // For good connections, wait for YouTube to fully initialize and resize
+                    // For good connections on mobile, wait for YouTube to fully initialize
                     readyTimeoutRef.current = setTimeout(() => {
                       setPreviewReady(true);
                     }, 800);
