@@ -41,8 +41,27 @@ export function Toast({ message, type = 'info', duration = 3000, onClose }: Toas
     <div
       className={cn(
         'fixed bottom-4 left-4 right-4 z-[100] mx-auto max-w-sm',
-        'bg-popover border rounded-lg shadow-lg p-4 flex items-center gap-3',
+        'rounded-lg shadow-lg p-4 flex items-center gap-3',
         'transition-all duration-300',
+        'border-l-4',
+        // Success styling
+        type === 'success' && [
+          'bg-green-50 dark:bg-green-950/30',
+          'border-green-500 dark:border-green-400',
+          'text-green-900 dark:text-green-100',
+        ],
+        // Info styling
+        type === 'info' && [
+          'bg-blue-50 dark:bg-blue-950/30',
+          'border-blue-500 dark:border-blue-400',
+          'text-blue-900 dark:text-blue-100',
+        ],
+        // Error styling
+        type === 'error' && [
+          'bg-red-50 dark:bg-red-950/30',
+          'border-red-500 dark:border-red-400',
+          'text-red-900 dark:text-red-100',
+        ],
         isExiting
           ? 'animate-out slide-out-to-bottom-5 fade-out-0'
           : 'animate-in slide-in-from-bottom-5 fade-in-0'
@@ -51,15 +70,21 @@ export function Toast({ message, type = 'info', duration = 3000, onClose }: Toas
       <Icon
         className={cn(
           'h-5 w-5 flex-shrink-0',
-          type === 'success' && 'text-green-500',
-          type === 'info' && 'text-blue-500',
-          type === 'error' && 'text-red-500'
+          type === 'success' && 'text-green-600 dark:text-green-400',
+          type === 'info' && 'text-blue-600 dark:text-blue-400',
+          type === 'error' && 'text-red-600 dark:text-red-400'
         )}
       />
-      <p className="flex-1 text-sm">{message}</p>
+      <p className="flex-1 text-sm font-medium">{message}</p>
       <button
         onClick={handleClose}
-        className="p-1 hover:bg-accent rounded transition-colors"
+        className={cn(
+          'p-1 rounded transition-colors',
+          'hover:bg-black/5 dark:hover:bg-white/10',
+          type === 'success' && 'text-green-700 dark:text-green-300',
+          type === 'info' && 'text-blue-700 dark:text-blue-300',
+          type === 'error' && 'text-red-700 dark:text-red-300'
+        )}
         aria-label="Close"
       >
         <X className="h-4 w-4" />
