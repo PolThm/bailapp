@@ -24,6 +24,11 @@ export function PWAInstallPrompt() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
     (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
   const isAndroid = /Android/.test(navigator.userAgent);
+  
+  // Detect if device is mobile (iOS, Android, or other mobile devices)
+  const isMobile = isIOS || isAndroid || 
+    /webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    (window.innerWidth <= 768 && navigator.maxTouchPoints > 0);
 
   useEffect(() => {
     if (showInstallPrompt && !isInstalled) {
@@ -39,8 +44,8 @@ export function PWAInstallPrompt() {
     }
   }, [showInstallPrompt, isInstalled, shouldRender]);
 
-  // Don't show if we shouldn't render
-  if ((isInstalled || !shouldRender) && !isExiting) {
+  // Don't show on desktop or if we shouldn't render
+  if (!isMobile || ((isInstalled || !shouldRender) && !isExiting)) {
     return null;
   }
 
