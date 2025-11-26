@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical, Trash2, Copy, Palette } from 'lucide-react';
+import { MoreVertical, Trash2, Copy, Palette, Clipboard } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import type { ChoreographyMovement } from '@/types';
@@ -18,6 +18,7 @@ interface ChoreographyMovementItemProps {
   onEndEdit: (name: string) => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  onCopy?: () => void;
   onColorChange?: () => void;
   isReadOnly?: boolean;
 }
@@ -31,6 +32,7 @@ export function ChoreographyMovementItem({
   onEndEdit,
   onDelete,
   onDuplicate,
+  onCopy,
   onColorChange,
   isReadOnly = false,
 }: ChoreographyMovementItemProps) {
@@ -187,6 +189,13 @@ export function ChoreographyMovementItem({
     onDuplicate();
   };
 
+  const handleCopy = () => {
+    setShowMenu(false);
+    if (onCopy) {
+      onCopy();
+    }
+  };
+
   const handleChangeColor = async () => {
     setShowMenu(false);
     try {
@@ -292,6 +301,15 @@ export function ChoreographyMovementItem({
                 <Copy className="h-4 w-4" />
                 {t('choreographies.movements.duplicate')}
               </button>
+              {onCopy && (
+                <button
+                  onClick={handleCopy}
+                  className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"
+                >
+                  <Clipboard className="h-4 w-4" />
+                  {t('choreographies.movements.copy')}
+                </button>
+              )}
               <button
                 onClick={handleChangeColor}
                 className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"

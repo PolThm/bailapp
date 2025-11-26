@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Pencil, Music2, Share2, Copy, Menu, Trash2, FileQuestion } from 'lucide-react';
+import { Plus, Pencil, Music2, Share2, Copy, Menu, Trash2, FileQuestion, Clipboard } from 'lucide-react';
 import { useMovementColor } from '@/hooks/useMovementColor';
 import {
   DndContext,
@@ -51,6 +51,7 @@ function SortableMovementItem({
   onEndEdit,
   onDelete,
   onDuplicate,
+  onCopy,
   colorUpdateKey,
   onColorChange,
   isReadOnly,
@@ -62,6 +63,7 @@ function SortableMovementItem({
   onEndEdit: (name: string) => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  onCopy?: () => void;
   colorUpdateKey: number;
   onColorChange: () => void;
   isReadOnly?: boolean;
@@ -133,6 +135,7 @@ function SortableMovementItem({
             onEndEdit={onEndEdit}
             onDelete={onDelete}
             onDuplicate={onDuplicate}
+            onCopy={onCopy}
             onColorChange={onColorChange}
             isReadOnly={isReadOnly}
           />
@@ -159,6 +162,7 @@ export function ChoreographyDetail() {
   const [isLoadingPublic, setIsLoadingPublic] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [copiedMovement, setCopiedMovement] = useState<{ movement: ChoreographyMovement; sourceChoreographyId: string } | null>(null);
 
   // Determine if we're viewing someone else's public choreography
   const isViewingPublicChoreography = ownerId && ownerId !== user?.uid;
@@ -168,6 +172,34 @@ export function ChoreographyDetail() {
   const choreography = isViewingPublicChoreography ? publicChoreography : contextChoreography;
   const lastUpdatedIdRef = useRef<string | null>(null);
   const previousUserRef = useRef<User | null>(user);
+
+  // Load copied movement from localStorage on mount and when choreography changes
+  useEffect(() => {
+    const stored = localStorage.getItem('copiedMovement');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setCopiedMovement(parsed);
+      } catch (error) {
+        console.error('Error parsing copied movement:', error);
+        localStorage.removeItem('copiedMovement');
+      }
+    }
+  }, [id]);
+
+  // Auto-remove copied movement after 1 minute if not pasted
+  useEffect(() => {
+    if (!copiedMovement) return;
+
+    const timer = setTimeout(() => {
+      localStorage.removeItem('copiedMovement');
+      setCopiedMovement(null);
+    }, 60000); // 1 minute
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [copiedMovement]);
 
   // Load public choreography if viewing someone else's
   useEffect(() => {
@@ -272,6 +304,11 @@ export function ChoreographyDetail() {
   const isExampleChoreography = choreography.id === EXAMPLE_CHOREOGRAPHY_ID;
   const isOwner = !isViewingPublicChoreography && !!user && (user.uid === choreography.ownerId || !choreography.ownerId || contextChoreography !== undefined) && !(isExampleChoreography && !user);
 
+  // Check if we can paste (item is copied and user owns the current choreography)
+  const canPaste = copiedMovement && 
+    isOwner && 
+    choreography !== null;
+
   const handleDelete = () => {
     if (isOwner) {
       deleteChoreography(choreography.id);
@@ -337,6 +374,39 @@ export function ChoreographyDetail() {
   const handleColorChange = () => {
     // Force re-render by updating the key
     setColorUpdateKey(prev => prev + 1);
+  };
+
+  const handleCopyMovement = (movement: ChoreographyMovement) => {
+    if (!choreography) return;
+    const copiedData = {
+      movement: {
+        ...movement,
+        id: crypto.randomUUID(), // Generate new ID for the copied item
+      },
+      sourceChoreographyId: choreography.id,
+    };
+    localStorage.setItem('copiedMovement', JSON.stringify(copiedData));
+    setCopiedMovement(copiedData);
+    setToast({ message: t('choreographies.movements.copySuccess'), type: 'success' });
+  };
+
+  const handlePasteMovement = () => {
+    if (!copiedMovement || !choreography || !isOwner) return;
+    
+    const newMovement: ChoreographyMovement = {
+      ...copiedMovement.movement,
+      id: crypto.randomUUID(), // Generate new ID
+      order: choreography.movements.length,
+    };
+    
+    const updatedMovements = [...choreography.movements, newMovement];
+    updateChoreography(choreography.id, { movements: updatedMovements });
+    
+    // Clear the copied movement after pasting
+    localStorage.removeItem('copiedMovement');
+    setCopiedMovement(null);
+    
+    setToast({ message: t('choreographies.movements.pasteSuccess'), type: 'success' });
   };
 
   const handleShare = async () => {
@@ -504,6 +574,7 @@ export function ChoreographyDetail() {
                   }}
                   onDelete={() => isOwner && handleDeleteMovement(movement.id)}
                   onDuplicate={() => isOwner && handleDuplicateMovement(movement.id)}
+                  onCopy={isOwner ? () => handleCopyMovement(movement) : undefined}
                   colorUpdateKey={colorUpdateKey}
                   onColorChange={isOwner ? handleColorChange : () => {}}
                   isReadOnly={!isOwner}
@@ -524,15 +595,27 @@ export function ChoreographyDetail() {
 
       <div className="flex flex-col gap-2 mt-auto">
         {(isOwner || (isExampleChoreography && !user)) && sortedMovements.length > 0 && (
-          <Button
-              variant="default"
+          <div className="flex gap-2 w-full max-w-lg mx-auto">
+            <Button
+              variant={canPaste ? 'outline' : 'default'}
               onClick={handleAddMovement}
-              className="w-full mx-auto"
+              className="flex-1"
             >
               <Plus className="h-4 w-4 mr-2" />
               {t('choreographies.movements.add')}
             </Button>
-          )}
+            {canPaste && (
+              <Button
+                variant="default"
+                onClick={handlePasteMovement}
+                className="h-10 w-10 p-0"
+                aria-label={t('choreographies.movements.paste')}
+              >
+                <Clipboard className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        )}
           {isViewingPublicChoreography && choreography && (
             <Button
               variant="outline"

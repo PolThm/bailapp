@@ -1,6 +1,6 @@
 {
   "name": "@bailapp/web",
-  "version": "0.2.55",
+  "version": "0.2.57",
   "private": true,
   "type": "module",
   "scripts": {
