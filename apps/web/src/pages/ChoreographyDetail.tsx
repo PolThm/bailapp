@@ -312,7 +312,15 @@ export function ChoreographyDetail() {
   const handleDelete = () => {
     if (isOwner) {
       deleteChoreography(choreography.id);
-      navigate('/choreographies');
+      // Navigate back to choreographies list with toast message in state
+      navigate('/choreographies', {
+        state: {
+          toast: {
+            message: t('choreographies.delete.success'),
+            type: 'success' as const,
+          },
+        },
+      });
     }
   };
 
@@ -454,11 +462,17 @@ export function ChoreographyDetail() {
       };
       
       await copyChoreography(copiedChoreography);
-      setToast({ message: t('choreographies.detail.duplicateSuccess'), type: 'success' });
       setShowMenu(false);
       
-      // Navigate back to choreographies list
-      navigate('/choreographies');
+      // Navigate back to choreographies list with toast message in state
+      navigate('/choreographies', {
+        state: {
+          toast: {
+            message: t('choreographies.detail.duplicateSuccess'),
+            type: 'success' as const,
+          },
+        },
+      });
     } catch (error) {
       console.error('Failed to duplicate choreography:', error);
       setToast({ message: t('common.error'), type: 'error' });

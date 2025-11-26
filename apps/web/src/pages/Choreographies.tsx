@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Music, Plus } from 'lucide-react';
 import { useChoreographies } from '@/context/ChoreographiesContext';
 import { EmptyState } from '@/components/EmptyState';
@@ -8,15 +9,27 @@ import { NewChoreographyModal } from '@/components/NewChoreographyModal';
 import { ChoreographyCard } from '@/components/ChoreographyCard';
 import { Button } from '@/components/ui/button';
 import { Loader } from '@/components/Loader';
+import { Toast } from '@/components/Toast';
 import { sortByLastOpened } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 
 export function Choreographies() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const location = useLocation();
   const { choreographies, isLoading } = useChoreographies();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewChoreographyModal, setShowNewChoreographyModal] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+
+  // Check for toast message in navigation state
+  useEffect(() => {
+    if (location.state?.toast) {
+      setToast(location.state.toast);
+      // Clear the state to avoid showing the toast again on re-render
+      window.history.replaceState({ ...location.state, toast: null }, '');
+    }
+  }, [location.state]);
 
   const handleNewChoreography = () => {
     if (!user) {
@@ -92,6 +105,15 @@ export function Choreographies() {
         open={showNewChoreographyModal}
         onClose={() => setShowNewChoreographyModal(false)}
       />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </>
   );
 }

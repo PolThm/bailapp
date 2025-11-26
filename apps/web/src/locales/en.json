@@ -141,7 +141,8 @@
     "delete": {
       "title": "Delete choreography",
       "message": "Are you sure you want to delete this choreography?",
-      "confirm": "Delete"
+      "confirm": "Delete",
+      "success": "Choreography deleted successfully"
     },
     "menu": {
       "title": "Menu"

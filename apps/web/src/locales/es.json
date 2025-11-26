@@ -141,7 +141,8 @@
     "delete": {
       "title": "Eliminar coreografía",
       "message": "¿Estás seguro de que quieres eliminar esta coreografía?",
-      "confirm": "Eliminar"
+      "confirm": "Eliminar",
+      "success": "Coreografía eliminada con éxito"
     },
     "menu": {
       "title": "Menú"

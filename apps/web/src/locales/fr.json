@@ -141,7 +141,8 @@
     "delete": {
       "title": "Supprimer la chorégraphie",
       "message": "Es-tu sûr de vouloir supprimer cette chorégraphie ?",
-      "confirm": "Supprimer"
+      "confirm": "Supprimer",
+      "success": "Chorégraphie supprimée avec succès"
     },
     "menu": {
       "title": "Menu"
