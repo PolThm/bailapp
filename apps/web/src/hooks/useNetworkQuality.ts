@@ -99,6 +99,11 @@ function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQ
   const type = connection.type;
   const saveData = connection.saveData || false;
 
+  // Detect if we're on desktop (non-mobile)
+  const isMobile = /iPad|iPhone|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    (window.innerWidth <= 768 && navigator.maxTouchPoints > 0);
+  const isDesktop = !isMobile;
+
   // Determine connection slow level
   // Priority: downlink > effectiveType > type
   let slowLevel: SlowConnectionLevel = 'none';
@@ -108,8 +113,54 @@ function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQ
   if (saveData) {
     slowLevel = 'very';
     isSlow = true;
+  } else if (isDesktop) {
+    // On desktop, be more permissive with connection quality
+    // Desktop connections often have unreliable downlink values from the API
+    const isWifiOrEthernet = type === 'wifi' || type === 'ethernet' || type === undefined;
+    const hasGoodEffectiveType = effectiveType === '4g';
+    const hasLowRTT = rtt !== undefined && rtt < 200;
+    
+    if (isWifiOrEthernet && (hasGoodEffectiveType || hasLowRTT)) {
+      // Desktop with WiFi/Ethernet (or undefined type) and good indicators
+      // Only consider it slow if downlink is extremely low (< 1 Mbps) or RTT is very high (> 1000ms)
+      if (downlink !== undefined && downlink < 1) {
+        slowLevel = 'very';
+        isSlow = true;
+      } else if (rtt !== undefined && rtt > 1000) {
+        slowLevel = 'moderate';
+        isSlow = true;
+      } else {
+        // Desktop with good indicators is generally good, even with lower downlink values
+        slowLevel = 'none';
+        isSlow = false;
+      }
+    } else if (downlink !== undefined) {
+      // Desktop but without good indicators, use downlink classification
+      if (downlink < 5) {
+        slowLevel = 'very';
+        isSlow = true;
+      } else if (downlink < 6) {
+        slowLevel = 'moderate';
+        isSlow = true;
+      } else if (downlink < 8) {
+        slowLevel = 'slight';
+        isSlow = true;
+      } else {
+        slowLevel = 'none';
+        isSlow = false;
+      }
+    } else {
+      // Desktop without downlink, use effectiveType or type
+      if (effectiveType === '4g' || type === 'wifi' || type === 'ethernet') {
+        slowLevel = 'none';
+        isSlow = false;
+      } else {
+        slowLevel = 'moderate';
+        isSlow = true;
+      }
+    }
   } else if (downlink !== undefined) {
-    // Primary classification: use downlink speed (most reliable indicator)
+    // Primary classification: use downlink speed (most reliable indicator for mobile)
     if (downlink < 5) {
       slowLevel = 'very';
       isSlow = true;

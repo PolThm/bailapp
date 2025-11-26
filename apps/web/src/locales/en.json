@@ -273,7 +273,7 @@
       "title": "You are offline",
       "message": "Some features may not work properly.",
       "verySlowConnection": {
-        "title": "Very slow connection",
+        "title": "Slow connection",
         "message": "Some features may not work properly."
       },
       "backOnline": "Connection restored!"

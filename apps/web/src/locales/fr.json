@@ -272,7 +272,7 @@
       "title": "Tu es hors ligne",
       "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement.",
       "verySlowConnection": {
-        "title": "Connexion très lente",
+        "title": "Connexion lente",
         "message": "Certaines fonctionnalités peuvent ne pas fonctionner correctement."
       },
       "backOnline": "Connexion rétablie !"

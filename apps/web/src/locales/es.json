@@ -273,7 +273,7 @@
       "title": "Estás desconectado",
       "message": "Algunas funciones pueden no funcionar correctamente.",
       "verySlowConnection": {
-        "title": "Conexión muy lenta",
+        "title": "Conexión lenta",
         "message": "Algunas funciones pueden no funcionar correctamente."
       },
       "backOnline": "!Conexión restaurada!"
