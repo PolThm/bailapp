@@ -294,13 +294,6 @@ export function ChoreographyMovementItem({
           {/* Menu Dropdown */}
           {showMenu && (
             <div className="absolute right-0 top-full mt-1 bg-background border rounded-lg shadow-lg z-10 min-w-[160px]">
-              <button
-                onClick={handleDuplicate}
-                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"
-              >
-                <Copy className="h-4 w-4" />
-                {t('choreographies.movements.duplicate')}
-              </button>
               {onCopy && (
                 <button
                   onClick={handleCopy}
@@ -310,6 +303,13 @@ export function ChoreographyMovementItem({
                   {t('choreographies.movements.copy')}
                 </button>
               )}
+              <button
+                onClick={handleDuplicate}
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"
+              >
+                <Copy className="h-4 w-4" />
+                {t('choreographies.movements.duplicate')}
+              </button>
               <button
                 onClick={handleChangeColor}
                 className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"
