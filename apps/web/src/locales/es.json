@@ -125,7 +125,10 @@
       "backToChoreographies": "Volver a las coreografías",
       "edit": "Editar",
       "share": "Compartir",
-      "delete": "Eliminar"
+      "duplicate": "Duplicar",
+      "delete": "Eliminar",
+      "copyOf": "Copia de {{name}}",
+      "duplicateSuccess": "Coreografía duplicada con éxito"
     },
     "share": {
       "shareText": "Mira esta coreografía de {{style}} « {{name}} » en Bailapp:",

@@ -442,6 +442,29 @@ export function ChoreographyDetail() {
     setShowMenu(false);
   };
 
+  const handleDuplicateChoreography = async () => {
+    if (!choreography || !isOwner) return;
+    
+    try {
+      // Create a copy with "Copie de ..." prefix
+      const copyName = t('choreographies.detail.copyOf', { name: choreography.name });
+      const copiedChoreography: Choreography = {
+        ...choreography,
+        name: copyName,
+      };
+      
+      await copyChoreography(copiedChoreography);
+      setToast({ message: t('choreographies.detail.duplicateSuccess'), type: 'success' });
+      setShowMenu(false);
+      
+      // Navigate back to choreographies list
+      navigate('/choreographies');
+    } catch (error) {
+      console.error('Failed to duplicate choreography:', error);
+      setToast({ message: t('common.error'), type: 'error' });
+    }
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     if (!isOwner) return;
     const { active, over } = event;
@@ -510,6 +533,13 @@ export function ChoreographyDetail() {
                   >
                     <Share2 className="h-4 w-4" />
                     {t('choreographies.detail.share')}
+                  </button>
+                  <button
+                    onClick={handleDuplicateChoreography}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
+                  >
+                    <Copy className="h-4 w-4" />
+                    {t('choreographies.detail.duplicate')}
                   </button>
                   <div className="my-1 h-px bg-border" />
                   <button

@@ -125,7 +125,10 @@
       "backToChoreographies": "Back to choreographies",
       "edit": "Edit",
       "share": "Share",
-      "delete": "Delete"
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "copyOf": "Copy of {{name}}",
+      "duplicateSuccess": "Choreography duplicated successfully"
     },
     "share": {
       "shareText": "Check out this {{style}} choreography « {{name}} » on Bailapp:",
