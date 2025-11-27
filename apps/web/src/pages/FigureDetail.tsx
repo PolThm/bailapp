@@ -17,6 +17,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { MasteryLevelModal } from '@/components/MasteryLevelModal';
 import { HeaderBackTitle } from '@/components/HeaderBackTitle';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
+import { useOrientation } from '@/hooks/useOrientation';
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
 import { Toast } from '@/components/Toast';
 
@@ -31,16 +32,9 @@ export function FigureDetail() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMasteryModal, setShowMasteryModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
-  // Initialize landscape state based on current orientation
-  const [isLandscape, setIsLandscape] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const isMobile = window.innerWidth < 768;
-      const isLandscapeMode = window.innerWidth > window.innerHeight;
-      return isMobile && isLandscapeMode;
-    }
-    return false;
-  });
+  const { isLandscapeMobile } = useOrientation();
   const [isFullscreenExited, setIsFullscreenExited] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(() => isLandscapeMobile && !isFullscreenExited);
 
   const figure = id ? getFigure(id) : undefined;
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
@@ -55,39 +49,20 @@ export function FigureDetail() {
     }
   }, [id, figure, isFavorite, updateLastOpened]);
 
-  // Detect landscape orientation on mobile
+  // Update landscape state based on orientation and fullscreen exit status
   useEffect(() => {
-    const checkOrientation = () => {
-      const isMobile = window.innerWidth < 768; // sm breakpoint
-      const isLandscapeMode = window.innerWidth > window.innerHeight;
-      // Only enable landscape fullscreen if not explicitly exited by user
-      const shouldBeFullscreen = isMobile && isLandscapeMode && !isFullscreenExited;
-      setIsLandscape(shouldBeFullscreen);
-      
-      // Reset exit flag when switching back to portrait
-      if (!isLandscapeMode) {
-        setIsFullscreenExited(false);
-      }
-    };
+    const shouldBeFullscreen = isLandscapeMobile && !isFullscreenExited;
+    setIsLandscape(shouldBeFullscreen);
+    
+    // Reset exit flag when switching back to portrait
+    if (!isLandscapeMobile) {
+      setIsFullscreenExited(false);
+    }
+  }, [isLandscapeMobile, isFullscreenExited]);
 
-    checkOrientation();
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', checkOrientation);
-
-    return () => {
-      window.removeEventListener('resize', checkOrientation);
-      window.removeEventListener('orientationchange', checkOrientation);
-    };
-  }, [isFullscreenExited]);
-
-  // Reset fullscreen exit flag when figure changes and check initial orientation
+  // Reset fullscreen exit flag when figure changes
   useEffect(() => {
     setIsFullscreenExited(false);
-    // Check orientation immediately when figure changes
-    const isMobile = window.innerWidth < 768;
-    const isLandscapeMode = window.innerWidth > window.innerHeight;
-    const shouldBeFullscreen = isMobile && isLandscapeMode;
-    setIsLandscape(shouldBeFullscreen);
   }, [id]);
 
   // Detect when user exits fullscreen from YouTube player

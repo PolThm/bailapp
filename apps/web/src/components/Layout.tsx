@@ -1,42 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, Compass, Heart, Music, User } from 'lucide-react';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { usePullToRefreshContext } from '@/context/PullToRefreshContext';
+import { useOrientation } from '@/hooks/useOrientation';
 import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
   const { refreshHandler } = usePullToRefreshContext();
+  const { isLandscapeMobile } = useOrientation();
   const mainRef = useRef<HTMLElement | null>(null);
-  const [isLandscapeMobile, setIsLandscapeMobile] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const isMobile = window.innerWidth < 768; // sm breakpoint
-      const isLandscapeMode = window.innerWidth > window.innerHeight;
-      return isMobile && isLandscapeMode;
-    }
-    return false;
-  });
-
-  // Detect landscape orientation on mobile
-  useEffect(() => {
-    const checkOrientation = () => {
-      const isMobile = window.innerWidth < 768; // sm breakpoint
-      const isLandscapeMode = window.innerWidth > window.innerHeight;
-      setIsLandscapeMobile(isMobile && isLandscapeMode);
-    };
-
-    checkOrientation();
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', checkOrientation);
-
-    return () => {
-      window.removeEventListener('resize', checkOrientation);
-      window.removeEventListener('orientationchange', checkOrientation);
-    };
-  }, []);
 
   // Scroll to top when route changes
   useEffect(() => mainRef.current?.scrollTo(0, 0), [location.pathname]);
