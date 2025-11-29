@@ -710,7 +710,7 @@ export function ChoreographyDetail() {
                         {t('choreographies.share.sharingMode.title')}
                       </button>
                       {showSharingModeMenu && (
-                        <div className="absolute left-full top-0 ml-1 rounded-md border bg-popover shadow-lg py-1 min-w-[220px]">
+                        <div className="absolute left-0 md:left-full top-full md:top-0 mt-1 md:mt-0 md:ml-1 rounded-md border bg-popover shadow-lg py-1 w-full md:w-auto md:min-w-[220px] z-[70]">
                           <button
                             onClick={() => handleChangeSharingMode('view-only')}
                             className={`w-full px-4 py-2 text-left text-sm hover:bg-accent ${
@@ -718,8 +718,8 @@ export function ChoreographyDetail() {
                             }`}
                           >
                             <div className="flex items-center gap-2">
-                              <Eye className="h-4 w-4" />
-                              <div>
+                              <Eye className="h-4 w-4 flex-shrink-0" />
+                              <div className="min-w-0">
                                 <div className="font-medium">{t('choreographies.share.sharingMode.viewOnly')}</div>
                                 <div className="text-xs text-muted-foreground">{t('choreographies.share.sharingMode.viewOnlyDescription')}</div>
                               </div>
@@ -732,8 +732,8 @@ export function ChoreographyDetail() {
                             }`}
                           >
                             <div className="flex items-center gap-2">
-                              <Users className="h-4 w-4" />
-                              <div>
+                              <Users className="h-4 w-4 flex-shrink-0" />
+                              <div className="min-w-0">
                                 <div className="font-medium">{t('choreographies.share.sharingMode.collaborative')}</div>
                                 <div className="text-xs text-muted-foreground">{t('choreographies.share.sharingMode.collaborativeDescription')}</div>
                               </div>
