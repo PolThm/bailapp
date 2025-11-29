@@ -30,8 +30,8 @@ export function ChoreographyCard({ choreography, isFollowed = false }: Choreogra
             <h3 className="font-semibold line-clamp-2 text-base leading-tight flex-1 min-w-0">
               {choreography.name}
             </h3>
-            {isFollowed && (
-              <Users className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" aria-label="Followed" />
+            {(isFollowed || choreography.isPublic) && (
+              <Users className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" aria-label={isFollowed ? "Followed" : "Shared"} />
             )}
           </div>
         </CardHeader>

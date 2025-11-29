@@ -313,7 +313,7 @@ export function ChoreographyDetail() {
       // (but if user is authenticated and owns it, update it)
       if (!isExampleChoreography || (isExampleChoreography && user)) {
         const now = new Date().toISOString();
-        updateChoreography(id, { lastOpenedAt: now });
+        updateChoreography(id, { lastOpenedAt: now }, choreography?.ownerId);
         lastUpdatedIdRef.current = id;
       }
     }
@@ -449,7 +449,14 @@ export function ChoreographyDetail() {
       order: choreography.movements.length,
     };
     const updatedMovements = [...choreography.movements, newMovement];
-    updateChoreography(choreography.id, { movements: updatedMovements });
+    // Optimistic update for public choreography
+    if (isViewingPublicChoreography && publicChoreography) {
+      setPublicChoreography({
+        ...publicChoreography,
+        movements: updatedMovements,
+      });
+    }
+    updateChoreography(choreography.id, { movements: updatedMovements }, choreography.ownerId);
     setEditingId(newMovement.id);
   };
 
@@ -458,7 +465,14 @@ export function ChoreographyDetail() {
     const updatedMovements = choreography.movements.map((m: ChoreographyMovement) =>
       m.id === movementId ? { ...m, name, mentionId, mentionType } : m
     );
-    updateChoreography(choreography.id, { movements: updatedMovements });
+    // Optimistic update for public choreography
+    if (isViewingPublicChoreography && publicChoreography) {
+      setPublicChoreography({
+        ...publicChoreography,
+        movements: updatedMovements,
+      });
+    }
+    updateChoreography(choreography.id, { movements: updatedMovements }, choreography.ownerId);
     setEditingId(null);
   };
 
@@ -467,7 +481,14 @@ export function ChoreographyDetail() {
     const updatedMovements = choreography.movements
       .filter((m: ChoreographyMovement) => m.id !== movementId)
       .map((m: ChoreographyMovement, index: number) => ({ ...m, order: index }));
-    updateChoreography(choreography.id, { movements: updatedMovements });
+    // Optimistic update for public choreography
+    if (isViewingPublicChoreography && publicChoreography) {
+      setPublicChoreography({
+        ...publicChoreography,
+        movements: updatedMovements,
+      });
+    }
+    updateChoreography(choreography.id, { movements: updatedMovements }, choreography.ownerId);
   };
 
   const handleDuplicateMovement = (movementId: string) => {
@@ -489,7 +510,14 @@ export function ChoreographyDetail() {
           order: m.order + 1,
         })),
       ];
-      updateChoreography(choreography.id, { movements: updatedMovements });
+      // Optimistic update for public choreography
+      if (isViewingPublicChoreography && publicChoreography) {
+        setPublicChoreography({
+          ...publicChoreography,
+          movements: updatedMovements,
+        });
+      }
+      updateChoreography(choreography.id, { movements: updatedMovements }, choreography.ownerId);
     }
   };
 
@@ -522,7 +550,14 @@ export function ChoreographyDetail() {
     };
     
     const updatedMovements = [...choreography.movements, newMovement];
-    updateChoreography(choreography.id, { movements: updatedMovements });
+    // Optimistic update for public choreography
+    if (isViewingPublicChoreography && publicChoreography) {
+      setPublicChoreography({
+        ...publicChoreography,
+        movements: updatedMovements,
+      });
+    }
+    updateChoreography(choreography.id, { movements: updatedMovements }, choreography.ownerId);
     
     // Clear the copied movement after pasting
     localStorage.removeItem('copiedMovement');
@@ -672,7 +707,7 @@ export function ChoreographyDetail() {
     if (!choreography || !isOwner) return;
     
     try {
-      await updateChoreography(choreography.id, { isPublic: false });
+      await updateChoreography(choreography.id, { isPublic: false }, choreography.ownerId);
       setShowSharingModeMenu(false);
       setShowMenu(false);
       setToast({ message: t('choreographies.share.madePrivate'), type: 'success' });
@@ -734,7 +769,14 @@ export function ChoreographyDetail() {
       order: index,
     }));
 
-    updateChoreography(choreography.id, { movements: updatedMovements });
+    // Optimistic update for public choreography
+    if (isViewingPublicChoreography && publicChoreography) {
+      setPublicChoreography({
+        ...publicChoreography,
+        movements: updatedMovements,
+      });
+    }
+    updateChoreography(choreography.id, { movements: updatedMovements }, choreography.ownerId);
   };
 
   // Sort movements by order

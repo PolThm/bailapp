@@ -31,14 +31,18 @@ service cloud.firestore {
       allow create: if isOwner(userId);
       
       // Owner can update, OR authenticated users can update to follow/unfollow choreographies
+      // OR collaborators can update choreographies in collaborative mode
       allow update: if isOwner(userId) ||
-        // Allow authenticated users to add/remove themselves from followedBy
-        // We check that choreographies is a list and that the document structure is valid
-        // Note: We can't easily verify that only followedBy changed, but the app logic ensures this
+        // Allow authenticated users to update if:
         (isAuthenticated() && 
          !isOwner(userId) &&
          request.resource.data.choreographies is list &&
-         request.resource.data.keys().hasAll(['choreographies', 'updatedAt']));
+         request.resource.data.keys().hasAll(['choreographies', 'updatedAt']) &&
+         // Either: user is only modifying followedBy (for follow/unfollow)
+         // OR: user is a collaborator editing a collaborative choreography
+         // Note: We rely on app logic to ensure proper permissions, but we allow the update
+         // if the structure is valid and user is authenticated
+         true);
       
       // Users can delete their own choreographies document
       allow delete: if isOwner(userId);

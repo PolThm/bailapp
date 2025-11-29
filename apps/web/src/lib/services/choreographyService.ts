@@ -212,14 +212,18 @@ export async function createChoreography(
 
 /**
  * Update an existing choreography in Firestore
+ * @param ownerId - Optional owner ID. If provided, updates the choreography in the owner's document instead of the user's document
  */
 export async function updateChoreography(
   choreographyId: string,
   updates: Partial<Choreography>,
-  userId: string
+  userId: string,
+  ownerId?: string
 ): Promise<void> {
   try {
-    const choreographiesRef = doc(db, 'choreographies', userId);
+    // Use ownerId if provided (for shared choreographies), otherwise use userId
+    const targetUserId = ownerId || userId;
+    const choreographiesRef = doc(db, 'choreographies', targetUserId);
     const existingDoc = await getDoc(choreographiesRef);
     
     if (!existingDoc.exists()) {

@@ -20,7 +20,7 @@ interface ChoreographiesContextType {
   choreographies: Choreography[];
   followedChoreographies: Choreography[];
   addChoreography: (choreography: Choreography) => Promise<string>;
-  updateChoreography: (id: string, updates: Partial<Choreography>) => void;
+  updateChoreography: (id: string, updates: Partial<Choreography>, ownerId?: string) => void;
   deleteChoreography: (id: string) => void;
   getChoreography: (id: string) => Choreography | undefined;
   togglePublic: (id: string) => void;
@@ -309,7 +309,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
     return choreography.id;
   };
 
-  const updateChoreography = async (id: string, updates: Partial<Choreography>) => {
+  const updateChoreography = async (id: string, updates: Partial<Choreography>, ownerId?: string) => {
     // Store the previous state for potential revert
     let previousChoreography: Choreography | undefined;
     let updatedChoreographies: Choreography[] = [];
@@ -342,18 +342,18 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
         // Queue for sync when back online
         await addToSyncQueue({
           type: 'updateChoreography',
-          userId: user.uid,
-          data: { choreographyId: id, updates },
+          userId: ownerId || user.uid,
+          data: { choreographyId: id, updates, ownerId },
         });
       } else {
-        updateChoreographyInFirestore(id, updates, user.uid).catch(async (error: any) => {
+        updateChoreographyInFirestore(id, updates, user.uid, ownerId).catch(async (error: any) => {
           console.error('Failed to update choreography in Firestore:', error);
           // If network error, queue for later
           if (error?.code === 'unavailable' || error?.code === 'deadline-exceeded') {
             await addToSyncQueue({
               type: 'updateChoreography',
-              userId: user.uid,
-              data: { choreographyId: id, updates },
+              userId: ownerId || user.uid,
+              data: { choreographyId: id, updates, ownerId },
             });
           } else if (error?.code === 'permission-denied' && previousChoreography) {
             // Revert on permission error
