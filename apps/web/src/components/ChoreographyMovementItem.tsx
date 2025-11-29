@@ -311,7 +311,7 @@ export function ChoreographyMovementItem({
                 {movement.mentionId && movement.mentionType ? (
                   <span
                     onClick={handleMentionClick}
-                    className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition-colors"
+                    className="text-primary hover:underline cursor-pointer"
                   >
                     {movement.name}
                   </span>
