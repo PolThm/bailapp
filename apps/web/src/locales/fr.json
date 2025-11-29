@@ -136,7 +136,20 @@
       "linkCopied": "Lien copié dans le presse-papiers",
       "public": "Publique",
       "private": "Privée",
-      "duplicateToMyChoreographies": "Dupliquer dans mes chorégraphies"
+      "duplicateToMyChoreographies": "Dupliquer dans mes chorégraphies",
+      "follow": "Suivre",
+      "unfollow": "Ne plus suivre",
+      "following": "Suivi",
+      "followSuccess": "Vous suivez maintenant cette chorégraphie",
+      "unfollowSuccess": "Vous ne suivez plus cette chorégraphie",
+      "sharingMode": {
+        "title": "Mode de partage",
+        "viewOnly": "Lecture seule",
+        "collaborative": "Collaboratif",
+        "viewOnlyDescription": "Les autres peuvent voir mais pas modifier",
+        "collaborativeDescription": "Les abonnés peuvent modifier cette chorégraphie",
+        "updated": "Mode de partage mis à jour"
+      }
     },
     "delete": {
       "title": "Supprimer la chorégraphie",
@@ -174,7 +187,9 @@
     },
     "example": {
       "name": "Exemple Salsa"
-    }
+    },
+    "myChoreographies": "Mes chorégraphies",
+    "followed": "Suivies"
   },
   "profile": {
     "title": "Profil",
@@ -368,4 +383,3 @@
     "description": "On y travaille ! Tu pourras bientôt ajouter tes propres figures."
   }
 }
-

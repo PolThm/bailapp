@@ -50,6 +50,8 @@ export interface ChoreographyMovement {
   mentionType?: MentionType; // Type of the mention: 'choreography' or 'figure'
 }
 
+export type ChoreographySharingMode = 'view-only' | 'collaborative';
+
 export interface Choreography {
   id: string;
   name: string;
@@ -62,5 +64,7 @@ export interface Choreography {
   lastOpenedAt?: string;
   isPublic?: boolean;
   ownerId?: string; // ID of the user who owns this choreography
+  sharingMode?: ChoreographySharingMode; // 'view-only' or 'collaborative'
+  followedBy?: string[]; // IDs of users who follow this choreography
 }
 

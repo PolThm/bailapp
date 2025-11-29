@@ -101,6 +101,8 @@
     "title": "Choreographies",
     "subtitle": "Create and manage your sequences",
     "new": "New",
+    "myChoreographies": "My Choreographies",
+    "followed": "Followed",
     "empty": {
       "title": "No choreographies yet",
       "description": "Create your first choreography to combine figures and practice sequences!",
@@ -136,7 +138,20 @@
       "linkCopied": "Link copied to clipboard",
       "public": "Public",
       "private": "Private",
-      "duplicateToMyChoreographies": "Duplicate to my choreographies"
+      "duplicateToMyChoreographies": "Duplicate to my choreographies",
+      "follow": "Follow",
+      "unfollow": "Unfollow",
+      "following": "Following",
+      "followSuccess": "You are now following this choreography",
+      "unfollowSuccess": "You are no longer following this choreography",
+      "sharingMode": {
+        "title": "Sharing Mode",
+        "viewOnly": "View Only",
+        "collaborative": "Collaborative",
+        "viewOnlyDescription": "Others can view but not edit",
+        "collaborativeDescription": "Followers can edit this choreography",
+        "updated": "Sharing mode updated"
+      }
     },
     "delete": {
       "title": "Delete choreography",

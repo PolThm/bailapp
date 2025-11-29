@@ -5,6 +5,10 @@ import {
   createChoreography,
   updateChoreography as updateChoreographyInFirestore,
   deleteChoreography as deleteChoreographyFromFirestore,
+  followChoreography as followChoreographyInFirestore,
+  unfollowChoreography as unfollowChoreographyInFirestore,
+  updateChoreographySharingMode,
+  getFollowedChoreographies,
 } from '@/lib/services/choreographyService';
 import type { Choreography } from '@/types';
 import { createExampleChoreography } from '@/data/mockChoreographies';
@@ -14,12 +18,16 @@ import { addToSyncQueue, getSyncQueue } from '@/lib/syncQueue';
 
 interface ChoreographiesContextType {
   choreographies: Choreography[];
+  followedChoreographies: Choreography[];
   addChoreography: (choreography: Choreography) => Promise<string>;
   updateChoreography: (id: string, updates: Partial<Choreography>) => void;
   deleteChoreography: (id: string) => void;
   getChoreography: (id: string) => Choreography | undefined;
   togglePublic: (id: string) => void;
   copyChoreography: (choreography: Choreography) => Promise<string>;
+  followChoreography: (choreographyId: string, ownerId: string) => Promise<void>;
+  unfollowChoreography: (choreographyId: string, ownerId: string) => Promise<void>;
+  updateSharingMode: (choreographyId: string, sharingMode: 'view-only' | 'collaborative') => Promise<void>;
   isLoading: boolean;
   reloadChoreographies: () => Promise<void>;
 }
@@ -32,6 +40,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const { shouldUseCache } = useOfflineStatus();
   const [choreographies, setChoreographies] = useState<Choreography[]>([]);
+  const [followedChoreographies, setFollowedChoreographies] = useState<Choreography[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Function to reload choreographies from Firestore
@@ -48,6 +57,15 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
       
       setChoreographies(migratedChoreographies);
       await setCachedData(cacheKey, migratedChoreographies);
+      
+      // Reload followed choreographies
+      try {
+        const followed = await getFollowedChoreographies(user.uid);
+        setFollowedChoreographies(followed);
+      } catch (error) {
+        console.error('Failed to reload followed choreographies:', error);
+        setFollowedChoreographies([]);
+      }
     } catch (error: any) {
       console.error('Failed to reload choreographies from Firestore:', error);
       // On error, try to load from cache
@@ -143,6 +161,20 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
           setChoreographies(migratedChoreographies);
               // Cache the data for offline use
               await setCachedData(cacheKey, migratedChoreographies);
+              
+              // Load followed choreographies
+              try {
+                const followed = await getFollowedChoreographies(user.uid);
+                if (!cancelled) {
+                  setFollowedChoreographies(followed);
+                }
+              } catch (error) {
+                console.error('Failed to load followed choreographies:', error);
+                if (!cancelled) {
+                  setFollowedChoreographies([]);
+                }
+              }
+              
               setIsLoading(false);
             }
           } catch (error: any) {
@@ -169,6 +201,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
           if (!cancelled) {
             const exampleChoreography = createExampleChoreography();
             setChoreographies([exampleChoreography]);
+            setFollowedChoreographies([]);
             setIsLoading(false);
           }
         }
@@ -464,6 +497,8 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
       id: crypto.randomUUID(), // New ID for the copy
       ownerId: user.uid, // Set current user as owner
       isPublic: false, // Copy is private by default
+      sharingMode: 'view-only', // Default to view-only
+      followedBy: [], // New choreography has no followers
       createdAt: now, // New creation date
       lastOpenedAt: now, // Set to now so it appears at the top of the list
     };
@@ -472,16 +507,65 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
     return await addChoreography(copiedChoreography);
   };
 
+  const followChoreography = async (choreographyId: string, ownerId: string): Promise<void> => {
+    if (!user || !user.uid) {
+      throw new Error('User must be authenticated to follow a choreography');
+    }
+
+    try {
+      await followChoreographyInFirestore(choreographyId, ownerId, user.uid);
+      // Reload choreographies and followed choreographies to reflect the change
+      await reloadChoreographies();
+    } catch (error) {
+      console.error('Failed to follow choreography:', error);
+      throw error;
+    }
+  };
+
+  const unfollowChoreography = async (choreographyId: string, ownerId: string): Promise<void> => {
+    if (!user || !user.uid) {
+      throw new Error('User must be authenticated to unfollow a choreography');
+    }
+
+    try {
+      await unfollowChoreographyInFirestore(choreographyId, ownerId, user.uid);
+      // Reload choreographies and followed choreographies to reflect the change
+      await reloadChoreographies();
+    } catch (error) {
+      console.error('Failed to unfollow choreography:', error);
+      throw error;
+    }
+  };
+
+  const updateSharingMode = async (choreographyId: string, sharingMode: 'view-only' | 'collaborative'): Promise<void> => {
+    if (!user || !user.uid) {
+      throw new Error('User must be authenticated to update sharing mode');
+    }
+
+    try {
+      await updateChoreographySharingMode(choreographyId, user.uid, sharingMode);
+      // Update local state
+      updateChoreography(choreographyId, { sharingMode });
+    } catch (error) {
+      console.error('Failed to update sharing mode:', error);
+      throw error;
+    }
+  };
+
   return (
     <ChoreographiesContext.Provider
       value={{
         choreographies,
+        followedChoreographies,
         addChoreography,
         updateChoreography,
         deleteChoreography,
         getChoreography,
         togglePublic,
         copyChoreography,
+        followChoreography,
+        unfollowChoreography,
+        updateSharingMode,
         isLoading,
         reloadChoreographies,
       }}

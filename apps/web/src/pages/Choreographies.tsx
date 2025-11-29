@@ -17,7 +17,7 @@ export function Choreographies() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const location = useLocation();
-  const { choreographies, isLoading } = useChoreographies();
+  const { choreographies, followedChoreographies, isLoading } = useChoreographies();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewChoreographyModal, setShowNewChoreographyModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
@@ -41,6 +41,7 @@ export function Choreographies() {
 
   // Sort choreographies by lastOpenedAt (most recent first), then by createdAt for those without lastOpenedAt
   const sortedChoreographies = sortByLastOpened(choreographies);
+  const sortedFollowedChoreographies = sortByLastOpened(followedChoreographies);
 
   return (
     <>
@@ -64,7 +65,7 @@ export function Choreographies() {
       {/* Choreographies List or Empty State */}
       {isLoading ? (
         <Loader />
-      ) : sortedChoreographies.length === 0 ? (
+      ) : sortedChoreographies.length === 0 && sortedFollowedChoreographies.length === 0 ? (
         <EmptyState
           icon={Music}
           title={t('choreographies.empty.title')}
@@ -75,15 +76,35 @@ export function Choreographies() {
           onLogin={() => setShowAuthModal(true)}
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-2 lg:grid-cols-3 md:gap-5">
-          {sortedChoreographies.map((choreography) => (
-            <ChoreographyCard key={choreography.id} choreography={choreography} />
-          ))}
+        <div className="space-y-6 sm:space-y-8 mt-4 sm:mt-6">
+          {/* My Choreographies */}
+          {sortedChoreographies.length > 0 && (
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">{t('choreographies.myChoreographies')}</h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 md:gap-5">
+                {sortedChoreographies.map((choreography) => (
+                  <ChoreographyCard key={choreography.id} choreography={choreography} isFollowed={false} />
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Followed Choreographies */}
+          {sortedFollowedChoreographies.length > 0 && (
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">{t('choreographies.followed')}</h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 md:gap-5">
+                {sortedFollowedChoreographies.map((choreography) => (
+                  <ChoreographyCard key={`followed-${choreography.id}-${choreography.ownerId}`} choreography={choreography} isFollowed={true} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* Add Button at Bottom */}
-      {sortedChoreographies.length > 0 && (
+      {(sortedChoreographies.length > 0 || sortedFollowedChoreographies.length > 0) && (
         <div className="mt-auto pt-6 mx-auto">
           <Button
             onClick={handleNewChoreography}

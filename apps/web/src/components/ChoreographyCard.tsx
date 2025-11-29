@@ -5,24 +5,35 @@ import {
   DanceSubStyleBadge,
   ComplexityBadge,
 } from '@/components/ui/badge';
-import { Clock } from 'lucide-react';
+import { Clock, Users } from 'lucide-react';
 import type { Choreography } from '@/types';
 
 interface ChoreographyCardProps {
   choreography: Choreography;
+  isFollowed?: boolean;
 }
 
-export function ChoreographyCard({ choreography }: ChoreographyCardProps) {
+export function ChoreographyCard({ choreography, isFollowed = false }: ChoreographyCardProps) {
+  // Build the link URL - include ownerId if it's a followed choreography
+  const linkUrl = isFollowed && choreography.ownerId
+    ? `/choreography/${choreography.id}?ownerId=${choreography.ownerId}`
+    : `/choreography/${choreography.id}`;
+
   return (
     <Link
-      to={`/choreography/${choreography.id}`}
+      to={linkUrl}
       className="touch-manipulation active:scale-[0.98] transition-transform"
     >
       <Card className="h-full transition-shadow hover:shadow-lg border-2 hover:border-primary/50 overflow-hidden">
         <CardHeader className="pb-3">
-          <h3 className="font-semibold line-clamp-2 text-base leading-tight">
-            {choreography.name}
-          </h3>
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-semibold line-clamp-2 text-base leading-tight flex-1 min-w-0">
+              {choreography.name}
+            </h3>
+            {isFollowed && (
+              <Users className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" aria-label="Followed" />
+            )}
+          </div>
         </CardHeader>
 
         <CardContent className="pt-0 space-y-3">

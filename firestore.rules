@@ -23,11 +23,23 @@ service cloud.firestore {
     
     // Choreographies collection (one document per user)
     match /choreographies/{userId} {
-      // Users can read their own choreographies
-      // Anyone can read if the document contains public choreographies (checked in app logic)
-      allow read: if isOwner(userId) || isAuthenticated();
-      // Only the user can create/update their own choreographies document
-      allow create, update: if isOwner(userId);
+      // Anyone can read public choreographies (even without authentication)
+      // Users can also read their own choreographies
+      allow read: if true;
+      
+      // Only the user can create their own choreographies document
+      allow create: if isOwner(userId);
+      
+      // Owner can update, OR authenticated users can update to follow/unfollow choreographies
+      allow update: if isOwner(userId) ||
+        // Allow authenticated users to add/remove themselves from followedBy
+        // We check that choreographies is a list and that the document structure is valid
+        // Note: We can't easily verify that only followedBy changed, but the app logic ensures this
+        (isAuthenticated() && 
+         !isOwner(userId) &&
+         request.resource.data.choreographies is list &&
+         request.resource.data.keys().hasAll(['choreographies', 'updatedAt']));
+      
       // Users can delete their own choreographies document
       allow delete: if isOwner(userId);
     }

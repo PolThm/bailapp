@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Pencil, Music2, Share2, Copy, Menu, Trash2, FileQuestion, Clipboard } from 'lucide-react';
+import { Plus, Pencil, Music2, Share2, Copy, Menu, Trash2, FileQuestion, Clipboard, UserPlus, UserMinus, Eye, Users } from 'lucide-react';
 import { useMovementColor } from '@/hooks/useMovementColor';
 import {
   DndContext,
@@ -152,7 +152,7 @@ export function ChoreographyDetail() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { getChoreography, deleteChoreography, updateChoreography, togglePublic, copyChoreography, isLoading } = useChoreographies();
+  const { getChoreography, deleteChoreography, updateChoreography, togglePublic, copyChoreography, followChoreography, unfollowChoreography, updateSharingMode, isLoading } = useChoreographies();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -163,6 +163,8 @@ export function ChoreographyDetail() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [copiedMovement, setCopiedMovement] = useState<{ movement: ChoreographyMovement; sourceChoreographyId: string } | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showSharingModeMenu, setShowSharingModeMenu] = useState(false);
 
   // Determine if we're viewing someone else's public choreography
   const isViewingPublicChoreography = ownerId && ownerId !== user?.uid;
@@ -257,6 +259,17 @@ export function ChoreographyDetail() {
     }
   }, [id, choreography, isViewingPublicChoreography, updateChoreography, user]);
 
+  // Check if user is following this choreography
+  // This must be before early returns to follow Rules of Hooks
+  useEffect(() => {
+    if (choreography && user) {
+      const following = choreography.followedBy?.includes(user.uid) || false;
+      setIsFollowing(following);
+    } else {
+      setIsFollowing(false);
+    }
+  }, [choreography, user]);
+
   // Configure sensors for drag & drop
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -303,10 +316,18 @@ export function ChoreographyDetail() {
   // Exception: example choreography is read-only for non-authenticated users
   const isExampleChoreography = choreography.id === EXAMPLE_CHOREOGRAPHY_ID;
   const isOwner = !isViewingPublicChoreography && !!user && (user.uid === choreography.ownerId || !choreography.ownerId || contextChoreography !== undefined) && !(isExampleChoreography && !user);
+  
+  // Check if user can edit (owner or collaborative follower)
+  const canEdit = isOwner || (
+    isViewingPublicChoreography && 
+    user && 
+    choreography.sharingMode === 'collaborative' && 
+    isFollowing
+  );
 
-  // Check if we can paste (item is copied and user owns the current choreography)
+  // Check if we can paste (item is copied and user can edit the current choreography)
   const canPaste = copiedMovement && 
-    isOwner && 
+    canEdit && 
     choreography !== null;
 
   const handleDelete = () => {
@@ -330,7 +351,7 @@ export function ChoreographyDetail() {
       setShowAuthModal(true);
       return;
     }
-    if (!isOwner) return;
+    if (!canEdit) return;
     const newMovement: ChoreographyMovement = {
       id: crypto.randomUUID(),
       name: '',
@@ -342,7 +363,7 @@ export function ChoreographyDetail() {
   };
 
   const handleUpdateMovementName = (movementId: string, name: string, mentionId?: string, mentionType?: import('@/types').MentionType) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
     const updatedMovements = choreography.movements.map((m: ChoreographyMovement) =>
       m.id === movementId ? { ...m, name, mentionId, mentionType } : m
     );
@@ -351,7 +372,7 @@ export function ChoreographyDetail() {
   };
 
   const handleDeleteMovement = (movementId: string) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
     const updatedMovements = choreography.movements
       .filter((m: ChoreographyMovement) => m.id !== movementId)
       .map((m: ChoreographyMovement, index: number) => ({ ...m, order: index }));
@@ -359,7 +380,7 @@ export function ChoreographyDetail() {
   };
 
   const handleDuplicateMovement = (movementId: string) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
     const movement = choreography.movements.find((m: ChoreographyMovement) => m.id === movementId);
     if (movement) {
       const newMovement: ChoreographyMovement = {
@@ -401,7 +422,7 @@ export function ChoreographyDetail() {
   };
 
   const handlePasteMovement = () => {
-    if (!copiedMovement || !choreography || !isOwner) return;
+    if (!copiedMovement || !choreography || !canEdit) return;
     
     const newMovement: ChoreographyMovement = {
       ...copiedMovement.movement,
@@ -481,8 +502,78 @@ export function ChoreographyDetail() {
     }
   };
 
+  const handleFollow = async () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    if (!choreography || !choreography.ownerId) return;
+    
+    try {
+      await followChoreography(choreography.id, choreography.ownerId);
+      setIsFollowing(true);
+      setToast({ message: t('choreographies.share.followSuccess'), type: 'success' });
+    } catch (error) {
+      console.error('Failed to follow choreography:', error);
+      setToast({ message: t('common.error'), type: 'error' });
+    }
+  };
+
+  const handleUnfollow = async () => {
+    if (!user || !choreography || !choreography.ownerId) return;
+    
+    try {
+      await unfollowChoreography(choreography.id, choreography.ownerId);
+      setIsFollowing(false);
+      setToast({ message: t('choreographies.share.unfollowSuccess'), type: 'success' });
+    } catch (error) {
+      console.error('Failed to unfollow choreography:', error);
+      setToast({ message: t('common.error'), type: 'error' });
+    }
+  };
+
+  const handleChangeSharingMode = async (mode: 'view-only' | 'collaborative') => {
+    if (!choreography || !isOwner) return;
+    
+    try {
+      await updateSharingMode(choreography.id, mode);
+      setShowSharingModeMenu(false);
+      setShowMenu(false);
+      setToast({ message: t('choreographies.share.sharingMode.updated'), type: 'success' });
+    } catch (error) {
+      console.error('Failed to update sharing mode:', error);
+      setToast({ message: t('common.error'), type: 'error' });
+    }
+  };
+
+  const handleCopyChoreography = async () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    if (!choreography) return;
+    
+    try {
+      await copyChoreography(choreography);
+      navigate('/choreographies', { 
+        replace: true,
+        state: {
+          toast: {
+            message: t('choreographies.detail.duplicateSuccess'),
+            type: 'success' as const,
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Failed to copy choreography:', error);
+      setToast({ message: t('common.error'), type: 'error' });
+    }
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
     const { active, over } = event;
 
     if (!over || active.id === over.id) {
@@ -532,7 +623,7 @@ export function ChoreographyDetail() {
                   onClick={() => setShowMenu(false)}
                 />
                 {/* Menu dropdown */}
-                <div className="absolute right-0 top-full mt-2 rounded-md border bg-popover shadow-lg z-[60] py-1">
+                <div className="absolute right-0 top-full mt-2 rounded-md border bg-popover shadow-lg z-[60] py-1 min-w-[200px]">
                   <button
                     onClick={() => {
                       setShowEditModal(true);
@@ -550,6 +641,53 @@ export function ChoreographyDetail() {
                     <Share2 className="h-4 w-4" />
                     {t('choreographies.detail.share')}
                   </button>
+                  {choreography.isPublic && (
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowSharingModeMenu(!showSharingModeMenu)}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
+                      >
+                        {choreography.sharingMode === 'collaborative' ? (
+                          <Users className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                        {t('choreographies.share.sharingMode.title')}
+                      </button>
+                      {showSharingModeMenu && (
+                        <div className="absolute left-full top-0 ml-1 rounded-md border bg-popover shadow-lg py-1 min-w-[220px]">
+                          <button
+                            onClick={() => handleChangeSharingMode('view-only')}
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-accent ${
+                              choreography.sharingMode === 'view-only' ? 'bg-accent' : ''
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Eye className="h-4 w-4" />
+                              <div>
+                                <div className="font-medium">{t('choreographies.share.sharingMode.viewOnly')}</div>
+                                <div className="text-xs text-muted-foreground">{t('choreographies.share.sharingMode.viewOnlyDescription')}</div>
+                              </div>
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => handleChangeSharingMode('collaborative')}
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-accent ${
+                              choreography.sharingMode === 'collaborative' ? 'bg-accent' : ''
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" />
+                              <div>
+                                <div className="font-medium">{t('choreographies.share.sharingMode.collaborative')}</div>
+                                <div className="text-xs text-muted-foreground">{t('choreographies.share.sharingMode.collaborativeDescription')}</div>
+                              </div>
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <button
                     onClick={handleDuplicateChoreography}
                     className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-3"
@@ -575,7 +713,7 @@ export function ChoreographyDetail() {
         )}
       </HeaderBackTitle>
       {/* Badges */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 items-center">
         <DanceStyleBadge style={choreography.danceStyle} />
         {choreography.danceSubStyle && (
           <DanceSubStyleBadge
@@ -585,6 +723,12 @@ export function ChoreographyDetail() {
         )}
         {choreography.complexity && (
           <ComplexityBadge complexity={choreography.complexity} />
+        )}
+        {isViewingPublicChoreography && isFollowing && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border text-xs sm:text-sm text-muted-foreground">
+            <Users className="h-3.5 w-3.5 flex-shrink-0" />
+            <span className="whitespace-nowrap">{t('choreographies.share.following')}</span>
+          </div>
         )}
       </div>
 
@@ -603,9 +747,9 @@ export function ChoreographyDetail() {
                   movement={movement}
                   choreography={choreography}
                   isEditing={editingId === movement.id}
-                  onStartEdit={() => isOwner && setEditingId(movement.id)}
+                  onStartEdit={() => canEdit && setEditingId(movement.id)}
                   onEndEdit={(name, mentionId, mentionType) => {
-                    if (!isOwner) return;
+                    if (!canEdit) return;
                     if (!name.trim()) {
                       // If empty name and it's a new movement (no name originally), delete it
                       if (!movement.name) {
@@ -618,12 +762,12 @@ export function ChoreographyDetail() {
                       handleUpdateMovementName(movement.id, name, mentionId, mentionType);
                     }
                   }}
-                  onDelete={() => isOwner && handleDeleteMovement(movement.id)}
-                  onDuplicate={() => isOwner && handleDuplicateMovement(movement.id)}
-                  onCopy={isOwner ? () => handleCopyMovement(movement) : undefined}
+                  onDelete={() => canEdit && handleDeleteMovement(movement.id)}
+                  onDuplicate={() => canEdit && handleDuplicateMovement(movement.id)}
+                  onCopy={canEdit ? () => handleCopyMovement(movement) : undefined}
                   colorUpdateKey={colorUpdateKey}
-                  onColorChange={isOwner ? handleColorChange : () => {}}
-                  isReadOnly={!isOwner}
+                  onColorChange={canEdit ? handleColorChange : () => {}}
+                  isReadOnly={!canEdit}
                 />
               ))}
             </div>
@@ -640,7 +784,7 @@ export function ChoreographyDetail() {
       )}
 
       <div className="flex flex-col gap-2 mt-auto">
-        {(isOwner || (isExampleChoreography && !user)) && sortedMovements.length > 0 && (
+        {(canEdit || (isExampleChoreography && !user)) && sortedMovements.length > 0 && (
           <div className="flex gap-2 w-full max-w-lg mx-auto">
             <Button
               variant={canPaste ? 'outline' : 'default'}
@@ -662,27 +806,41 @@ export function ChoreographyDetail() {
             )}
           </div>
         )}
-          {isViewingPublicChoreography && choreography && (
+        {isViewingPublicChoreography && choreography && (
+          <div className="flex flex-col sm:flex-row gap-2 w-full max-w-lg mx-auto">
+            {!isFollowing ? (
+              <Button
+                variant="default"
+                className="flex-1 w-full sm:w-auto"
+                size="lg"
+                onClick={handleFollow}
+              >
+                <UserPlus className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span className="truncate">{t('choreographies.share.follow')}</span>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                className="flex-1 w-full sm:w-auto"
+                size="lg"
+                onClick={handleUnfollow}
+              >
+                <UserMinus className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span className="truncate">{t('choreographies.share.unfollow')}</span>
+              </Button>
+            )}
             <Button
               variant="outline"
-              className="w-full mt-2 mx-auto"
+              className="flex-1 w-full sm:w-auto"
               size="lg"
-              onClick={async () => {
-                try {
-                  await copyChoreography(choreography);
-                  // Navigate to choreographies list, replacing current history entry
-                  // so back button goes to the list, not the shared choreography
-                  navigate('/choreographies', { replace: true });
-                } catch (error) {
-                  console.error('Failed to copy choreography:', error);
-                  // You could add an error toast here
-                }
-              }}
+              onClick={handleCopyChoreography}
             >
-              <Copy className="h-4 w-4 mr-2" />
-              {t('choreographies.share.duplicateToMyChoreographies')}
+              <Copy className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span className="truncate hidden sm:inline">{t('choreographies.share.duplicateToMyChoreographies')}</span>
+              <span className="truncate sm:hidden">{t('choreographies.detail.duplicate')}</span>
             </Button>
-          )}
+          </div>
+        )}
       </div>
 
       {/* Edit Modal */}
