@@ -78,6 +78,17 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
                    op.type === 'toggleChoreographyPublic'
           );
           
+          // If should use cache (offline or slow connection), load directly from cache
+          if (shouldUseCache) {
+            const cachedChoreographies = await getCachedData<Choreography[]>(cacheKey);
+            if (cachedChoreographies && !cancelled) {
+              setChoreographies(cachedChoreographies);
+              setIsLoading(false);
+              return;
+            }
+            // If no cache available, continue to try Firestore (might work)
+          }
+          
           // If we have pending operations and we're coming back online, 
           // keep using local state until sync completes
           if (hasPendingChoreographyOps && !shouldUseCache) {

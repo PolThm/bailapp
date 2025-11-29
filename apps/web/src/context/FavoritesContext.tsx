@@ -57,6 +57,32 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
                    op.type === 'updateFavoriteMasteryLevel'
           );
           
+          // If should use cache (offline or slow connection), load directly from cache
+          if (shouldUseCache) {
+            const cachedData = await getCachedData<UserFavorites>(cacheKey);
+            if (cachedData && !cancelled) {
+              const figureIds = cachedData.favorites.map((fav) => fav.figureId);
+              const lastOpenedAtMap: Record<string, string> = {};
+              const masteryLevelsMap: Record<string, number> = {};
+              
+              cachedData.favorites.forEach((fav) => {
+                if (fav.lastOpenedAt) {
+                  lastOpenedAtMap[fav.figureId] = fav.lastOpenedAt;
+                }
+                if (fav.masteryLevel !== null) {
+                  masteryLevelsMap[fav.figureId] = fav.masteryLevel;
+                }
+              });
+              
+              setFavorites(figureIds);
+              setLastOpenedAt(lastOpenedAtMap);
+              setMasteryLevels(masteryLevelsMap);
+              setIsLoading(false);
+              return;
+            }
+            // If no cache available, continue to try Firestore (might work)
+          }
+          
           // If we have pending operations and we're coming back online, 
           // keep using local state until sync completes
           if (hasPendingFavoriteOps && !shouldUseCache) {
