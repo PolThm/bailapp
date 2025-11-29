@@ -13,6 +13,7 @@ interface MentionSuggestionsModalProps {
   onClose: () => void;
   onSelect: (mentionId: string, mentionType: MentionType, displayName: string) => void;
   searchQuery?: string;
+  currentChoreographyId?: string; // ID of the current choreography to exclude from the list
 }
 
 interface MentionItem {
@@ -27,6 +28,7 @@ export function MentionSuggestionsModal({
   onClose,
   onSelect,
   searchQuery: initialSearchQuery = '',
+  currentChoreographyId,
 }: MentionSuggestionsModalProps) {
   const { t } = useTranslation();
   const { choreographies } = useChoreographies();
@@ -68,9 +70,13 @@ export function MentionSuggestionsModal({
   const allItems = useMemo(() => {
     const items: MentionItem[] = [];
 
-    // 1. All user's choreographies
+    // 1. All user's choreographies (excluding current one)
     const sortedChoreographies = sortByLastOpened(choreographies);
     sortedChoreographies.forEach((choreography: Choreography) => {
+      // Exclude the current choreography from the list
+      if (currentChoreographyId && choreography.id === currentChoreographyId) {
+        return;
+      }
       items.push({
         id: choreography.id,
         type: 'choreography' as MentionType,
@@ -167,7 +173,7 @@ export function MentionSuggestionsModal({
       
       {/* Modal */}
       <div 
-        className="fixed inset-0 z-[101] flex items-center justify-center p-4"
+        className="fixed inset-0 z-[101] flex items-start justify-center p-4 pt-8"
         onClick={onClose}
       >
         <div
@@ -210,13 +216,12 @@ export function MentionSuggestionsModal({
                   
                   {/* Group Header */}
                   {group.type === 'choreography' && (
-                    <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase">
+                    <div className="px-4 pt-4 pb-2 text-xs font-semibold text-muted-foreground uppercase">
                       {t('choreographies.movements.mentionChoreographies')}
                     </div>
                   )}
                   {group.type === 'figure' && (
                     <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase flex items-center gap-2">
-                      <Heart className="h-3 w-3" />
                       {t('choreographies.movements.mentionFavoriteFigures')}
                     </div>
                   )}

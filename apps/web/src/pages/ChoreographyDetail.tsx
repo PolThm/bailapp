@@ -55,6 +55,7 @@ function SortableMovementItem({
   colorUpdateKey,
   onColorChange,
   isReadOnly,
+  currentChoreographyId,
 }: {
   movement: ChoreographyMovement;
   isEditing: boolean;
@@ -67,6 +68,7 @@ function SortableMovementItem({
   colorUpdateKey: number;
   onColorChange: () => void;
   isReadOnly?: boolean;
+  currentChoreographyId?: string;
 }) {
   const {
     attributes,
@@ -138,6 +140,7 @@ function SortableMovementItem({
             onCopy={onCopy}
             onColorChange={onColorChange}
             isReadOnly={isReadOnly}
+            currentChoreographyId={currentChoreographyId}
           />
         </div>
       </div>
@@ -768,6 +771,7 @@ export function ChoreographyDetail() {
                   colorUpdateKey={colorUpdateKey}
                   onColorChange={canEdit ? handleColorChange : () => {}}
                   isReadOnly={!canEdit}
+                  currentChoreographyId={choreography.id}
                 />
               ))}
             </div>
