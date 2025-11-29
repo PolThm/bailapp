@@ -1113,7 +1113,7 @@ export function ChoreographyDetail() {
                   <div className="text-sm text-muted-foreground">
                     {t('choreographies.share.createdAt')}
                   </div>
-                  <div className="text-base">
+                  <div className="text-base font-semibold">
                     {new Date(choreography.createdAt).toLocaleDateString(i18n.language, {
                       year: 'numeric',
                       month: 'long',
