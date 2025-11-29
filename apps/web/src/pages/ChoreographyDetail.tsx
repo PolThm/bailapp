@@ -60,7 +60,7 @@ function SortableMovementItem({
   isEditing: boolean;
   choreography: { danceStyle: import('@/types').DanceStyle };
   onStartEdit: () => void;
-  onEndEdit: (name: string) => void;
+  onEndEdit: (name: string, mentionId?: string, mentionType?: import('@/types').MentionType) => void;
   onDelete: () => void;
   onDuplicate: () => void;
   onCopy?: () => void;
@@ -341,10 +341,10 @@ export function ChoreographyDetail() {
     setEditingId(newMovement.id);
   };
 
-  const handleUpdateMovementName = (movementId: string, name: string) => {
+  const handleUpdateMovementName = (movementId: string, name: string, mentionId?: string, mentionType?: import('@/types').MentionType) => {
     if (!isOwner) return;
     const updatedMovements = choreography.movements.map((m: ChoreographyMovement) =>
-      m.id === movementId ? { ...m, name } : m
+      m.id === movementId ? { ...m, name, mentionId, mentionType } : m
     );
     updateChoreography(choreography.id, { movements: updatedMovements });
     setEditingId(null);
@@ -366,6 +366,8 @@ export function ChoreographyDetail() {
         id: crypto.randomUUID(),
         name: movement.name,
         order: movement.order + 1,
+        mentionId: movement.mentionId,
+        mentionType: movement.mentionType,
       };
       const updatedMovements = [
         ...choreography.movements.slice(0, movement.order + 1),
@@ -602,7 +604,7 @@ export function ChoreographyDetail() {
                   choreography={choreography}
                   isEditing={editingId === movement.id}
                   onStartEdit={() => isOwner && setEditingId(movement.id)}
-                  onEndEdit={(name) => {
+                  onEndEdit={(name, mentionId, mentionType) => {
                     if (!isOwner) return;
                     if (!name.trim()) {
                       // If empty name and it's a new movement (no name originally), delete it
@@ -610,10 +612,10 @@ export function ChoreographyDetail() {
                         handleDeleteMovement(movement.id);
                       } else {
                         // Keep original name if editing existing
-                        handleUpdateMovementName(movement.id, movement.name);
+                        handleUpdateMovementName(movement.id, movement.name, movement.mentionId, movement.mentionType);
                       }
                     } else {
-                      handleUpdateMovementName(movement.id, name);
+                      handleUpdateMovementName(movement.id, name, mentionId, mentionType);
                     }
                   }}
                   onDelete={() => isOwner && handleDeleteMovement(movement.id)}

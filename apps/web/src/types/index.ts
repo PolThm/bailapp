@@ -40,10 +40,14 @@ export interface Figure {
   lastOpenedAt?: string;
 }
 
+export type MentionType = 'choreography' | 'figure';
+
 export interface ChoreographyMovement {
   id: string;
   name: string;
   order: number;
+  mentionId?: string; // ID of the mentioned choreography or figure
+  mentionType?: MentionType; // Type of the mention: 'choreography' or 'figure'
 }
 
 export interface Choreography {

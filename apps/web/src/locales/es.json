@@ -164,7 +164,13 @@
       "empty": {
         "title": "Aún no hay movimientos",
         "description": "Comienza a crear tu coreografía agregando tu primer paso de baile o figura."
-      }
+      },
+      "mentionTitle": "Vincular una Coreografía o Figura",
+      "mentionSearchPlaceholder": "Buscar...",
+      "mentionChoreographies": "Coreografías",
+      "mentionFavoriteFigures": "Figuras Favoritas",
+      "mentionOtherFigures": "Otras Figuras",
+      "noMentionsFound": "No se encontraron resultados"
     },
     "example": {
       "name": "Ejemplo Salsa"

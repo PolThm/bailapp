@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical, Trash2, Copy, Palette, Clipboard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MoreVertical, Trash2, Copy, Palette, Clipboard, ExternalLink } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
-import type { ChoreographyMovement } from '@/types';
+import { MentionSuggestionsModal } from '@/components/MentionSuggestionsModal';
+import type { ChoreographyMovement, MentionType } from '@/types';
 import { changeMovementColor } from '@/hooks/useMovementColor';
 
 import type { DanceStyle } from '@/types';
@@ -15,7 +17,7 @@ interface ChoreographyMovementItemProps {
   isEditing: boolean;
   danceStyle?: DanceStyle;
   onStartEdit: () => void;
-  onEndEdit: (name: string) => void;
+  onEndEdit: (name: string, mentionId?: string, mentionType?: MentionType) => void;
   onDelete: () => void;
   onDuplicate: () => void;
   onCopy?: () => void;
@@ -37,8 +39,10 @@ export function ChoreographyMovementItem({
   isReadOnly = false,
 }: ChoreographyMovementItemProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showMentionModal, setShowMentionModal] = useState(false);
   const [editName, setEditName] = useState(movement.name);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
@@ -63,9 +67,19 @@ export function ChoreographyMovementItem({
     }
   }, [movement.name, isEditing]);
 
-  // Load and filter suggestions based on danceStyle and input
+  // Check if input starts with "@" to show mention modal
   useEffect(() => {
-    if (!isEditing || !danceStyle || !editName.trim()) {
+    if (isEditing && editName.trim().startsWith('@')) {
+      setShowMentionModal(true);
+      setShowSuggestions(false);
+    } else {
+      setShowMentionModal(false);
+    }
+  }, [editName, isEditing]);
+
+  // Load and filter suggestions based on danceStyle and input (only if not starting with @)
+  useEffect(() => {
+    if (!isEditing || !danceStyle || !editName.trim() || editName.trim().startsWith('@')) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
@@ -116,14 +130,15 @@ export function ChoreographyMovementItem({
   };
 
   const handleNameBlur = () => {
-    if (isEditing && !isSelectingSuggestion) {
+    if (isEditing && !isSelectingSuggestion && !showMentionModal) {
       const trimmedName = editName.trim();
       if (trimmedName) {
-        onEndEdit(trimmedName);
+        // Preserve mention info if it exists
+        onEndEdit(trimmedName, movement.mentionId, movement.mentionType);
       } else {
         // If empty, revert to original
         setEditName(movement.name);
-        onEndEdit(movement.name);
+        onEndEdit(movement.name, movement.mentionId, movement.mentionType);
       }
     }
   };
@@ -167,9 +182,30 @@ export function ChoreographyMovementItem({
     setEditName(suggestion);
     setShowSuggestions(false);
     setSelectedIndex(-1);
-    // Call onEndEdit directly with the suggestion
-    onEndEdit(suggestion);
+    // Call onEndEdit directly with the suggestion, preserving mention info
+    onEndEdit(suggestion, movement.mentionId, movement.mentionType);
     setIsSelectingSuggestion(false);
+  };
+
+  const handleMentionSelect = (mentionId: string, mentionType: MentionType, displayName: string) => {
+    // Update the name to show the mention
+    const newName = `@${displayName}`;
+    setEditName(newName);
+    // Call onEndEdit with the mention info
+    onEndEdit(newName, mentionId, mentionType);
+    setShowMentionModal(false);
+  };
+
+  const handleMentionClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (movement.mentionId && movement.mentionType) {
+      if (movement.mentionType === 'choreography') {
+        navigate(`/choreography/${movement.mentionId}`);
+      } else if (movement.mentionType === 'figure') {
+        navigate(`/figure/${movement.mentionId}`);
+      }
+    }
   };
 
   const handleSuggestionMouseDown = (e: React.MouseEvent, suggestion: string) => {
@@ -270,7 +306,19 @@ export function ChoreographyMovementItem({
           >
             {movement.name ? (
               <span className="line-clamp-5 break-words">
-                {movement.name}
+                {movement.mentionId && movement.mentionType ? (
+                  <span className="inline-flex items-center gap-1.5">
+                    <span
+                      onClick={handleMentionClick}
+                      className="text-primary hover:underline cursor-pointer inline-flex items-center gap-1"
+                    >
+                      {movement.name}
+                      <ExternalLink className="h-3 w-3" />
+                    </span>
+                  </span>
+                ) : (
+                  movement.name
+                )}
               </span>
             ) : (
               <span className="text-muted-foreground flex items-center">
@@ -343,6 +391,20 @@ export function ChoreographyMovementItem({
         cancelLabel={t('common.cancel')}
         onConfirm={handleDelete}
         destructive={true}
+      />
+
+      {/* Mention Suggestions Modal */}
+      <MentionSuggestionsModal
+        open={showMentionModal}
+        onClose={() => {
+          setShowMentionModal(false);
+          // Remove @ from input if modal is closed without selection
+          if (editName.trim().startsWith('@') && editName.trim().length === 1) {
+            setEditName('');
+          }
+        }}
+        onSelect={handleMentionSelect}
+        searchQuery={editName.trim().startsWith('@') ? editName.trim().slice(1) : ''}
       />
     </>
   );

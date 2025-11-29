@@ -164,7 +164,13 @@
       "empty": {
         "title": "No movements yet",
         "description": "Start building your choreography by adding your first dance step or figure."
-      }
+      },
+      "mentionTitle": "Link a Choreography or Figure",
+      "mentionSearchPlaceholder": "Search...",
+      "mentionChoreographies": "Choreographies",
+      "mentionFavoriteFigures": "Favorite Figures",
+      "mentionOtherFigures": "Other Figures",
+      "noMentionsFound": "No results found"
     },
     "example": {
       "name": "Salsa Example"
