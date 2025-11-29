@@ -171,6 +171,13 @@ export function ChoreographyDetail() {
   const [showSharingModeMenu, setShowSharingModeMenu] = useState(false);
   const [ownerName, setOwnerName] = useState<string | null>(null);
 
+  // Close sharing mode submenu when main menu closes
+  useEffect(() => {
+    if (!showMenu) {
+      setShowSharingModeMenu(false);
+    }
+  }, [showMenu]);
+
   // Determine if we're viewing someone else's public choreography
   const isViewingPublicChoreography = ownerId && ownerId !== user?.uid;
   
