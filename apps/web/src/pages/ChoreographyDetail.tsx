@@ -33,7 +33,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { HeaderBackTitle } from '@/components/HeaderBackTitle';
 import { useAuth } from '@/context/AuthContext';
 import type { User } from 'firebase/auth';
-import { getPublicChoreography } from '@/lib/services/choreographyService';
+import { getPublicChoreography, getChoreographyByIdAndOwner } from '@/lib/services/choreographyService';
 import { getUserProfileFromFirestore } from '@/lib/services/userService';
 import { EmptyState } from '@/components/EmptyState';
 import { useChoreographies } from '@/context/ChoreographiesContext';
@@ -170,6 +170,8 @@ export function ChoreographyDetail() {
   const [copiedMovement, setCopiedMovement] = useState<{ movement: ChoreographyMovement; sourceChoreographyId: string } | null>(null);
   const [showSharingModeMenu, setShowSharingModeMenu] = useState(false);
   const [ownerName, setOwnerName] = useState<string | null>(null);
+  const [isPrivateFollowedChoreography, setIsPrivateFollowedChoreography] = useState(false);
+  const [privateChoreography, setPrivateChoreography] = useState<Choreography | null>(null);
 
   // Close sharing mode submenu when main menu closes
   useEffect(() => {
@@ -221,22 +223,55 @@ export function ChoreographyDetail() {
     // Even if user is not authenticated, we should try to load it if ownerId exists
     if (ownerId && id && ownerId !== user?.uid) {
       setIsLoadingPublic(true);
+      setIsPrivateFollowedChoreography(false);
+      
+      // Load owner name first (always needed)
+      getUserProfileFromFirestore(ownerId)
+        .then((profile) => {
+          setOwnerName(profile?.displayName || profile?.email || ownerId);
+        })
+        .catch((error) => {
+          console.error('Error loading owner profile:', error);
+          setOwnerName(ownerId);
+        });
+      
+      // First try to get it as public
       getPublicChoreography(id, ownerId)
         .then((choreo) => {
-          setPublicChoreography(choreo);
-          // Load owner name
-          getUserProfileFromFirestore(ownerId)
-            .then((profile) => {
-              setOwnerName(profile?.displayName || profile?.email || ownerId);
-            })
-            .catch((error) => {
-              console.error('Error loading owner profile:', error);
-              setOwnerName(ownerId);
-            });
+          if (choreo) {
+            setPublicChoreography(choreo);
+            setIsPrivateFollowedChoreography(false);
+          } else {
+            // If not public, check if it exists and is private, and if user is following it
+            if (user?.uid) {
+              getChoreographyByIdAndOwner(id, ownerId)
+                .then((choreo) => {
+                  if (choreo && !choreo.isPublic && choreo.followedBy?.includes(user.uid)) {
+                    // User is following this choreography but it's now private
+                    setIsPrivateFollowedChoreography(true);
+                    setPrivateChoreography(choreo);
+                    setPublicChoreography(null);
+                  } else {
+                    setPublicChoreography(null);
+                    setIsPrivateFollowedChoreography(false);
+                    setPrivateChoreography(null);
+                  }
+                })
+                .catch((error) => {
+                  console.error('Error checking private choreography:', error);
+                  setPublicChoreography(null);
+                  setIsPrivateFollowedChoreography(false);
+                });
+            } else {
+              setPublicChoreography(null);
+              setIsPrivateFollowedChoreography(false);
+            }
+          }
         })
         .catch((error) => {
           console.error('Error loading public choreography:', error);
           setPublicChoreography(null);
+          setIsPrivateFollowedChoreography(false);
         })
         .finally(() => {
           setIsLoadingPublic(false);
@@ -244,6 +279,8 @@ export function ChoreographyDetail() {
     } else {
       setPublicChoreography(null);
       setOwnerName(null);
+      setIsPrivateFollowedChoreography(false);
+      setPrivateChoreography(null);
     }
   }, [id, ownerId, user]);
 
@@ -298,10 +335,47 @@ export function ChoreographyDetail() {
     })
   );
 
+  const handleRemoveFromList = async () => {
+    if (!user || !id || !ownerId) return;
+    
+    try {
+      await unfollowChoreography(id, ownerId);
+      setToast({ message: t('choreographies.share.unfollowSuccess'), type: 'success' });
+      navigate('/choreographies');
+    } catch (error) {
+      console.error('Failed to remove choreography from list:', error);
+      setToast({ message: t('common.error'), type: 'error' });
+    }
+  };
 
   // Show loader while loading public choreography or while context is loading (for private choreographies)
   if (isLoadingPublic || (!isViewingPublicChoreography && isLoading && !choreography)) {
     return <Loader />;
+  }
+
+  // Show message if choreography is private and user is following it
+  if (isPrivateFollowedChoreography) {
+    return (
+      <>
+        <HeaderBackTitle title={privateChoreography?.name || t('choreographies.title')} />
+        <EmptyState
+          icon={Lock}
+          title={t('choreographies.share.private.title')}
+          description={t('choreographies.share.private.description')}
+          actionLabel={t('choreographies.detail.backToChoreographies')}
+          onAction={() => navigate('/choreographies')}
+          secondaryActionLabel={t('choreographies.share.private.removeFromList')}
+          onSecondaryAction={handleRemoveFromList}
+        />
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
+      </>
+    );
   }
 
   if (!choreography) {

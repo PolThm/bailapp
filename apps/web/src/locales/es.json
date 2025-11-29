@@ -153,7 +153,12 @@
         "updated": "Modo de compartir actualizado"
       },
       "madePrivate": "La coreografía ahora es privada",
-      "ownedBy": "Propietario: {{name}}"
+      "ownedBy": "Propietario: {{name}}",
+      "private": {
+        "title": "Esta coreografía ahora es privada",
+        "description": "El propietario ha hecho esta coreografía privada. Ya no es visible para los seguidores.",
+        "removeFromList": "Eliminar de mi lista"
+      }
     },
     "delete": {
       "title": "Eliminar coreografía",

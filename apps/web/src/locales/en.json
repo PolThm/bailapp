@@ -155,7 +155,12 @@
         "privateDescription": "Only visible to you",
         "updated": "Sharing mode updated"
       },
-      "madePrivate": "Choreography is now private"
+      "madePrivate": "Choreography is now private",
+      "private": {
+        "title": "This choreography is now private",
+        "description": "The owner has made this choreography private. It is no longer visible to followers.",
+        "removeFromList": "Remove from my list"
+      }
     },
     "delete": {
       "title": "Delete choreography",

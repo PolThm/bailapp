@@ -408,6 +408,31 @@ export async function getPublicChoreography(
 }
 
 /**
+ * Get a choreography by ID and owner ID, even if it's private
+ * This is used to check if a followed choreography still exists and if it's private
+ */
+export async function getChoreographyByIdAndOwner(
+  choreographyId: string,
+  ownerId: string
+): Promise<Choreography | null> {
+  try {
+    const choreographiesDoc = await getDoc(doc(db, 'choreographies', ownerId));
+    if (choreographiesDoc.exists()) {
+      const data = choreographiesDoc.data() as FirestoreChoreographies;
+      const items = data.choreographies || [];
+      const item = items.find((c) => c.id === choreographyId);
+      if (item) {
+        return firestoreItemToChoreography(item, ownerId);
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting choreography by ID and owner:', error);
+    throw error;
+  }
+}
+
+/**
  * Follow a public choreography
  * Adds the current user to the followedBy array of the choreography
  */
@@ -546,10 +571,9 @@ export async function getFollowedChoreographies(
       const data = docSnapshot.data() as FirestoreChoreographies;
       const items = data.choreographies || [];
       
-      // Find choreographies where user is in followedBy and isPublic is true
+      // Find choreographies where user is in followedBy (including private ones)
       items.forEach((item) => {
         if (
-          item.isPublic === true &&
           item.followedBy &&
           item.followedBy.includes(userId)
         ) {

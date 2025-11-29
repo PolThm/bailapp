@@ -153,7 +153,12 @@
         "updated": "Mode de partage mis à jour"
       },
       "madePrivate": "La chorégraphie est maintenant privée",
-      "ownedBy": "Propriétaire : {{name}}"
+      "ownedBy": "Propriétaire : {{name}}",
+      "private": {
+        "title": "Cette chorégraphie est maintenant privée",
+        "description": "Le propriétaire a rendu cette chorégraphie privée. Elle n'est plus visible pour les abonnés.",
+        "removeFromList": "Retirer de ma liste"
+      }
     },
     "delete": {
       "title": "Supprimer la chorégraphie",
