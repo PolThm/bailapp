@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNetworkQuality } from './useNetworkQuality';
+import { useAuth } from '@/context/AuthContext';
 
 interface OfflineStatus {
   isOffline: boolean;
@@ -10,6 +11,7 @@ interface OfflineStatus {
 
 export function useOfflineStatus(): OfflineStatus {
   const networkQuality = useNetworkQuality();
+  const { forceSlowMode } = useAuth();
   const [isOnline, setIsOnline] = useState(() => {
     if (typeof navigator !== 'undefined' && 'onLine' in navigator) {
       return navigator.onLine;
@@ -31,10 +33,11 @@ export function useOfflineStatus(): OfflineStatus {
   }, []);
 
   const isOffline = !isOnline;
-  const isVerySlowConnection = networkQuality.slowLevel === 'very';
-  // Use cache for moderate, slight, or very slow connections, or when offline
-  const shouldUseCache = isOffline || ['moderate', 'slight', 'very'].includes(networkQuality.slowLevel);
-  const shouldShowWarning = isOffline || ['moderate', 'slight', 'very'].includes(networkQuality.slowLevel);
+  // If forceSlowMode is true (auth timeout), treat as very slow connection
+  const isVerySlowConnection = forceSlowMode || networkQuality.slowLevel === 'very';
+  // Use cache for moderate, slight, or very slow connections, when offline, or when forceSlowMode is active
+  const shouldUseCache = forceSlowMode || isOffline || ['moderate', 'slight', 'very'].includes(networkQuality.slowLevel);
+  const shouldShowWarning = forceSlowMode || isOffline || ['moderate', 'slight', 'very'].includes(networkQuality.slowLevel);
 
   return {
     isOffline,

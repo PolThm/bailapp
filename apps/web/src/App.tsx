@@ -35,22 +35,23 @@ const isProduction = import.meta.env.PROD;
 // Internal component that handles splash screen based on auth loading
 function AppContent() {
   const { loading } = useAuth();
-  const [showSplash, setShowSplash] = useState(isProduction);
+  const [showSplash, setShowSplash] = useState(true);
+  const [shouldHideSplash, setShouldHideSplash] = useState(false);
   useSyncQueue(); // Sync pending operations when back online
 
   useEffect(() => {
-    // Close splash screen when auth is loaded
     if (!loading && showSplash) {
-      // Small delay for smooth transition
+      // Wait 500ms before starting to hide the splash screen
       const timer = setTimeout(() => {
-        setShowSplash(false);
-      }, 300);
+        setShouldHideSplash(true);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [loading, showSplash]);
 
-  if (showSplash) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  // Show splash screen while loading
+  if (loading || showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} shouldHide={shouldHideSplash} />;
   }
 
   return (

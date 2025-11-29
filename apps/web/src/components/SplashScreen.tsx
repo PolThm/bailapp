@@ -4,22 +4,20 @@ import dancingCoupleLogo from '@/images/dancing-couple-transparent.png';
 
 interface SplashScreenProps {
   onFinish: () => void;
+  shouldHide?: boolean;
 }
 
-export function SplashScreen({ onFinish }: SplashScreenProps) {
+export function SplashScreen({ onFinish, shouldHide = false }: SplashScreenProps) {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Fade out after 2 seconds
-    const timer = setTimeout(() => {
+    if (shouldHide && isVisible) {
       setIsVisible(false);
       // Call onFinish after fade animation completes
       setTimeout(onFinish, 300);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [onFinish]);
+    }
+  }, [shouldHide, isVisible, onFinish]);
 
   return (
     <div
