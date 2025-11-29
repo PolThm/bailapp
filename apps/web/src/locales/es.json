@@ -154,6 +154,9 @@
       },
       "madePrivate": "La coreografía ahora es privada",
       "ownedBy": "Propietario: {{name}}",
+      "myself": "Yo mismo",
+      "info": "Información de la coreografía compartida",
+      "createdAt": "Creada el",
       "private": {
         "title": "Esta coreografía ahora es privada",
         "description": "El propietario ha hecho esta coreografía privada. Ya no es visible para los seguidores.",

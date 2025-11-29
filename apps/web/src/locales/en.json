@@ -145,6 +145,9 @@
       "followSuccess": "You are now following this choreography",
       "unfollowSuccess": "You are no longer following this choreography",
       "ownedBy": "Owned by {{name}}",
+      "myself": "Myself",
+      "info": "Shared choreography information",
+      "createdAt": "Created on",
       "sharingMode": {
         "title": "Sharing Mode",
         "viewOnly": "View Only",

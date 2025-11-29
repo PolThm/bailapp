@@ -42,7 +42,7 @@ import { GripVertical } from 'lucide-react';
 import { Toast } from '@/components/Toast';
 import { Loader } from '@/components/Loader';
 import { EXAMPLE_CHOREOGRAPHY_ID } from '@/data/mockChoreographies';
-import { Tooltip } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // Sortable wrapper component
 function SortableMovementItem({
@@ -154,7 +154,7 @@ export function ChoreographyDetail() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const ownerId = searchParams.get('ownerId');
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { getChoreography, deleteChoreography, updateChoreography, togglePublic, copyChoreography, followChoreography, unfollowChoreography, updateSharingMode, isLoading } = useChoreographies();
@@ -172,6 +172,7 @@ export function ChoreographyDetail() {
   const [ownerName, setOwnerName] = useState<string | null>(null);
   const [isPrivateFollowedChoreography, setIsPrivateFollowedChoreography] = useState(false);
   const [privateChoreography, setPrivateChoreography] = useState<Choreography | null>(null);
+  const [showChoreographyInfoModal, setShowChoreographyInfoModal] = useState(false);
 
   // Close sharing mode submenu when main menu closes
   useEffect(() => {
@@ -747,10 +748,14 @@ export function ChoreographyDetail() {
         title={
           <div className="flex items-center gap-2 w-full">
             <h1 className="text-2xl font-bold leading-tight line-clamp-2 flex-1">{choreography.name}</h1>
-            {isViewingPublicChoreography && isFollowing && ownerName && (
-              <Tooltip content={t('choreographies.share.ownedBy', { name: ownerName })}>
+            {choreography.isPublic && ((isViewingPublicChoreography && isFollowing && ownerName) || (choreography.ownerId === user?.uid || (!isViewingPublicChoreography && user && contextChoreography?.isPublic))) && (
+              <button
+                onClick={() => setShowChoreographyInfoModal(true)}
+                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all touch-manipulation"
+                aria-label={t('choreographies.share.info')}
+              >
                 <Users className="h-5 w-5 text-destructive flex-shrink-0" />
-              </Tooltip>
+              </button>
             )}
           </div>
         }
@@ -1028,6 +1033,57 @@ export function ChoreographyDetail() {
       
       {/* Auth Modal */}
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      
+      {/* Choreography Info Modal */}
+      {choreography?.isPublic && ((isViewingPublicChoreography && isFollowing && ownerName) || (choreography.ownerId === user?.uid || (!isViewingPublicChoreography && user && contextChoreography?.isPublic))) && (
+        <Dialog open={showChoreographyInfoModal} onOpenChange={setShowChoreographyInfoModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t('choreographies.share.info')}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="text-sm text-muted-foreground">
+                  {t('choreographies.share.ownedBy', { name: '' }).split('{{name}}')[0]}
+                </div>
+                <div className="text-base font-semibold">
+                  {(choreography.ownerId === user?.uid || (!isViewingPublicChoreography && user && contextChoreography?.isPublic)) ? t('choreographies.share.myself') : ownerName}
+                </div>
+              </div>
+              
+              {choreography.sharingMode && (
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    {t('choreographies.share.sharingMode.title')}
+                  </div>
+                  <div className="text-base font-semibold">
+                    {choreography.sharingMode === 'view-only'
+                      ? t('choreographies.share.sharingMode.viewOnly')
+                      : choreography.sharingMode === 'collaborative'
+                      ? t('choreographies.share.sharingMode.collaborative')
+                      : t('choreographies.share.sharingMode.private')}
+                  </div>
+                </div>
+              )}
+              
+              {choreography.createdAt && (
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    {t('choreographies.share.createdAt')}
+                  </div>
+                  <div className="text-base">
+                    {new Date(choreography.createdAt).toLocaleDateString(i18n.language, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, ReactNode } from 'react';
 
 interface TooltipProps {
-  content: string;
+  content: string | ReactNode;
   children: ReactNode;
   side?: 'top' | 'bottom' | 'left' | 'right';
 }
