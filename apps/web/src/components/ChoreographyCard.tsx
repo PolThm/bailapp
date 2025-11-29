@@ -31,7 +31,7 @@ export function ChoreographyCard({ choreography, isFollowed = false }: Choreogra
               {choreography.name}
             </h3>
             {isFollowed && (
-              <Users className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" aria-label="Followed" />
+              <Users className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" aria-label="Followed" />
             )}
           </div>
         </CardHeader>

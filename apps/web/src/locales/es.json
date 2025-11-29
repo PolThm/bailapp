@@ -149,7 +149,8 @@
         "viewOnlyDescription": "Otros pueden ver pero no editar",
         "collaborativeDescription": "Los seguidores pueden editar esta coreografía",
         "updated": "Modo de compartir actualizado"
-      }
+      },
+      "ownedBy": "Propietario: {{name}}"
     },
     "delete": {
       "title": "Eliminar coreografía",

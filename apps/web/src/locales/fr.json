@@ -149,7 +149,8 @@
         "viewOnlyDescription": "Les autres peuvent voir mais pas modifier",
         "collaborativeDescription": "Les abonnés peuvent modifier cette chorégraphie",
         "updated": "Mode de partage mis à jour"
-      }
+      },
+      "ownedBy": "Propriétaire : {{name}}"
     },
     "delete": {
       "title": "Supprimer la chorégraphie",

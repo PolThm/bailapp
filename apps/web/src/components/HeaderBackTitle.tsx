@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ReactNode } from 'react';
 
 interface HeaderBackTitleProps {
-  title: string;
+  title: string | ReactNode;
   onBack?: () => void;
   children?: ReactNode;
   className?: string;
@@ -33,9 +33,15 @@ export function HeaderBackTitle({
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className={`text-2xl font-bold leading-tight line-clamp-2 ${titleClassName}`}>
-          {title}
-        </h1>
+        {typeof title === 'string' ? (
+          <h1 className={`text-2xl font-bold leading-tight line-clamp-2 ${titleClassName}`}>
+            {title}
+          </h1>
+        ) : (
+          <div className={`text-2xl font-bold leading-tight ${titleClassName}`}>
+            {title}
+          </div>
+        )}
         {children}
       </div>
     </div>

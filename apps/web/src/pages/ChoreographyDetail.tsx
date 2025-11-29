@@ -34,6 +34,7 @@ import { HeaderBackTitle } from '@/components/HeaderBackTitle';
 import { useAuth } from '@/context/AuthContext';
 import type { User } from 'firebase/auth';
 import { getPublicChoreography } from '@/lib/services/choreographyService';
+import { getUserProfileFromFirestore } from '@/lib/services/userService';
 import { EmptyState } from '@/components/EmptyState';
 import { useChoreographies } from '@/context/ChoreographiesContext';
 import type { ChoreographyMovement, Choreography } from '@/types';
@@ -41,6 +42,7 @@ import { GripVertical } from 'lucide-react';
 import { Toast } from '@/components/Toast';
 import { Loader } from '@/components/Loader';
 import { EXAMPLE_CHOREOGRAPHY_ID } from '@/data/mockChoreographies';
+import { Tooltip } from '@/components/ui/tooltip';
 
 // Sortable wrapper component
 function SortableMovementItem({
@@ -166,8 +168,8 @@ export function ChoreographyDetail() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [copiedMovement, setCopiedMovement] = useState<{ movement: ChoreographyMovement; sourceChoreographyId: string } | null>(null);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [showSharingModeMenu, setShowSharingModeMenu] = useState(false);
+  const [ownerName, setOwnerName] = useState<string | null>(null);
 
   // Determine if we're viewing someone else's public choreography
   const isViewingPublicChoreography = ownerId && ownerId !== user?.uid;
@@ -215,6 +217,15 @@ export function ChoreographyDetail() {
       getPublicChoreography(id, ownerId)
         .then((choreo) => {
           setPublicChoreography(choreo);
+          // Load owner name
+          getUserProfileFromFirestore(ownerId)
+            .then((profile) => {
+              setOwnerName(profile?.displayName || profile?.email || ownerId);
+            })
+            .catch((error) => {
+              console.error('Error loading owner profile:', error);
+              setOwnerName(ownerId);
+            });
         })
         .catch((error) => {
           console.error('Error loading public choreography:', error);
@@ -225,6 +236,7 @@ export function ChoreographyDetail() {
         });
     } else {
       setPublicChoreography(null);
+      setOwnerName(null);
     }
   }, [id, ownerId, user]);
 
@@ -262,16 +274,10 @@ export function ChoreographyDetail() {
     }
   }, [id, choreography, isViewingPublicChoreography, updateChoreography, user]);
 
-  // Check if user is following this choreography
-  // This must be before early returns to follow Rules of Hooks
-  useEffect(() => {
-    if (choreography && user) {
-      const following = choreography.followedBy?.includes(user.uid) || false;
-      setIsFollowing(following);
-    } else {
-      setIsFollowing(false);
-    }
-  }, [choreography, user]);
+  // Check if user is following this choreography (computed directly, no state to avoid flicker)
+  const isFollowing = choreography && user 
+    ? (choreography.followedBy?.includes(user.uid) || false)
+    : false;
 
   // Configure sensors for drag & drop
   const sensors = useSensors(
@@ -513,12 +519,27 @@ export function ChoreographyDetail() {
     
     if (!choreography || !choreography.ownerId) return;
     
+    // Optimistic update
+    const previousFollowedBy = choreography.followedBy || [];
+    if (publicChoreography && !previousFollowedBy.includes(user.uid)) {
+      setPublicChoreography({
+        ...publicChoreography,
+        followedBy: [...previousFollowedBy, user.uid],
+      });
+    }
+    
     try {
       await followChoreography(choreography.id, choreography.ownerId);
-      setIsFollowing(true);
       setToast({ message: t('choreographies.share.followSuccess'), type: 'success' });
     } catch (error) {
       console.error('Failed to follow choreography:', error);
+      // Revert on error
+      if (publicChoreography) {
+        setPublicChoreography({
+          ...publicChoreography,
+          followedBy: previousFollowedBy,
+        });
+      }
       setToast({ message: t('common.error'), type: 'error' });
     }
   };
@@ -526,12 +547,27 @@ export function ChoreographyDetail() {
   const handleUnfollow = async () => {
     if (!user || !choreography || !choreography.ownerId) return;
     
+    // Optimistic update
+    const previousFollowedBy = choreography.followedBy || [];
+    if (publicChoreography && previousFollowedBy.includes(user.uid)) {
+      setPublicChoreography({
+        ...publicChoreography,
+        followedBy: previousFollowedBy.filter((id) => id !== user.uid),
+      });
+    }
+    
     try {
       await unfollowChoreography(choreography.id, choreography.ownerId);
-      setIsFollowing(false);
       setToast({ message: t('choreographies.share.unfollowSuccess'), type: 'success' });
     } catch (error) {
       console.error('Failed to unfollow choreography:', error);
+      // Revert on error
+      if (publicChoreography) {
+        setPublicChoreography({
+          ...publicChoreography,
+          followedBy: previousFollowedBy,
+        });
+      }
       setToast({ message: t('common.error'), type: 'error' });
     }
   };
@@ -559,7 +595,14 @@ export function ChoreographyDetail() {
     if (!choreography) return;
     
     try {
-      await copyChoreography(choreography);
+      // Create a copy with "Copy of ..." prefix
+      const copyName = t('choreographies.detail.copyOf', { name: choreography.name });
+      const copiedChoreography: Choreography = {
+        ...choreography,
+        name: copyName,
+      };
+      
+      await copyChoreography(copiedChoreography);
       navigate('/choreographies', { 
         replace: true,
         state: {
@@ -606,7 +649,16 @@ export function ChoreographyDetail() {
     <>
       {/* Header with back icon and title */}
       <HeaderBackTitle
-        title={choreography.name}
+        title={
+          <div className="flex items-center gap-2 w-full">
+            <h1 className="text-2xl font-bold leading-tight line-clamp-2 flex-1">{choreography.name}</h1>
+            {isViewingPublicChoreography && isFollowing && ownerName && (
+              <Tooltip content={t('choreographies.share.ownedBy', { name: ownerName })}>
+                <Users className="h-5 w-5 text-destructive flex-shrink-0" />
+              </Tooltip>
+            )}
+          </div>
+        }
         titleClassName="flex-1"
       >
         {isOwner && (
@@ -727,12 +779,6 @@ export function ChoreographyDetail() {
         {choreography.complexity && (
           <ComplexityBadge complexity={choreography.complexity} />
         )}
-        {isViewingPublicChoreography && isFollowing && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border text-xs sm:text-sm text-muted-foreground">
-            <Users className="h-3.5 w-3.5 flex-shrink-0" />
-            <span className="whitespace-nowrap">{t('choreographies.share.following')}</span>
-          </div>
-        )}
       </div>
 
       {/* Movements List */}
@@ -811,37 +857,37 @@ export function ChoreographyDetail() {
           </div>
         )}
         {isViewingPublicChoreography && choreography && (
-          <div className="flex flex-col sm:flex-row gap-2 w-full max-w-lg mx-auto">
+          <div className="flex flex-row gap-2 w-full max-w-lg mx-auto">
             {!isFollowing ? (
               <Button
                 variant="default"
-                className="flex-1 w-full sm:w-auto"
+                className="flex-1"
                 size="lg"
                 onClick={handleFollow}
               >
-                <UserPlus className="h-4 w-4 mr-2 flex-shrink-0" />
-                <span className="truncate">{t('choreographies.share.follow')}</span>
+                <UserPlus className="h-4 w-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span className="truncate text-xs sm:text-sm">{t('choreographies.share.follow')}</span>
               </Button>
             ) : (
               <Button
                 variant="outline"
-                className="flex-1 w-full sm:w-auto"
+                className="flex-1"
                 size="lg"
                 onClick={handleUnfollow}
               >
-                <UserMinus className="h-4 w-4 mr-2 flex-shrink-0" />
-                <span className="truncate">{t('choreographies.share.unfollow')}</span>
+                <UserMinus className="h-4 w-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span className="truncate text-xs sm:text-sm">{t('choreographies.share.unfollow')}</span>
               </Button>
             )}
             <Button
               variant="outline"
-              className="flex-1 w-full sm:w-auto"
+              className="flex-1"
               size="lg"
               onClick={handleCopyChoreography}
             >
-              <Copy className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="truncate hidden sm:inline">{t('choreographies.share.duplicateToMyChoreographies')}</span>
-              <span className="truncate sm:hidden">{t('choreographies.detail.duplicate')}</span>
+              <Copy className="h-4 w-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+              <span className="truncate text-xs sm:text-sm hidden sm:inline">{t('choreographies.share.duplicateToMyChoreographies')}</span>
+              <span className="truncate text-xs sm:text-sm sm:hidden">{t('choreographies.detail.duplicate')}</span>
             </Button>
           </div>
         )}
