@@ -8,7 +8,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 // Get version from package.json, do not remove!
-const APP_VERSION = '0.2.77';
+const APP_VERSION = '0.2.78';
 
 export function Profile() {
   const { t, i18n } = useTranslation();

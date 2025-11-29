@@ -22,18 +22,22 @@ export function createExampleChoreography(): Choreography {
     },
     {
         id: crypto.randomUUID(),
-        name: 'Enchufla doble',
+        name: 'Cubanito y Cubanita',
         order: 2,
+        mentionId: '32023492343248490238',
+        mentionType: 'figure',
     },
     {
         id: crypto.randomUUID(),
-        name: 'Setenta',
+        name: 'Enchufla doble',
         order: 3,
     },
     {
         id: crypto.randomUUID(),
-        name: 'Cubanito y Cubanita',
+        name: 'Setenta',
         order: 4,
+        mentionId: '3202349238490238',
+        mentionType: 'figure',
     },
     {
         id: crypto.randomUUID(),
