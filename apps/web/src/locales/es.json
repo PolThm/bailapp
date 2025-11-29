@@ -146,10 +146,13 @@
         "title": "Modo de compartir",
         "viewOnly": "Solo lectura",
         "collaborative": "Colaborativo",
+        "private": "Privado",
         "viewOnlyDescription": "Otros pueden ver pero no editar",
         "collaborativeDescription": "Los seguidores pueden editar esta coreografía",
+        "privateDescription": "Solo visible para ti",
         "updated": "Modo de compartir actualizado"
       },
+      "madePrivate": "La coreografía ahora es privada",
       "ownedBy": "Propietario: {{name}}"
     },
     "delete": {

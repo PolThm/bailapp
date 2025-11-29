@@ -149,10 +149,13 @@
         "title": "Sharing Mode",
         "viewOnly": "View Only",
         "collaborative": "Collaborative",
+        "private": "Private",
         "viewOnlyDescription": "Others can view but not edit",
         "collaborativeDescription": "Followers can edit this choreography",
+        "privateDescription": "Only visible to you",
         "updated": "Sharing mode updated"
-      }
+      },
+      "madePrivate": "Choreography is now private"
     },
     "delete": {
       "title": "Delete choreography",
