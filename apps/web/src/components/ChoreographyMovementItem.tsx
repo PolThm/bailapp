@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { MoreVertical, Trash2, Copy, Palette, Clipboard, ExternalLink } from 'lucide-react';
+import { MoreVertical, Trash2, Copy, Palette, Clipboard } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { MentionSuggestionsModal } from '@/components/MentionSuggestionsModal';
@@ -23,6 +23,7 @@ interface ChoreographyMovementItemProps {
   onCopy?: () => void;
   onColorChange?: () => void;
   isReadOnly?: boolean;
+  currentChoreographyId?: string; // ID of the current choreography to exclude from mentions
 }
 
 export function ChoreographyMovementItem({
@@ -37,6 +38,7 @@ export function ChoreographyMovementItem({
   onCopy,
   onColorChange,
   isReadOnly = false,
+  currentChoreographyId,
 }: ChoreographyMovementItemProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -307,14 +309,11 @@ export function ChoreographyMovementItem({
             {movement.name ? (
               <span className="line-clamp-5 break-words">
                 {movement.mentionId && movement.mentionType ? (
-                  <span className="inline-flex items-center gap-1.5">
-                    <span
-                      onClick={handleMentionClick}
-                      className="text-primary hover:underline cursor-pointer inline-flex items-center gap-1"
-                    >
-                      {movement.name}
-                      <ExternalLink className="h-3 w-3" />
-                    </span>
+                  <span
+                    onClick={handleMentionClick}
+                    className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition-colors"
+                  >
+                    {movement.name}
                   </span>
                 ) : (
                   movement.name
@@ -405,6 +404,7 @@ export function ChoreographyMovementItem({
         }}
         onSelect={handleMentionSelect}
         searchQuery={editName.trim().startsWith('@') ? editName.trim().slice(1) : ''}
+        currentChoreographyId={currentChoreographyId}
       />
     </>
   );
