@@ -20,16 +20,8 @@ jobs:
 
       - run: bun install
 
-      - name: Bump version
+      - name: Bump version (for build only, not committed)
         run: node scripts/bump-version.cjs
-
-      - name: Commit version bump
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .env.public
-          git diff --staged --quiet || git commit -m "chore: bump version [skip ci]"
-          git push
 
       - run: bun run build
         env:
