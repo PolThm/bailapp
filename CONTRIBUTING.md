@@ -68,5 +68,3 @@ We're always looking for quality Salsa and Bachata videos! Want to add new dance
 ---
 
 Thank you for contributing! 🙏
-
-Test
