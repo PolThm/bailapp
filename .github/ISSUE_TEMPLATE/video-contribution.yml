@@ -1,15 +1,15 @@
 name: 🎥 Add a Dance Video
 description: Suggest a new Salsa or Bachata video to add to the app
-title: "[VIDEO] "
-labels: ["video-contribution", "good first issue"]
+title: '[VIDEO] '
+labels: ['video-contribution', 'good first issue']
 body:
   - type: markdown
     attributes:
       value: |
         ## Thanks for contributing! 🙌
-        
+
         We're always looking for quality Salsa and Bachata videos to add to Bailapp!
-        
+
         Before submitting, please:
         - Check that the video doesn't already exist in the app
         - Make sure it's a good quality tutorial (clear explanations, good camera angles)
@@ -109,11 +109,11 @@ body:
     attributes:
       value: |
         ---
-        
+
         ### What happens next?
-        
+
         A maintainer will review your suggestion and either:
         - Add the video themselves
         - Guide you to create a Pull Request if you'd like to contribute directly
-        
+
         Thank you for helping make Bailapp better! 💃🕺
