@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
       - uses: oven-sh/setup-bun@v1
@@ -38,7 +38,6 @@ jobs:
             echo "No version changes to commit"
           else
             git commit -m "chore: bump version [skip ci]"
-            echo "Pushing version bump..."
             git push
           fi
 
