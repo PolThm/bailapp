@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📚 Adding Videos Guide
+    url: https://github.com/PolThm/bailapp/blob/main/ADDING_VIDEOS.md
+    about: Learn how to add videos to Bailapp
+  - name: 🤝 Contributing Guide
+    url: https://github.com/PolThm/bailapp/blob/main/CONTRIBUTING.md
+    about: Learn how to contribute to the project
