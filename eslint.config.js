@@ -18,7 +18,6 @@ export default tseslint.config(
       '**/node_modules/**',
       'apps/web/dev-dist',
       'apps/web/dist',
-      'apps/functions/lib',
     ],
   },
   {
