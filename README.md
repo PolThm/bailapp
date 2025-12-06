@@ -10,7 +10,7 @@ A modern PWA application for creating choreographies, learning new moves, and tr
 - 🎭 **Learn** - Browse and learn new dance moves
 - 🎨 **Create** - Design and save your own choreographies
 - 📊 **Progress** - Track your dance journey and improvements
-- 🌍 **Multilingual** - Full support for English, French, and Spanish
+- 🌍 **Multilingual** - Full support for English, French, Spanish and Italian
 - 📲 **PWA** - Install on any device and use offline
 - 🔒 **Optional Auth** - Explore freely, sign in only when needed
 - ⚡ **Fast** - Code splitting, lazy loading, and optimized caching
@@ -33,18 +33,11 @@ A modern PWA application for creating choreographies, learning new moves, and tr
 - **Firebase Auth** (Google)
 - **Firebase Hosting**
 
-### Monorepo
-
-- **Bun** workspaces
-- Shared TypeScript and ESLint configs
-
 ## Getting Started
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) installed
-- [Firebase CLI](https://firebase.google.com/docs/cli) installed
-- A Firebase project (free Spark plan)
+- [Bun](https://bun.sh) installed (otherwise you can also try with "yarn" or "npm")
 
 ### Installation
 
@@ -60,8 +53,6 @@ A modern PWA application for creating choreographies, learning new moves, and tr
    ```bash
    bun install
    ```
-
-   ⚠ You need to have "bun" installed, otherwise you can also try with "yarn" or "npm"
 
 3. **Start development server**
 
