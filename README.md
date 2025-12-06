@@ -61,6 +61,8 @@ A modern PWA application for creating choreographies, learning new moves, and tr
    bun install
    ```
 
+   ⚠ You need to have "bun" installed, otherwise you can also try with "yarn" or "npm"
+
 3. **Start development server**
 
    ```bash
