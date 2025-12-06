@@ -34,12 +34,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="p-safe-area flex h-screen flex-col overflow-hidden sm:border">
+    <div className="p-safe-area flex h-full flex-col overflow-hidden sm:border">
       {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
       <main
         ref={mainRef}
         className={`relative flex flex-col overflow-y-auto px-4 py-5 ${
-          isLandscapeMobile ? 'h-[100dvh]' : 'h-[calc(100dvh-72px)]'
+          isLandscapeMobile ? 'h-full' : 'h-[calc(100%-72px)]'
         }`}
       >
         <PullToRefreshIndicator
