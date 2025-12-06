@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 import { usePullToRefreshContext } from '@/context/PullToRefreshContext';
+import { useOrientation } from '@/hooks/useOrientation';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
   const { refreshHandler } = usePullToRefreshContext();
+  const { isLandscapeMobile } = useOrientation();
   const mainRef = useRef<HTMLElement | null>(null);
 
   // Scroll to top when route changes
@@ -32,9 +34,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="p-safe-area flex h-[100dvh] flex-col overflow-hidden sm:border">
-      {/* Main Content - Mobile Optimized with Padding and Safe Area */}
-      <main ref={mainRef} className="relative flex flex-1 flex-col overflow-y-auto px-4 py-5">
+    <div className="p-safe-area flex h-screen flex-col overflow-hidden sm:border">
+      {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
+      <main
+        ref={mainRef}
+        className={`relative flex flex-col overflow-y-auto px-4 py-5 ${
+          isLandscapeMobile ? 'h-[100dvh]' : 'h-[calc(100dvh-72px)]'
+        }`}
+      >
         <PullToRefreshIndicator
           isPulling={isPulling}
           isRefreshing={isRefreshing}
@@ -45,7 +52,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav className="z-50 border-t bg-background/95 backdrop-blur">
+      <nav
+        className={`z-50 border-t bg-background/95 backdrop-blur ${isLandscapeMobile ? 'hidden' : ''}`}
+      >
         <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1 p-2">
           <Link
             to="/"
