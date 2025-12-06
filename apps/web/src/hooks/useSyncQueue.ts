@@ -16,6 +16,7 @@ import {
   updateFavoriteMasteryLevelInFirestore,
 } from '@/lib/services/favoritesService';
 import { getSyncQueue, removeFromSyncQueue, incrementRetryCount } from '@/lib/syncQueue';
+import { isEmpty } from '@/lib/utils';
 
 interface MergedSyncOperation extends SyncOperation {
   originalOperationIds?: string[];
@@ -36,7 +37,7 @@ export function useSyncQueue() {
     const syncQueue = async () => {
       const queue = await getSyncQueue();
 
-      if (queue.length === 0) return;
+      if (isEmpty(queue)) return;
 
       // Group and merge updateChoreography operations for the same choreography
       // Use current local state to ensure we sync the latest state

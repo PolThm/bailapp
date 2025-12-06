@@ -6,6 +6,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Check if an array or string is empty
+ * @param value Array or string to check
+ * @returns true if the value has length 0, false otherwise
+ */
+export function isEmpty<T extends { length: number }>(value: T): boolean {
+  return value.length === 0;
+}
+
+/**
  * Sort items by lastOpenedAt (most recent first), then by createdAt for those without lastOpenedAt
  * @param items Array of items with lastOpenedAt and createdAt properties
  * @returns Sorted array

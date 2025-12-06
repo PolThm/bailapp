@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useChoreographies } from '@/context/ChoreographiesContext';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useFigures } from '@/hooks/useFigures';
-import { sortByLastOpened } from '@/lib/utils';
+import { isEmpty, sortByLastOpened } from '@/lib/utils';
 
 interface MentionSuggestionsModalProps {
   open: boolean;
@@ -204,7 +204,7 @@ export function MentionSuggestionsModal({
 
           {/* Results List */}
           <div className="flex-1 overflow-auto">
-            {groupedItems.length === 0 ? (
+            {isEmpty(groupedItems) ? (
               <div className="p-8 text-center text-muted-foreground">
                 {t('choreographies.movements.noMentionsFound')}
               </div>
