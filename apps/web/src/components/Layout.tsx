@@ -34,9 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div
-      className={`p-safe-area-horizontal flex h-[100dvh] flex-col overflow-hidden sm:border ${!isLandscapeMobile ? 'p-safe-area' : ''}`}
-    >
+    <div className="p-safe-area flex h-[100dvh] flex-col overflow-hidden sm:border">
       {/* Main Content - Mobile Optimized with Padding and Safe Area */}
       <main ref={mainRef} className="relative flex flex-1 flex-col overflow-y-auto px-4 py-5">
         <PullToRefreshIndicator
