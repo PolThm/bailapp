@@ -277,7 +277,8 @@
     "videoLanguage": {
       "french": "Francés",
       "english": "Inglés",
-      "spanish": "Español"
+      "spanish": "Español",
+      "italian": "Italiano"
     },
     "videoFormat": {
       "classic": "Clásico",

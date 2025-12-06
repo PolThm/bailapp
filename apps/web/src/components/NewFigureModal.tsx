@@ -395,6 +395,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
                 <SelectItem value="french">🇫🇷 {t('badges.videoLanguage.french')}</SelectItem>
                 <SelectItem value="english">🇬🇧 {t('badges.videoLanguage.english')}</SelectItem>
                 <SelectItem value="spanish">🇪🇸 {t('badges.videoLanguage.spanish')}</SelectItem>
+                <SelectItem value="italian">🇮🇹 {t('badges.videoLanguage.italian')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

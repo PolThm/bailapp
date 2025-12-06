@@ -21,6 +21,48 @@ import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { useOrientation } from '@/hooks/useOrientation';
 import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
 
+// YouTube IFrame Player API types
+interface YTPlayer {
+  getCurrentTime(): number;
+  pauseVideo(): void;
+  destroy(): void;
+}
+
+interface YTPlayerEvent {
+  data: number;
+}
+
+interface YTPlayerConstructor {
+  new (
+    element: HTMLIFrameElement,
+    config: {
+      events: {
+        onReady?: () => void;
+        onStateChange?: (event: YTPlayerEvent) => void;
+      };
+    }
+  ): YTPlayer;
+}
+
+interface YTNamespace {
+  Player: YTPlayerConstructor;
+  PlayerState: {
+    PLAYING: number;
+  };
+}
+
+declare global {
+  interface Window {
+    YT?: YTNamespace;
+    onYouTubeIframeAPIReady?: () => void;
+  }
+  interface Document {
+    webkitFullscreenElement?: Element;
+    mozFullScreenElement?: Element;
+    msFullscreenElement?: Element;
+  }
+}
+
 export function FigureDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
@@ -45,7 +87,7 @@ export function FigureDetail() {
 
   // Initialize refs at the top level (before any conditional returns)
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
   const hasPassedEndTimeRef = useRef<boolean>(false);
 
   // Update lastOpenedAt when figure is opened (only once per id, and only if favorited)
@@ -79,9 +121,9 @@ export function FigureDetail() {
       // Check if we're no longer in fullscreen
       const isInFullscreen = !!(
         document.fullscreenElement ||
-        (document as any).webkitFullscreenElement ||
-        (document as any).mozFullScreenElement ||
-        (document as any).msFullscreenElement
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
       );
 
       if (!isInFullscreen && isLandscape) {
@@ -152,19 +194,19 @@ export function FigureDetail() {
     };
 
     const onYouTubeIframeAPIReady = () => {
-      if (!iframeRef.current) return;
+      if (!iframeRef.current || !window.YT) return;
 
-      playerRef.current = new (window as any).YT.Player(iframeRef.current, {
+      playerRef.current = new window.YT.Player(iframeRef.current, {
         events: {
           onReady: () => {
             // Set up polling to check current time
             intervalId = setInterval(checkAndPause, 500);
           },
-          onStateChange: (event: any) => {
+          onStateChange: (event: YTPlayerEvent) => {
             // If video is playing, reset the flag
-            if (event.data === (window as any).YT.PlayerState.PLAYING) {
-              const currentTime = playerRef.current.getCurrentTime();
-              if (currentTime < endTimeSeconds) {
+            if (event.data === window.YT?.PlayerState.PLAYING) {
+              const currentTime = playerRef.current?.getCurrentTime();
+              if (currentTime !== undefined && currentTime < endTimeSeconds) {
                 hasPassedEndTimeRef.current = false;
               }
             }
@@ -174,19 +216,19 @@ export function FigureDetail() {
     };
 
     // Check if API is already loaded
-    if ((window as any).YT && (window as any).YT.Player) {
+    if (window.YT && window.YT.Player) {
       onYouTubeIframeAPIReady();
     } else {
       // Load the API
-      if (!(window as any).onYouTubeIframeAPIReady) {
+      if (!window.onYouTubeIframeAPIReady) {
         const tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
 
-        (window as any).onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
       } else {
-        (window as any).onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
       }
     }
 
@@ -242,7 +284,7 @@ export function FigureDetail() {
           }),
           url: window.location.href,
         });
-      } catch (err) {
+      } catch {
         console.log('Share cancelled');
       }
     } else {

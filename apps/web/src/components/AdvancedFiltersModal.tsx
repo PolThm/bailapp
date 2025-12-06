@@ -63,7 +63,7 @@ export function AdvancedFiltersModal({
     'intermediate-advanced',
     'advanced',
   ];
-  const videoLanguages: VideoLanguage[] = ['french', 'english', 'spanish'];
+  const videoLanguages: VideoLanguage[] = ['french', 'english', 'spanish', 'italian'];
   const videoFormats: VideoFormat[] = ['classic', 'short'];
 
   return (

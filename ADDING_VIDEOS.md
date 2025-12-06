@@ -39,7 +39,7 @@ Navigate to `apps/web/src/data/videoList.ts`
   figureType: 'figure',
   complexity: 'basic-intermediate', // see options below
   phrasesCount: 4, // Number of 8-count phrases (estimate if unsure)
-  videoLanguage: 'english', // 'english', 'french', or 'spanish'
+  videoLanguage: 'english', // 'english', 'french', 'spanish' or 'italian'
   visibility: 'public',
   importedBy: 'Bailapp',
   createdAt: new Date().toISOString(),
@@ -99,7 +99,7 @@ Navigate to `apps/web/src/data/videoList.ts`
   - `'intermediate-advanced'` - Advanced intermediate
   - `'advanced'` - For experienced dancers
 
-- **`videoLanguage`**: `'english'`, `'french'`, or `'spanish'`
+- **`videoLanguage`**: `'english'`, `'french'`, `'spanish'` or `'italian'`
 
 **Optional but recommended:**
 

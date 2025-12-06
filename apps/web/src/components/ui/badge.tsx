@@ -39,6 +39,7 @@ const badgeVariants = cva(
         french: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100',
         english: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-100',
         spanish: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-100',
+        italian: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100',
 
         // Dance substyles - Salsa
         'salsa-cuban': 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-100',
@@ -98,6 +99,7 @@ export function LanguageBadge({ language }: { language: VideoLanguage }) {
     french: '🇫🇷',
     english: '🇬🇧',
     spanish: '🇪🇸',
+    italian: '🇮🇹',
   };
   return (
     <Badge variant={language}>
@@ -105,6 +107,21 @@ export function LanguageBadge({ language }: { language: VideoLanguage }) {
     </Badge>
   );
 }
+
+type ValidSubStyleVariant =
+  | 'salsa-cuban'
+  | 'salsa-la-style'
+  | 'salsa-ny-style'
+  | 'salsa-puerto-rican'
+  | 'salsa-colombian'
+  | 'salsa-rueda-de-casino'
+  | 'salsa-romantica'
+  | 'bachata-dominican'
+  | 'bachata-modern'
+  | 'bachata-sensual'
+  | 'bachata-urban'
+  | 'bachata-fusion'
+  | 'bachata-ballroom';
 
 export function DanceSubStyleBadge({
   style,
@@ -120,8 +137,8 @@ export function DanceSubStyleBadge({
       .trim();
   };
   const { t } = useTranslation();
-  const variantKey = `${style}-${subStyle}` as any;
-  const validVariants = [
+  const variantKey = `${style}-${subStyle}` as ValidSubStyleVariant;
+  const validVariants: ValidSubStyleVariant[] = [
     'salsa-cuban',
     'salsa-la-style',
     'salsa-ny-style',
@@ -136,10 +153,10 @@ export function DanceSubStyleBadge({
     'bachata-fusion',
     'bachata-ballroom',
   ];
-  const variant = validVariants.includes(variantKey) ? variantKey : 'default';
-  return (
-    <Badge variant={variant as any}>{t(`badges.danceSubStyle.${formatSubStyle(subStyle)}`)}</Badge>
-  );
+  const variant: ValidSubStyleVariant | 'default' = validVariants.includes(variantKey)
+    ? variantKey
+    : 'default';
+  return <Badge variant={variant}>{t(`badges.danceSubStyle.${formatSubStyle(subStyle)}`)}</Badge>;
 }
 
-export { Badge, badgeVariants };
+export { Badge };

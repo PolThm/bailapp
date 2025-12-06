@@ -9,7 +9,7 @@ export type Complexity =
   | 'intermediate-advanced'
   | 'advanced';
 
-export type VideoLanguage = 'french' | 'english' | 'spanish';
+export type VideoLanguage = 'french' | 'english' | 'spanish' | 'italian';
 
 export type VideoFormat = 'classic' | 'short';
 
