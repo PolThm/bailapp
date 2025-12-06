@@ -295,6 +295,27 @@ export const classicVideoList: Figure[] = [
     importedBy: 'Bailapp',
     createdAt: new Date().toISOString(),
   },
+  {
+    id: 'watch_AqnNTeRs2Pw',
+    youtubeUrl: 'https://www.youtube.com/watch?v=AqnNTeRs2Pw',
+    shortTitle: 'Sombrero',
+    fullTitle: 'Salsa Cubaine Sombrero',
+    description:
+      'Le “Sombrero” est une figure de salsa où les danseurs passent leurs bras au-dessus de la tête pour effectuer des rotations fluides et changer de position',
+    videoAuthor: 'Avinciia-Danse',
+    startTime: undefined,
+    endTime: undefined,
+    previewStartDelay: 36,
+    danceStyle: 'salsa',
+    danceSubStyle: 'cuban',
+    figureType: 'figure',
+    complexity: 'basic-intermediate',
+    phrasesCount: 2,
+    videoLanguage: 'french',
+    visibility: 'public',
+    importedBy: 'Bailapp',
+    createdAt: new Date().toISOString(),
+  },
 ];
 
 export const shortVideoList: Figure[] = [
