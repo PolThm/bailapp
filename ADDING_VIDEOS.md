@@ -113,7 +113,7 @@ Navigate to `apps/web/src/data/videoList.ts`
   - Extract the specific section you want to highlight
   - Each figure should have its own time range
 
-- **`previewStartDelay`**: Number of seconds to delay preview
+- **`previewStartDelay`**: Number of seconds to delay preview (from startTime)
   - Helps skip intros and show the actual move
   - Classic videos: usually 3-10 seconds
   - Shorts: usually 0-2 seconds
