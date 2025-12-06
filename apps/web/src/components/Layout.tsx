@@ -35,15 +35,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className={`p-safe-area-horizontal flex h-screen flex-col overflow-hidden sm:border ${!isLandscapeMobile ? 'p-safe-area' : ''}`}
+      className={`p-safe-area-horizontal flex h-[100dvh] flex-col overflow-hidden sm:border ${!isLandscapeMobile ? 'p-safe-area' : ''}`}
     >
-      {/* Main Content - Mobile Optimized with Padding and Safe Area (72px is the height of the navbar) */}
-      <main
-        ref={mainRef}
-        className={`relative flex flex-col overflow-y-auto px-4 py-5 ${
-          isLandscapeMobile ? 'h-[100dvh]' : 'h-[calc(100dvh-72px)]'
-        }`}
-      >
+      {/* Main Content - Mobile Optimized with Padding and Safe Area */}
+      <main ref={mainRef} className="relative flex flex-1 flex-col overflow-y-auto px-4 py-5">
         <PullToRefreshIndicator
           isPulling={isPulling}
           isRefreshing={isRefreshing}
