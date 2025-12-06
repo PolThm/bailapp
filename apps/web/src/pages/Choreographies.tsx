@@ -11,7 +11,7 @@ import { Toast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useChoreographies } from '@/context/ChoreographiesContext';
-import { sortByLastOpened } from '@/lib/utils';
+import { isEmpty, sortByLastOpened } from '@/lib/utils';
 
 export function Choreographies() {
   const { t } = useTranslation();
@@ -66,7 +66,7 @@ export function Choreographies() {
       {/* Choreographies List or Empty State */}
       {isLoading ? (
         <Loader />
-      ) : sortedChoreographies.length === 0 && sortedFollowedChoreographies.length === 0 ? (
+      ) : isEmpty(sortedChoreographies) && isEmpty(sortedFollowedChoreographies) ? (
         <EmptyState
           icon={Music}
           title={t('choreographies.empty.title')}

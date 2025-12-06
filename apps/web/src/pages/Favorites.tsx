@@ -16,7 +16,7 @@ import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useFigures } from '@/hooks/useFigures';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
-import { sortByLastOpened } from '@/lib/utils';
+import { isEmpty, sortByLastOpened } from '@/lib/utils';
 
 export function Favorites() {
   const { t } = useTranslation();
@@ -107,21 +107,21 @@ export function Favorites() {
           )}
 
           {/* Favorites Grid or Empty State */}
-          {filteredFigures.length === 0 ? (
+          {isEmpty(filteredFigures) ? (
             <EmptyState
-              icon={favoriteFiguresData.length === 0 ? Heart : Plus}
+              icon={isEmpty(favoriteFiguresData) ? Heart : Plus}
               title={
-                favoriteFiguresData.length === 0
+                isEmpty(favoriteFiguresData)
                   ? t('favorites.empty.title')
                   : t('discover.empty.filtered.title')
               }
               description={
-                favoriteFiguresData.length === 0
+                isEmpty(favoriteFiguresData)
                   ? t('favorites.empty.description')
                   : t('discover.empty.filtered.description')
               }
               actionLabel={
-                favoriteFiguresData.length === 0
+                isEmpty(favoriteFiguresData)
                   ? t('favorites.empty.action')
                   : t('discover.empty.action')
               }

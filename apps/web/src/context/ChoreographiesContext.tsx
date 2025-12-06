@@ -15,6 +15,7 @@ import {
   getFollowedChoreographies,
 } from '@/lib/services/choreographyService';
 import { addToSyncQueue, getSyncQueue } from '@/lib/syncQueue';
+import { isEmpty } from '@/lib/utils';
 
 interface ChoreographiesContextType {
   choreographies: Choreography[];
@@ -135,7 +136,7 @@ export function ChoreographiesProvider({ children }: { children: ReactNode }) {
 
             // Only create example if user has no choreographies
             // This ensures that if user deletes the example, it stays deleted
-            if (migratedChoreographies.length === 0) {
+            if (isEmpty(migratedChoreographies)) {
               const exampleChoreography = createExampleChoreography();
               // Create example in Firestore
               try {

@@ -17,6 +17,7 @@ import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useFigures } from '@/hooks/useFigures';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
+import { isEmpty } from '@/lib/utils';
 
 // Fisher-Yates shuffle algorithm for randomizing array
 function shuffleArray<T>(array: T[]): T[] {
@@ -353,7 +354,7 @@ export function Discover() {
         )}
 
       {/* Figures Grid */}
-      {shuffledFigures.length === 0 && filteredShorts.length === 0 ? (
+      {isEmpty(shuffledFigures) && isEmpty(filteredShorts) ? (
         <EmptyState
           icon={Plus}
           title={!hasActiveFilters ? t('discover.empty.title') : t('discover.empty.filtered.title')}
@@ -365,7 +366,7 @@ export function Discover() {
           actionLabel={t('discover.empty.action')}
           onAction={handleAddFigure}
         />
-      ) : shuffledFigures.length === 0 &&
+      ) : isEmpty(shuffledFigures) &&
         filteredShorts.length > 0 &&
         isMobilePortrait &&
         showImages ? (
