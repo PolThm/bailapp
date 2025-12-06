@@ -129,7 +129,12 @@ export default defineConfig(() => {
     },
     server: {
       port: 5173,
-      host: true,
+      host: '0.0.0.0', // Allow external connections (required for ngrok)
+      strictPort: false,
+      allowedHosts: ['.ngrok-free.dev', '.ngrok.io', '.ngrok.app'], // Allow ngrok hosts
+      hmr: {
+        clientPort: 5173,
+      },
     },
     build: {
       // Mobile-first build optimizations

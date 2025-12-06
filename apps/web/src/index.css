@@ -64,7 +64,6 @@
     overflow-x: hidden;
     /* Better touch scrolling */
     -webkit-overflow-scrolling: touch;
-    min-height: 100vh;
     margin: 0;
     padding: 0;
   }
