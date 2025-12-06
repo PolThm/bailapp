@@ -20,6 +20,16 @@ interface NetworkQuality {
   saveData: boolean;
 }
 
+// Network quality thresholds (in Mbps)
+const NETWORK_THRESHOLDS = {
+  VERY_SLOW: 5,
+  MODERATE: 6,
+  SLIGHT: 8,
+  RTT_LOW: 200,
+  RTT_VERY_HIGH: 1000,
+  DESKTOP_MIN: 1,
+} as const;
+
 export function useNetworkQuality(): NetworkQuality {
   const [networkQuality, setNetworkQuality] = useState<NetworkQuality>(() => {
     // Get initial connection info
@@ -85,7 +95,96 @@ function getConnection():
   return connection;
 }
 
+/**
+ * Detect if the user is on a desktop device
+ */
+function isDesktopDevice(): boolean {
+  const isMobile =
+    /iPad|iPhone|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    (window.innerWidth <= 768 && navigator.maxTouchPoints > 0);
+  return !isMobile;
+}
+
+/**
+ * Classify connection speed based on downlink value
+ */
+function classifyDownlinkSpeed(downlink: number): SlowConnectionLevel {
+  if (downlink < NETWORK_THRESHOLDS.VERY_SLOW) return 'very';
+  if (downlink < NETWORK_THRESHOLDS.MODERATE) return 'moderate';
+  if (downlink < NETWORK_THRESHOLDS.SLIGHT) return 'slight';
+  return 'none';
+}
+
+/**
+ * Calculate network quality for desktop devices
+ * Desktop connections are more permissive as API values can be unreliable
+ */
+function calculateDesktopQuality(connection: NetworkConnection): SlowConnectionLevel {
+  const { effectiveType, downlink, rtt, type } = connection;
+
+  const isWifiOrEthernet = type === 'wifi' || type === 'ethernet' || type === undefined;
+  const hasGoodEffectiveType = effectiveType === '4g';
+  const hasLowRTT = rtt !== undefined && rtt < NETWORK_THRESHOLDS.RTT_LOW;
+
+  // WiFi/Ethernet with good indicators
+  if (isWifiOrEthernet && (hasGoodEffectiveType || hasLowRTT)) {
+    if (downlink !== undefined && downlink < NETWORK_THRESHOLDS.DESKTOP_MIN) {
+      return 'very';
+    }
+    if (rtt !== undefined && rtt > NETWORK_THRESHOLDS.RTT_VERY_HIGH) {
+      return 'moderate';
+    }
+    return 'none';
+  }
+
+  // Use downlink if available
+  if (downlink !== undefined) {
+    return classifyDownlinkSpeed(downlink);
+  }
+
+  // Fallback to type/effectiveType
+  if (effectiveType === '4g' || type === 'wifi' || type === 'ethernet') {
+    return 'none';
+  }
+
+  return 'moderate';
+}
+
+/**
+ * Calculate network quality for mobile devices
+ */
+function calculateMobileQuality(connection: NetworkConnection): SlowConnectionLevel {
+  const { effectiveType, downlink, type } = connection;
+
+  // Primary: use downlink speed (most reliable for mobile)
+  if (downlink !== undefined) {
+    return classifyDownlinkSpeed(downlink);
+  }
+
+  // Fallback 1: effectiveType
+  if (effectiveType === 'slow-2g' || effectiveType === '2g') {
+    return 'very';
+  }
+  if (effectiveType === '3g') {
+    return 'moderate';
+  }
+  if (effectiveType === '4g') {
+    return 'none';
+  }
+
+  // Fallback 2: connection type
+  if (type === 'cellular' && effectiveType !== '4g') {
+    return 'moderate';
+  }
+  if (type === 'wifi' || type === 'ethernet') {
+    return 'none';
+  }
+
+  return 'none';
+}
+
 function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQuality {
+  // Early return for no connection
   if (!connection) {
     return {
       isSlow: false,
@@ -98,119 +197,22 @@ function calculateNetworkQuality(connection: NetworkConnection | null): NetworkQ
     };
   }
 
-  const effectiveType = connection.effectiveType;
-  const downlink = connection.downlink;
-  const rtt = connection.rtt;
-  const type = connection.type;
-  const saveData = connection.saveData || false;
+  const { effectiveType, downlink, rtt, type, saveData = false } = connection;
 
-  // Detect if we're on desktop (non-mobile)
-  const isMobile =
-    /iPad|iPhone|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-    (window.innerWidth <= 768 && navigator.maxTouchPoints > 0);
-  const isDesktop = !isMobile;
+  // Calculate slow level based on device type and connection properties
+  let slowLevel: SlowConnectionLevel;
 
-  // Determine connection slow level
-  // Priority: downlink > effectiveType > type
-  let slowLevel: SlowConnectionLevel = 'none';
-  let isSlow = false;
-
-  // Override: if saveData is enabled, consider it very slow
+  // Override: saveData enabled = very slow connection
   if (saveData) {
     slowLevel = 'very';
-    isSlow = true;
-  } else if (isDesktop) {
-    // On desktop, be more permissive with connection quality
-    // Desktop connections often have unreliable downlink values from the API
-    const isWifiOrEthernet = type === 'wifi' || type === 'ethernet' || type === undefined;
-    const hasGoodEffectiveType = effectiveType === '4g';
-    const hasLowRTT = rtt !== undefined && rtt < 200;
-
-    if (isWifiOrEthernet && (hasGoodEffectiveType || hasLowRTT)) {
-      // Desktop with WiFi/Ethernet (or undefined type) and good indicators
-      // Only consider it slow if downlink is extremely low (< 1 Mbps) or RTT is very high (> 1000ms)
-      if (downlink !== undefined && downlink < 1) {
-        slowLevel = 'very';
-        isSlow = true;
-      } else if (rtt !== undefined && rtt > 1000) {
-        slowLevel = 'moderate';
-        isSlow = true;
-      } else {
-        // Desktop with good indicators is generally good, even with lower downlink values
-        slowLevel = 'none';
-        isSlow = false;
-      }
-    } else if (downlink !== undefined) {
-      // Desktop but without good indicators, use downlink classification
-      if (downlink < 5) {
-        slowLevel = 'very';
-        isSlow = true;
-      } else if (downlink < 6) {
-        slowLevel = 'moderate';
-        isSlow = true;
-      } else if (downlink < 8) {
-        slowLevel = 'slight';
-        isSlow = true;
-      } else {
-        slowLevel = 'none';
-        isSlow = false;
-      }
-    } else {
-      // Desktop without downlink, use effectiveType or type
-      if (effectiveType === '4g' || type === 'wifi' || type === 'ethernet') {
-        slowLevel = 'none';
-        isSlow = false;
-      } else {
-        slowLevel = 'moderate';
-        isSlow = true;
-      }
-    }
-  } else if (downlink !== undefined) {
-    // Primary classification: use downlink speed (most reliable indicator for mobile)
-    if (downlink < 5) {
-      slowLevel = 'very';
-      isSlow = true;
-    } else if (downlink < 6) {
-      slowLevel = 'moderate';
-      isSlow = true;
-    } else if (downlink < 8) {
-      slowLevel = 'slight';
-      isSlow = true;
-    } else {
-      // downlink >= 8 Mbps: good connection
-      slowLevel = 'none';
-      isSlow = false;
-    }
-  } else if (effectiveType) {
-    // Fallback 1: use effectiveType if downlink is not available
-    if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-      slowLevel = 'very';
-      isSlow = true;
-    } else if (effectiveType === '3g') {
-      slowLevel = 'moderate';
-      isSlow = true;
-    } else if (effectiveType === '4g') {
-      // 4g is generally good, but without downlink we can't be sure
-      // Assume good connection
-      slowLevel = 'none';
-      isSlow = false;
-    }
-  } else if (type) {
-    // Fallback 2: use connection type if neither downlink nor effectiveType available
-    if (type === 'cellular' && effectiveType !== '4g') {
-      // Cellular without 4g indication: assume moderate
-      slowLevel = 'moderate';
-      isSlow = true;
-    } else if (type === 'wifi' || type === 'ethernet') {
-      // WiFi and ethernet are generally good
-      slowLevel = 'none';
-      isSlow = false;
-    }
-    // Other types (bluetooth, wimax, etc.) default to 'none' (good)
+  } else if (isDesktopDevice()) {
+    slowLevel = calculateDesktopQuality(connection);
+  } else {
+    slowLevel = calculateMobileQuality(connection);
   }
 
   return {
-    isSlow,
+    isSlow: slowLevel !== 'none',
     slowLevel,
     effectiveType: effectiveType || null,
     downlink: downlink || null,
