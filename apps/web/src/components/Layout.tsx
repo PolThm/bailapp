@@ -4,14 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 import { usePullToRefreshContext } from '@/context/PullToRefreshContext';
-import { useOrientation } from '@/hooks/useOrientation';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
   const { refreshHandler } = usePullToRefreshContext();
-  const { isLandscapeMobile } = useOrientation();
   const mainRef = useRef<HTMLElement | null>(null);
 
   // Scroll to top when route changes
@@ -34,7 +32,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="p-safe-area flex h-[100dvh] flex-col overflow-hidden sm:border">
+    <div className="flex h-[100dvh] w-full flex-col overflow-hidden pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] sm:border">
       {/* Main Content - Mobile Optimized with Padding and Safe Area */}
       <main ref={mainRef} className="relative flex flex-1 flex-col overflow-y-auto px-4 py-5">
         <PullToRefreshIndicator
@@ -47,9 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Bottom Navigation - Mobile Only, Touch-Optimized */}
-      <nav
-        className={`z-50 border-t bg-background/95 backdrop-blur ${isLandscapeMobile ? 'hidden' : ''}`}
-      >
+      <nav className="z-50 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1 p-2">
           <Link
             to="/"
