@@ -4,14 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 import { usePullToRefreshContext } from '@/context/PullToRefreshContext';
-import { useOrientation } from '@/hooks/useOrientation';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
   const { refreshHandler } = usePullToRefreshContext();
-  const { isLandscapeMobile } = useOrientation();
   const mainRef = useRef<HTMLElement | null>(null);
 
   // Scroll to top when route changes
