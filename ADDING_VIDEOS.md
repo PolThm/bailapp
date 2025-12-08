@@ -42,7 +42,7 @@ Navigate to `apps/web/src/data/videoList.ts`
   videoLanguage: 'english', // 'english', 'french', 'spanish' or 'italian'
   visibility: 'public',
   importedBy: 'Bailapp',
-  createdAt: new Date().toISOString(),
+  createdAt: '2025-12-08T01:00:00.000Z'
 },
 ```
 
@@ -67,7 +67,7 @@ Navigate to `apps/web/src/data/videoList.ts`
   videoLanguage: 'spanish',
   visibility: 'public',
   importedBy: 'Bailapp',
-  createdAt: new Date().toISOString(),
+  createdAt: '2025-12-08T02:00:00.000Z',
 },
 ```
 
@@ -122,6 +122,8 @@ Navigate to `apps/web/src/data/videoList.ts`
 
 - **`phrasesCount`**: Number of musical phrases (8-count beats)
 
+- **`createdAt`**: Date and time of the moment you add the video
+
 ### 5. Example: Adding a Real Video
 
 Let's say you found this video: `https://www.youtube.com/watch?v=ABC123xyz`
@@ -146,7 +148,7 @@ Let's say you found this video: `https://www.youtube.com/watch?v=ABC123xyz`
   videoLanguage: 'english',
   visibility: 'public',
   importedBy: 'Bailapp',
-  createdAt: new Date().toISOString(),
+  createdAt: '2025-12-08T03:00:00.000Z',
 },
 ```
 
@@ -174,7 +176,7 @@ If a video contains multiple figures (like a "10 figures tutorial"), you can add
   videoLanguage: 'english',
   visibility: 'public',
   importedBy: 'Bailapp',
-  createdAt: new Date().toISOString(),
+  createdAt: '2025-12-08T00:01:00.000Z',
 },
 // Figure 2 from the SAME video
 {
@@ -195,7 +197,7 @@ If a video contains multiple figures (like a "10 figures tutorial"), you can add
   videoLanguage: 'english',
   visibility: 'public',
   importedBy: 'Bailapp',
-  createdAt: new Date().toISOString(),
+  createdAt: '2025-12-08T00:02:00.000Z',
 },
 // Continue for figures 3, 4, 5... with id: 'watch_6yV0luuLZdw_3', etc.
 ```
