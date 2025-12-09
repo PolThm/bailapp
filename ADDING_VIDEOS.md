@@ -5,19 +5,22 @@ We're always looking for quality Salsa and Bachata videos! Here's how to add new
 ## Before You Start
 
 1. **Find a good video** on YouTube (Salsa or Bachata)
-2. **Check it doesn't already exist** in `apps/web/src/data/videoList.ts`
+2. **Check it doesn't already exist** in the appropriate file:
+   - Classic videos: `apps/web/src/data/classicVideoList.ts`
+   - Short videos: `apps/web/src/data/shortVideoList.ts`
 3. **Verify the video quality**: clear explanations, good camera angles, appropriate content
 
 ## Step-by-Step Guide
 
-### 1. Open the file
+### 1. Open the right file
 
-Navigate to `apps/web/src/data/videoList.ts`
+- **For regular YouTube videos** (tutorials, step-by-step guides): Navigate to `apps/web/src/data/classicVideoList.ts`
+- **For YouTube Shorts** (vertical format, quick tips): Navigate to `apps/web/src/data/shortVideoList.ts`
 
 ### 2. Choose the right list
 
-- **`classicVideoList`** - For regular YouTube videos (tutorials, step-by-step guides)
-- **`shortVideoList`** - For YouTube Shorts (vertical format, quick tips)
+- **`classicVideoList`** - For regular YouTube videos (tutorials, step-by-step guides) - in `classicVideoList.ts`
+- **`shortVideoList`** - For YouTube Shorts (vertical format, quick tips) - in `shortVideoList.ts`
 
 ### 3. Add your video at the END of the array
 
@@ -129,7 +132,7 @@ Navigate to `apps/web/src/data/videoList.ts`
 Let's say you found this video: `https://www.youtube.com/watch?v=ABC123xyz`
 
 ```typescript
-// Add at the END of classicVideoList array, before the closing ];
+// Add at the END of classicVideoList array in classicVideoList.ts, before the closing ];
 {
   id: 'watch_ABC123xyz',
   youtubeUrl: 'https://www.youtube.com/watch?v=ABC123xyz',

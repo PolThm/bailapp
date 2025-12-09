@@ -250,7 +250,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
       to={`/figure/${figure.id}`}
       className="touch-manipulation transition-transform active:scale-[0.98]"
     >
-      <Card className="h-full overflow-hidden border-2 transition-shadow hover:border-primary/50 hover:shadow-lg">
+      <Card className="flex h-full flex-col overflow-hidden border-2 transition-shadow hover:border-primary/50 hover:shadow-lg">
         {/* Thumbnail / Preview */}
         {showImage && (
           <div
@@ -373,7 +373,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
           </h3>
         </CardHeader>
 
-        <CardContent className="space-y-3 pt-0">
+        <CardContent className="mt-auto space-y-3 pt-0">
           {/* Badges */}
           <div className="flex flex-wrap gap-1.5">
             <DanceStyleBadge style={figure.danceStyle} />

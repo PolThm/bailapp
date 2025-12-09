@@ -261,16 +261,14 @@
     },
     "figureType": {
       "figure": "Figura",
-      "basicstep": "Passo Base",
-      "complexstep": "Passo Complesso",
+      "basicStep": "Passo Base",
+      "complexStep": "Passo Complesso",
       "mix": "Mix"
     },
     "complexity": {
       "basic": "Base",
-      "basicintermediate": "Base/Inter",
       "basicIntermediate": "Base/Inter",
       "intermediate": "Intermedio",
-      "intermediateadvanced": "Inter/Avanzato",
       "intermediateAdvanced": "Inter/Avanzato",
       "advanced": "Avanzato"
     },

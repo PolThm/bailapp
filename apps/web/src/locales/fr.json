@@ -260,16 +260,14 @@
     },
     "figureType": {
       "figure": "Figure",
-      "basicstep": "Pas de base",
-      "complexstep": "Pas complexe",
+      "basicStep": "Pas de base",
+      "complexStep": "Pas complexe",
       "mix": "Mixte"
     },
     "complexity": {
       "basic": "Basique",
-      "basicintermediate": "Basique/Inter",
       "basicIntermediate": "Basique/Inter",
       "intermediate": "Intermédiaire",
-      "intermediateadvanced": "Inter/Avancé",
       "intermediateAdvanced": "Inter/Avancé",
       "advanced": "Avancé"
     },

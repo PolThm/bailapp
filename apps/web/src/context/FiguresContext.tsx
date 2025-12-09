@@ -1,7 +1,8 @@
 import { useState, useEffect, ReactNode } from 'react';
 import type { Figure, DanceStyle } from '@/types';
 import { useFavorites } from '@/context/FavoritesContext';
-import { classicVideoList, shortVideoList } from '@/data/videoList';
+import { classicVideoList } from '@/data/classicVideoList';
+import { shortVideoList } from '@/data/shortVideoList';
 import { FiguresContext } from '@/hooks/useFigures';
 
 export function FiguresProvider({ children }: { children: ReactNode }) {
