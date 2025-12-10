@@ -357,9 +357,10 @@ export function Discover() {
         isMobilePortrait &&
         showImages ? (
         // Special case: only shorts to display on mobile
+        // Skip first section (index 0) as it's already displayed at the top
         <div className="space-y-6">
-          {distributedShortsBySection.map((sectionShorts, sectionIndex) => (
-            <ShortsCarousel key={`shorts-section-${sectionIndex}`} shorts={sectionShorts} />
+          {distributedShortsBySection.slice(1).map((sectionShorts, sectionIndex) => (
+            <ShortsCarousel key={`shorts-section-${sectionIndex + 1}`} shorts={sectionShorts} />
           ))}
         </div>
       ) : (
