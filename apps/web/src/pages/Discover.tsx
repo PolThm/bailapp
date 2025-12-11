@@ -186,8 +186,8 @@ export function Discover() {
     return filtered;
   }, [shorts, selectedStyle, searchQuery, advancedFilters]);
 
-  // Distribute shorts uniquely across sections (3 per section)
-  // If last section has less than 3, merge with second-to-last section
+  // Distribute shorts uniquely across sections (4 per section on mobile)
+  // If the last section has fewer than 3 shorts, merge it into the previous one
   const distributedShortsBySection = useMemo(() => {
     if (!filteredShorts.length) return [];
 
@@ -198,18 +198,18 @@ export function Discover() {
       return orderA - orderB;
     });
 
-    const SHORTS_PER_SECTION = 3;
+    const SHORTS_PER_SECTION = 4;
     const sections: Figure[][] = [];
 
-    // Distribute shorts into sections of 3
+    // Distribute shorts into sections of 4
     for (let i = 0; i < orderedShorts.length; i += SHORTS_PER_SECTION) {
       const section = orderedShorts.slice(i, i + SHORTS_PER_SECTION);
       sections.push(section);
     }
 
-    // If last section has less than 3, merge with second-to-last section
-    // BUT only if we have filters active (when no filters, we want clean sections of 3)
-    if (sections.length > 1 && hasActiveFilters) {
+    // If the last section has fewer than 3 shorts, merge it with the previous section
+    // This keeps the display clean and avoids a tiny final section
+    if (sections.length > 1) {
       const lastSection = sections[sections.length - 1];
       if (lastSection.length < 3) {
         const secondToLastSection = sections[sections.length - 2];
@@ -218,14 +218,8 @@ export function Discover() {
       }
     }
 
-    // When filters are active, keep all sections even if they have less than 3 shorts
-    // Otherwise, only keep sections with at least 3 shorts for clean display
-    if (hasActiveFilters) {
-      return sections; // Keep all sections, even if they have 1 or 2 shorts
-    } else {
-      return sections.filter((section) => section.length >= SHORTS_PER_SECTION);
-    }
-  }, [filteredShorts, hasActiveFilters]);
+    return sections;
+  }, [filteredShorts]);
 
   // Shuffle shorts for desktop display
   const shuffledFilteredShorts = useMemo(() => {

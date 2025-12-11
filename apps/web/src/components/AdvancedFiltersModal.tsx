@@ -115,7 +115,9 @@ export function AdvancedFiltersModal({
                 <SelectItem value="all">{t('discover.advancedFilters.allTypes')}</SelectItem>
                 {figureTypes.map((type) => (
                   <SelectItem key={type} value={type}>
-                    {t(`badges.figureType.${type.replace(/-/g, '')}`)}
+                    {t(
+                      `badges.figureType.${type.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())}`
+                    )}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -138,7 +140,9 @@ export function AdvancedFiltersModal({
                 <SelectItem value="all">{t('discover.advancedFilters.allComplexities')}</SelectItem>
                 {complexities.map((complexity) => (
                   <SelectItem key={complexity} value={complexity}>
-                    {t(`badges.complexity.${complexity.replace(/-/g, '')}`)}
+                    {t(
+                      `badges.complexity.${complexity.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())}`
+                    )}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -231,12 +235,16 @@ export function AdvancedFiltersModal({
                 )}
                 {filters.figureType && (
                   <Badge variant="secondary" className="text-xs">
-                    {t(`badges.figureType.${filters.figureType.replace(/-/g, '')}`)}
+                    {t(
+                      `badges.figureType.${filters.figureType.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())}`
+                    )}
                   </Badge>
                 )}
                 {filters.complexity && (
                   <Badge variant="secondary" className="text-xs">
-                    {t(`badges.complexity.${filters.complexity.replace(/-/g, '')}`)}
+                    {t(
+                      `badges.complexity.${filters.complexity.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())}`
+                    )}
                   </Badge>
                 )}
                 {filters.videoLanguage && (
