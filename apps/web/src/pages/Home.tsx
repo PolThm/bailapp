@@ -44,22 +44,22 @@ export function Home() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col justify-center pt-4">
+      <div className="flex flex-1 flex-col justify-center pt-4 lg:gap-[10vh]">
         {/* Hero Section */}
-        <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center lg:justify-end">
           <div className="mb-2 inline-flex items-center justify-center md:mb-0">
             <img
               src={dancingCoupleLogo}
               alt="Bailapp"
-              className="h-16 w-16 md:h-[6rem] md:w-[6rem]"
+              className="h-16 w-16 sm:h-[6rem] sm:w-[6rem]"
             />
           </div>
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+            <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
               {t('home.welcome').split('Bailapp')[0]}
               <span className="text-primary">Bailapp</span>
             </h1>
-            <p className="mx-auto max-w-sm text-lg text-muted-foreground md:text-2xl">
+            <p className="mx-auto max-w-sm text-lg text-muted-foreground sm:text-2xl">
               {t('home.subtitle')}
             </p>
           </div>
