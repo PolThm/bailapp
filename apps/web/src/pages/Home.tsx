@@ -48,7 +48,11 @@ export function Home() {
         {/* Hero Section */}
         <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center">
           <div className="mb-2 inline-flex items-center justify-center md:mb-0">
-            <img src={dancingCoupleLogo} alt="Bailapp" className="h-16 w-16" />
+            <img
+              src={dancingCoupleLogo}
+              alt="Bailapp"
+              className="h-16 w-16 md:h-[6rem] md:w-[6rem]"
+            />
           </div>
           <div className="space-y-2">
             <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">
