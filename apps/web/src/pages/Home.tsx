@@ -44,23 +44,29 @@ export function Home() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col justify-center pt-4">
+      <div className="flex flex-1 flex-col justify-center pt-4 lg:gap-[10vh]">
         {/* Hero Section */}
-        <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center lg:justify-end">
           <div className="mb-2 inline-flex items-center justify-center">
-            <img src={dancingCoupleLogo} alt="Bailapp" className="h-16 w-16" />
+            <img
+              src={dancingCoupleLogo}
+              alt="Bailapp"
+              className="h-16 w-16 sm:h-[5rem] sm:w-[5rem] lg:h-[6rem] lg:w-[6rem]"
+            />
           </div>
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold leading-tight tracking-tight">
+            <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
               {t('home.welcome').split('Bailapp')[0]}
               <span className="text-primary">Bailapp</span>
             </h1>
-            <p className="mx-auto max-w-sm text-lg text-muted-foreground">{t('home.subtitle')}</p>
+            <p className="mx-auto max-w-sm text-lg text-muted-foreground sm:text-xl lg:text-2xl">
+              {t('home.subtitle')}
+            </p>
           </div>
         </div>
 
         {/* Options Grid */}
-        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center gap-6 py-4">
+        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center gap-6 py-4 lg:grid lg:max-w-4xl lg:grid-cols-3 lg:grid-rows-1 lg:items-start">
           {options.map((option, index) => (
             <Link
               key={option.link}
@@ -74,22 +80,28 @@ export function Home() {
                 });
               }}
             >
-              <Card className="relative overflow-hidden border-0 bg-card/80 shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+              <Card className="group relative overflow-hidden border-0 bg-card/80 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl lg:h-[170px] lg:text-center lg:hover:-translate-y-1">
                 <div className={`absolute inset-0 opacity-5 ${option.bgGradient}`} />
-                <CardHeader className="relative p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <option.icon className={`h-5 w-5 ${option.iconColor} flex-shrink-0`} />
-                        <CardTitle className="text-lg font-semibold leading-tight">
+
+                <CardHeader className="relative flex h-full justify-center p-4 lg:p-5">
+                  <div className="flex items-center justify-between lg:flex-col lg:items-center lg:justify-center lg:gap-4">
+                    {/* Text + Icon */}
+                    <div className="flex-1 space-y-1 lg:flex lg:flex-col lg:items-center lg:space-y-2">
+                      <div className="flex items-center gap-2 lg:flex-col lg:gap-3">
+                        <option.icon className={`h-5 w-5 lg:h-7 lg:w-7 ${option.iconColor}`} />
+                        <CardTitle className="text-lg font-semibold leading-tight lg:text-xl">
                           {option.title}
                         </CardTitle>
                       </div>
-                      <CardDescription className="text-sm text-muted-foreground">
-                        {option.description}
+
+                      <CardDescription className="max-w-xs text-sm text-muted-foreground lg:flex lg:items-center lg:justify-center lg:gap-1.5 lg:text-center">
+                        <ArrowRight className="hidden h-3.5 w-3.5 shrink-0 text-muted-foreground/70 lg:inline-block" />
+                        <span>{option.description}</span>
                       </CardDescription>
                     </div>
-                    <div className="ml-3 flex h-8 w-8 items-center justify-center rounded-full bg-muted/50">
+
+                    {/* Arrow */}
+                    <div className="ml-3 flex h-8 w-8 items-center justify-center rounded-full bg-muted/50 transition-colors hover:bg-muted/70 lg:hidden">
                       <ArrowRight className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>

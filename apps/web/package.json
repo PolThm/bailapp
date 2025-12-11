@@ -39,5 +39,8 @@
     "typescript": "^5.6.3",
     "vite": "^5.4.10",
     "vite-plugin-pwa": "^0.20.5"
+  },
+  "engines": {
+    "bun": ">=1.1.21"
   }
 }
