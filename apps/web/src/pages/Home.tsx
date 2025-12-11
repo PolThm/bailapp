@@ -80,7 +80,7 @@ export function Home() {
                 });
               }}
             >
-              <Card className="group relative overflow-hidden border-0 bg-card/80 shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl lg:h-[170px] lg:text-center">
+              <Card className="group relative overflow-hidden border-0 bg-card/80 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl lg:h-[170px] lg:text-center lg:hover:-translate-y-1">
                 <div className={`absolute inset-0 opacity-5 ${option.bgGradient}`} />
 
                 <CardHeader className="relative flex h-full justify-center p-4 lg:p-5">
