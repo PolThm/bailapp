@@ -46,7 +46,7 @@ export function Home() {
     <>
       <div className="flex flex-1 flex-col justify-center pt-4">
         {/* Hero Section */}
-        <div className="space-y-4 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center">
           <div className="mb-2 inline-flex items-center justify-center">
             <img src={dancingCoupleLogo} alt="Bailapp" className="h-16 w-16" />
           </div>
@@ -60,7 +60,7 @@ export function Home() {
         </div>
 
         {/* Options Grid */}
-        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center gap-6 py-4">
+        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center gap-6 py-4">
           {options.map((option, index) => (
             <Link
               key={option.link}
