@@ -44,7 +44,7 @@ export function Home() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col justify-center pt-4 lg:gap-[8vh]">
+      <div className="flex flex-1 flex-col justify-center pt-4 md:-mt-2 lg:gap-[8vh]">
         {/* Hero Section */}
         <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center lg:justify-end">
           <div className="mb-2 inline-flex items-center justify-center">
