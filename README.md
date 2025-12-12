@@ -39,14 +39,14 @@ A modern PWA application for creating choreographies, learning new moves, and tr
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) installed (otherwise you can also try with "yarn" or "npm")
+- [Bun](https://bun.sh) installed (alternatively, you can use "yarn" or "npm")
 
 ### Installation
 
 1. **Clone the repository**
 
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/PolThm/bailapp.git
    cd bailapp
    ```
 
@@ -91,6 +91,7 @@ This will start:
 | `bun lint`           | Lint code                 |
 | `bun format`         | Format code with Prettier |
 | `bun type-check`     | Check TypeScript types    |
+| `bun ngrok`          | Start ngrok for tunneling |
 
 ## Project Structure
 
@@ -110,6 +111,7 @@ bailapp/
 │           ├── locales/      # Translation files
 │           ├── pages/        # Page components
 │           ├── config/       # Configuration files
+│           ├── data/         # Video lists and other data
 │           ├── App.tsx
 │           └── main.tsx
 ├── firebase.json
@@ -121,7 +123,7 @@ bailapp/
 
 ## Internationalization
 
-The app supports three languages:
+The app supports four languages:
 
 - 🇬🇧 English (default)
 - 🇫🇷 French
@@ -159,6 +161,7 @@ The app follows an "optional authentication" pattern:
    ```
 
 2. **Deploy to Firebase**
+
    ```bash
    bun deploy
    ```
