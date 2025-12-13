@@ -44,7 +44,7 @@ export function Home() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col justify-center pt-4 lg:gap-[8vh]">
+      <div className="flex flex-1 flex-col justify-center pt-4 md:-mt-2 lg:gap-[8vh]">
         {/* Hero Section */}
         <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center lg:justify-end">
           <div className="mb-2 inline-flex items-center justify-center">
@@ -66,7 +66,7 @@ export function Home() {
         </div>
 
         {/* Options Grid */}
-        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center gap-6 py-4 lg:grid lg:max-w-4xl lg:grid-cols-3 lg:grid-rows-1 lg:items-start">
+        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center gap-6 py-4 lg:grid lg:max-w-5xl lg:grid-cols-3 lg:grid-rows-1 lg:items-start">
           {options.map((option, index) => (
             <Link
               key={option.link}

@@ -48,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           pullDistance={pullDistance}
           threshold={80}
         />
-        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pb-5 pt-4">
+        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pb-5 pt-4 md:pt-6">
           {children}
         </div>
       </main>
