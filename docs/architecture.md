@@ -2,7 +2,7 @@
 
 ## Project Structure
 
-The Bailapp project is organized into a monorepo structure, utilizing Bun workspaces for better management of multiple applications and shared resources. Below is a detailed overview of the key folders and their responsibilities:
+The Bailapp project is organized into a monorepo structure, utilizing Bun workspaces for better management of multiple applications and shared resources (at the moment, there is only a web Progressive Web App, but in the future we will add a React Native app.). Below is a detailed overview of the key folders and their responsibilities:
 
 ### 1. `apps/web`
 
