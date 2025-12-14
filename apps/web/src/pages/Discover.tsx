@@ -7,6 +7,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { ComingSoonModal } from '@/components/ComingSoonModal';
 import { EmptyState } from '@/components/EmptyState';
 import { FigureCard } from '@/components/FigureCard';
+import { Loader } from '@/components/Loader';
 import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureModal';
 import { ResultsSummary } from '@/components/ResultsSummary';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
@@ -15,6 +16,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useFigures } from '@/hooks/useFigures';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import { isEmpty } from '@/lib/utils';
 
@@ -89,6 +91,15 @@ export function Discover() {
     clearFilters,
   } = useFigureFilters([...figures, ...shorts]);
 
+  // Pagination state
+  const ITEMS_PER_PAGE = 36; // Number of items to load per page
+  const [displayedCount, setDisplayedCount] = useState(ITEMS_PER_PAGE);
+
+  // Reset displayed count when filters change
+  useEffect(() => {
+    setDisplayedCount(ITEMS_PER_PAGE);
+  }, [selectedStyle, searchQuery, advancedFilters]);
+
   // Filter shorts based on device type
   // On mobile: exclude shorts from main grid (they appear in carousel sections)
   // On desktop: exclude shorts from main grid (they appear in a single carousel at the top)
@@ -146,6 +157,27 @@ export function Discover() {
     const newFigures = filteredFigures.filter((f) => !figureOrderRef.current.has(f.id));
     return [...orderedFigures, ...newFigures];
   }, [filteredFigures, figures, shorts, advancedFilters.sortByDate]);
+
+  // Get paginated figures (only show displayedCount items)
+  const paginatedFigures = useMemo(() => {
+    return shuffledFigures.slice(0, displayedCount);
+  }, [shuffledFigures, displayedCount]);
+
+  // Check if there are more items to load
+  const hasMoreFigures = shuffledFigures.length > displayedCount;
+
+  // Load more figures
+  const loadMoreFigures = () => {
+    setDisplayedCount((prev) => Math.min(prev + ITEMS_PER_PAGE, shuffledFigures.length));
+  };
+
+  // Infinite scroll hook
+  const { sentinelRef } = useInfiniteScroll({
+    hasMore: hasMoreFigures,
+    isLoading: false,
+    onLoadMore: loadMoreFigures,
+    threshold: 200,
+  });
 
   // Filter shorts with the same filters as figures
   const filteredShorts = useMemo(() => {
@@ -388,7 +420,7 @@ export function Discover() {
       ) : (
         <>
           <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
-            {shuffledFigures
+            {paginatedFigures
               .map((figure, index) => {
                 const elements = [
                   <FigureCard key={figure.id} figure={figure} showImage={showImages} />,
@@ -432,6 +464,15 @@ export function Discover() {
               })
               .flat()}
           </div>
+
+          {/* Infinite scroll sentinel and loading indicator */}
+          {hasMoreFigures && (
+            <>
+              <Loader size="md" fullHeight={false} className="py-8" />
+              {/* Sentinel - triggers load more when visible */}
+              <div ref={sentinelRef} className="h-20 w-full" aria-hidden="true" />
+            </>
+          )}
 
           {/* Show remaining shorts sections after the grid (mobile only) if there are filters and shorts that weren't displayed */}
           {hasActiveFilters &&
