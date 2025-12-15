@@ -1,7 +1,7 @@
 ---
-title: "Deployment Instructions for BailApp"
-description: "Step-by-step guide for building and deploying BailApp to Firebase Hosting, including emulator usage and best practices."
-icon: "🚀"
+title: 'Deployment Instructions for BailApp'
+description: 'Step-by-step guide for building and deploying BailApp to Firebase Hosting, including emulator usage and best practices.'
+icon: '🚀'
 order: 2
 ---
 
@@ -108,11 +108,13 @@ This command compiles the application and outputs the files to the `apps/web/dis
 1. **Environment Variables**: Make sure to configure any necessary environment variables before deployment. You can use a `.env` file for local development and set them in the Firebase console for production.
 
 2. **Testing**: Always test your application locally using the Firebase emulators before deploying to production. You can start the emulators with:
+
    ```bash
    npm run emu
    ```
 
 3. **Linting and Formatting**: Ensure your code is linted and formatted before deployment. You can run:
+
    ```bash
    npm run lint
    npm run format
@@ -127,6 +129,7 @@ This command compiles the application and outputs the files to the `apps/web/dis
 To deploy the BailApp to Firebase Hosting, follow these steps:
 
 1. Build the application:
+
    ```bash
    npm run build
    ```
@@ -139,9 +142,11 @@ To deploy the BailApp to Firebase Hosting, follow these steps:
 ### Running Locally
 
 To run the application locally for testing:
+
 ```bash
 npm run dev
 ```
+
 This command starts the development server, allowing you to preview your changes in real-time.
 
 ## Conclusion

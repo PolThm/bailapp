@@ -3,7 +3,8 @@ title: "Routing Documentation"
 description: "Comprehensive guide to the routing structure in Bailapp, including pages, dynamic segments, and navigation patterns."
 icon: "🗺️"
 order: 3
-```
+
+````
 
 # Routing Documentation
 
@@ -45,7 +46,7 @@ The following routes are defined in the application:
 
 The navigation state is structured as follows:
 
-- **Toast Message**: 
+- **Toast Message**:
   - `location.state?.toast`
     - Type: `{ message: string; type: 'success' | 'info' | 'error' } | null`
     - On render, if present, it is stored in local component state and cleared via `history.replaceState`.
@@ -54,20 +55,21 @@ The navigation state is structured as follows:
 
 The following hooks are utilized for routing:
 
-- **useParams**: 
+- **useParams**:
   ```typescript
   const { id } = useParams<{ id: string }>();
-  ```
-- **useSearchParams**: 
+````
+
+- **useSearchParams**:
   ```typescript
   const [searchParams] = useSearchParams();
   const ownerId = searchParams.get('ownerId');
   ```
-- **useLocation**: 
+- **useLocation**:
   ```typescript
   const location = useLocation();
   ```
-- **useNavigate**: 
+- **useNavigate**:
   ```typescript
   const navigate = useNavigate();
   ```
@@ -82,7 +84,7 @@ In the `ChoreographyDetail` component, you can access the dynamic segment and qu
 // apps/web/src/pages/ChoreographyDetail.tsx
 const { id } = useParams<{ id: string }>();
 const [searchParams] = useSearchParams();
-const ownerId = searchParams.get('ownerId');  // Public view key
+const ownerId = searchParams.get('ownerId'); // Public view key
 const isViewingPublic = ownerId && ownerId !== user?.uid;
 ```
 
