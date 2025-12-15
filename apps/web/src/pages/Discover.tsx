@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, GitPullRequest } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Figure } from '@/types';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
@@ -12,6 +12,8 @@ import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureMo
 import { ResultsSummary } from '@/components/ResultsSummary';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
 import { ShortsCarousel } from '@/components/ShortsCarousel';
+import { SubmitVideoModal } from '@/components/SubmitVideoModal';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useFigures } from '@/hooks/useFigures';
@@ -38,6 +40,7 @@ export function Discover() {
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showSubmitVideoModal, setShowSubmitVideoModal] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(
     getStorageKey(StorageKey.DISCOVER_SHOW_IMAGES),
     true
@@ -346,8 +349,21 @@ export function Discover() {
     <>
       {/* Header */}
       <div className="pb-3">
-        <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
-        <p className="mt-1 text-muted-foreground">{t('discover.subtitle')}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
+            <p className="mt-1 text-muted-foreground">{t('discover.subtitle')}</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowSubmitVideoModal(true)}
+            className="flex items-center gap-2"
+          >
+            <GitPullRequest className="h-4 w-4" />
+            Submit Video
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -518,6 +534,12 @@ export function Discover() {
         onFiltersChange={setAdvancedFilters}
         onApply={() => setShowAdvancedFilters(false)}
         selectedStyle={selectedStyle}
+      />
+
+      {/* Submit Video Modal */}
+      <SubmitVideoModal
+        open={showSubmitVideoModal}
+        onClose={() => setShowSubmitVideoModal(false)}
       />
     </>
   );
