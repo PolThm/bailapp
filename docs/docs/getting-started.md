@@ -1,7 +1,7 @@
 ---
-title: "Getting Started with BailApp"
-description: "A comprehensive guide to setting up the development environment, installing dependencies, and running the BailApp PWA locally."
-icon: "🚀"
+title: 'Getting Started with BailApp'
+description: 'A comprehensive guide to setting up the development environment, installing dependencies, and running the BailApp PWA locally.'
+icon: '🚀'
 order: 1
 ---
 

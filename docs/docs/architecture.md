@@ -1,7 +1,7 @@
 ---
-title: "Architecture Overview"
-description: "A comprehensive overview of the Bailapp architecture, including folder structure, key components, hooks, services, and contexts."
-icon: "🏗️"
+title: 'Architecture Overview'
+description: 'A comprehensive overview of the Bailapp architecture, including folder structure, key components, hooks, services, and contexts.'
+icon: '🏗️'
 order: 1
 ---
 
@@ -43,11 +43,13 @@ The components directory holds the UI components that are used throughout the ap
 ### React Contexts and Hooks
 
 - **`useAuth`**: Provides authentication state.
+
   ```typescript
   useAuth(): { user: User | null }
   ```
 
 - **`useChoreographies`**: Manages choreographies with CRUD operations.
+
   ```typescript
   useChoreographies(): {
     choreographies: Choreography[];
@@ -65,6 +67,7 @@ The components directory holds the UI components that are used throughout the ap
   ```
 
 - **`useFigures`**: Manages figures and shorts.
+
   ```typescript
   useFigures(): {
     figures: Figure[];
