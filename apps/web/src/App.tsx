@@ -29,6 +29,8 @@ const queryClient = new QueryClient({
   },
 });
 
+// TODO: Allow users to update videos
+
 // Disable SplashScreen and PWA Install Prompt in development
 const isProduction = import.meta.env.PROD;
 
