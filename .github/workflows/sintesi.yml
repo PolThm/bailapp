@@ -1,0 +1,28 @@
+name: Sintesi - Documentation AI
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sintesi Check & Fix
+        uses: doctypedev/action@v0
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          github_token: ${{ secrets.PAT_TOKEN }}
+          targets: 'readme,docs' # Documentation targets to generate (comma-separated). Options: readme, docs
+          docs_output: 'docs' # Optional: Directory for the output documentation - Default: docs
