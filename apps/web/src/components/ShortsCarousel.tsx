@@ -211,7 +211,7 @@ export function ShortsCarousel({ shorts }: ShortsCarouselProps) {
               <ShortCard figure={short} shouldShowPreview={visibleCardIds.has(short.id)} />
             </div>
           ))}
-          <div className="w-[55.6vw] flex-shrink-0" />
+          <div className="w-2 flex-shrink-0" />
         </div>
       </div>
     </div>
