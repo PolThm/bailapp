@@ -79,13 +79,14 @@ export function getYouTubeEmbedUrl(
 /**
  * Get YouTube preview video URL (autoplay, muted, loop, no controls)
  * Used for hover previews like on YouTube's website
- * Preview starts at previewStartDelay seconds (or 10 seconds by default) after the original start time
+ * Preview starts at previewStartTime (position in the video, same format as startTime),
+ * or 10 seconds after the original start time by default
  */
 export function getYouTubePreviewUrl(
   videoId: string,
   startTime?: string,
   endTime?: string,
-  previewStartDelay?: number
+  previewStartTime?: string
 ): string {
   const url = `https://www.youtube.com/embed/${videoId}?`;
 
@@ -100,15 +101,10 @@ export function getYouTubePreviewUrl(
   ];
 
   // Calculate preview start time
-  // Use previewStartDelay if provided, otherwise default to 10 seconds
-  const defaultPreviewStart = previewStartDelay ?? 10;
-  let previewStartSeconds = defaultPreviewStart;
-  if (startTime) {
-    const startSeconds = parseTimeToSeconds(startTime);
-    if (startSeconds !== null) {
-      previewStartSeconds = startSeconds + defaultPreviewStart;
-    }
-  }
+  // Use previewStartTime if provided, otherwise default to 10 seconds after the start time
+  const startSeconds = (startTime ? parseTimeToSeconds(startTime) : null) ?? 0;
+  const previewStart = previewStartTime ? parseTimeToSeconds(previewStartTime) : null;
+  let previewStartSeconds = previewStart ?? startSeconds + 10;
 
   // Ensure we don't exceed endTime if it exists
   if (endTime) {
@@ -132,13 +128,14 @@ export function getYouTubePreviewUrl(
 
 /**
  * Get YouTube preview video URL for Shorts (autoplay, muted, loop, no controls)
- * Preview starts at previewStartDelay seconds (or 0 seconds by default) after the original start time
+ * Preview starts at previewStartTime (position in the video, same format as startTime),
+ * or at the original start time by default
  */
 export function getYouTubeShortPreviewUrl(
   videoId: string,
   startTime?: string,
   endTime?: string,
-  previewStartDelay?: number
+  previewStartTime?: string
 ): string {
   const url = `https://www.youtube.com/embed/${videoId}?`;
 
@@ -153,15 +150,10 @@ export function getYouTubeShortPreviewUrl(
   ];
 
   // Calculate preview start time
-  // Use previewStartDelay if provided, otherwise default to 0 seconds for shorts
-  const defaultPreviewStart = previewStartDelay ?? 0;
-  let previewStartSeconds = defaultPreviewStart;
-  if (startTime) {
-    const startSeconds = parseTimeToSeconds(startTime);
-    if (startSeconds !== null) {
-      previewStartSeconds = startSeconds + defaultPreviewStart;
-    }
-  }
+  // Use previewStartTime if provided, otherwise default to the start time for shorts
+  const startSeconds = (startTime ? parseTimeToSeconds(startTime) : null) ?? 0;
+  const previewStart = previewStartTime ? parseTimeToSeconds(previewStartTime) : null;
+  let previewStartSeconds = previewStart ?? startSeconds;
 
   // Ensure we don't exceed endTime if it exists
   if (endTime) {

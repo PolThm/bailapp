@@ -36,7 +36,7 @@ We're always looking for quality Salsa and Bachata videos! Here's how to add new
   videoAuthor: 'Channel Name',
   startTime: '0:15',  // Optional: where the tutorial starts (format: 'M:SS' or 'MM:SS')
   endTime: '2:30',    // Optional: where it ends
-  previewStartDelay: 5, // Seconds to wait before showing preview (usually 3-10)
+  previewStartTime: '0:20', // Optional: where the preview starts (same format as startTime)
   danceStyle: 'salsa', // or 'bachata'
   danceSubStyle: 'cuban', // or 'sensual', 'modern', etc. (see types below)
   figureType: 'figure',
@@ -61,7 +61,7 @@ We're always looking for quality Salsa and Bachata videos! Here's how to add new
   videoAuthor: 'Channel Name',
   startTime: undefined,
   endTime: undefined,
-  previewStartDelay: 0, // Shorts usually start at 0
+  previewStartTime: '0:02', // Optional: where the preview starts (shorts usually 0:00-0:02)
   danceStyle: 'bachata',
   danceSubStyle: undefined, // or specific style
   figureType: undefined,
@@ -116,10 +116,11 @@ We're always looking for quality Salsa and Bachata videos! Here's how to add new
   - Extract the specific section you want to highlight
   - Each figure should have its own time range
 
-- **`previewStartDelay`**: Number of seconds to delay preview (from startTime)
+- **`previewStartTime`**: Where the hover preview starts, format `'M:SS'` or `'MM:SS'` (same as `startTime`)
+  - It is a position in the video, not a duration
   - Helps skip intros and show the actual move
-  - Classic videos: usually 3-10 seconds
-  - Shorts: usually 0-2 seconds
+  - Classic videos: usually 3-10 seconds after `startTime`
+  - Shorts: usually 0-2 seconds after the beginning
 
 - **`figureType`**: `'figure'` for structured choreography moves
 
@@ -142,7 +143,7 @@ Let's say you found this video: `https://www.youtube.com/watch?v=ABC123xyz`
   videoAuthor: 'Salsa Dance Academy',
   startTime: '0:30',
   endTime: '3:45',
-  previewStartDelay: 8,
+  previewStartTime: '0:38',
   danceStyle: 'salsa',
   danceSubStyle: 'la-style',
   figureType: 'figure',
@@ -170,7 +171,7 @@ If a video contains multiple figures (like a "10 figures tutorial"), you can add
   videoAuthor: 'Avinciia-Danse',
   startTime: '0:16',
   endTime: '1:31',
-  previewStartDelay: 54,
+  previewStartTime: '1:10',
   danceStyle: 'bachata',
   danceSubStyle: undefined,
   figureType: 'figure',
@@ -191,7 +192,7 @@ If a video contains multiple figures (like a "10 figures tutorial"), you can add
   videoAuthor: 'Avinciia-Danse',
   startTime: '1:31', // Different time range!
   endTime: '2:51',
-  previewStartDelay: 8,
+  previewStartTime: '1:39',
   danceStyle: 'bachata',
   danceSubStyle: undefined,
   figureType: 'figure',
@@ -211,7 +212,7 @@ If a video contains multiple figures (like a "10 figures tutorial"), you can add
 - ✅ Unique `id` for each figure (`_1`, `_2`, `_3`, etc.)
 - ✅ Different `startTime` and `endTime` for each figure
 - ✅ Update `shortTitle`, `fullTitle`, and `description` to match each specific figure
-- ✅ Adjust `previewStartDelay` if needed for each figure
+- ✅ Adjust `previewStartTime` if needed for each figure
 
 ### 6. Test Your Addition
 

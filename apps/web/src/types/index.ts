@@ -41,7 +41,7 @@ export interface Figure {
   videoAuthor?: string;
   startTime?: string; // Format: HH:MM:SS or MM:SS
   endTime?: string; // Format: HH:MM:SS or MM:SS
-  previewStartDelay?: number; // Delay in seconds to start the preview (default: 10 for videos, 0 for shorts)
+  previewStartTime?: string; // Format: HH:MM:SS or MM:SS (default: startTime + 10s for videos, startTime for shorts)
   danceStyle: DanceStyle;
   danceSubStyle?: DanceSubStyle;
   figureType?: FigureType;

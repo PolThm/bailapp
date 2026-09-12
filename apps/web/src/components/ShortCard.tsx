@@ -27,7 +27,7 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId ? getYouTubeThumbnail(videoId, 'high') : '/placeholder-video.jpg';
   const previewUrl = videoId
-    ? getYouTubeShortPreviewUrl(videoId, figure.startTime, figure.endTime, figure.previewStartDelay)
+    ? getYouTubeShortPreviewUrl(videoId, figure.startTime, figure.endTime, figure.previewStartTime)
     : null;
 
   const isFav = isFavorite(figure.id);

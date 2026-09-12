@@ -35,7 +35,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   const videoId = getYouTubeVideoId(figure.youtubeUrl);
   const thumbnail = videoId ? getYouTubeThumbnail(videoId, 'medium') : '/placeholder-video.jpg';
   const previewUrl = videoId
-    ? getYouTubePreviewUrl(videoId, figure.startTime, figure.endTime, figure.previewStartDelay)
+    ? getYouTubePreviewUrl(videoId, figure.startTime, figure.endTime, figure.previewStartTime)
     : null;
 
   const isFav = isFavorite(figure.id);
