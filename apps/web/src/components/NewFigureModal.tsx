@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type {
   DanceStyle,
@@ -6,6 +7,7 @@ import type {
   FigureType,
   Complexity,
   VideoLanguage,
+  VideoSource,
   Visibility,
 } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -20,16 +22,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { VideoUploadField, type UploadedVideoDraft } from '@/components/VideoUploadField';
+import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { getYouTubeVideoId, getYouTubeThumbnail } from '@/utils/youtube';
 
 interface NewFigureModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit?: (data: NewFigureFormData) => void;
+  /** May be async: the modal stays open, showing progress, until it settles. */
+  onSubmit?: (data: NewFigureFormData) => void | Promise<void>;
 }
 
 export interface NewFigureFormData {
-  youtubeUrl: string;
+  videoSource: VideoSource;
+  /** Present when videoSource is 'youtube'. */
+  youtubeUrl?: string;
+  /** Present when videoSource is 'upload': converted, not yet sent to Storage. */
+  uploadedVideo?: UploadedVideoDraft;
   shortTitle: string;
   fullTitle: string;
   description?: string;
@@ -54,9 +63,18 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   });
   const [videoId, setVideoId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [source, setSource] = useState<VideoSource>('youtube');
+  const [uploadedVideo, setUploadedVideo] = useState<UploadedVideoDraft | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { isOffline } = useOfflineStatus();
 
   // Auto-extract video ID when YouTube URL changes
   useEffect(() => {
+    if (source !== 'youtube') {
+      setVideoId(null);
+      return;
+    }
     if (formData.youtubeUrl) {
       const id = getYouTubeVideoId(formData.youtubeUrl);
       setVideoId(id);
@@ -71,14 +89,19 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
     } else {
       setVideoId(null);
     }
-  }, [formData.youtubeUrl, formData.shortTitle]);
+  }, [formData.youtubeUrl, formData.shortTitle, source]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     // Validation
     const newErrors: Record<string, string> = {};
-    if (!formData.youtubeUrl) newErrors.youtubeUrl = t('newFigure.errors.youtubeUrlRequired');
+    if (source === 'youtube') {
+      if (!formData.youtubeUrl) newErrors.youtubeUrl = t('newFigure.errors.youtubeUrlRequired');
+    } else if (!uploadedVideo) {
+      newErrors.uploadedVideo = t('newFigure.upload.errors.videoRequired');
+    }
     if (!formData.shortTitle) newErrors.shortTitle = t('newFigure.errors.titleRequired');
     if (!formData.fullTitle) newErrors.fullTitle = t('newFigure.errors.titleRequired');
     if (!formData.danceStyle) newErrors.danceStyle = t('newFigure.errors.danceStyleRequired');
@@ -93,21 +116,51 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
       return;
     }
 
-    // Submit
-    if (onSubmit) {
-      onSubmit(formData as NewFigureFormData);
-    } else {
-      console.log('New Figure Data:', formData);
+    // Bytes cannot be queued: the offline sync queue stores strings only.
+    if (source === 'upload' && isOffline) {
+      setSubmitError(t('newFigure.upload.errors.offline'));
+      return;
     }
 
-    // Close and reset
-    handleClose();
+    const payload: NewFigureFormData = {
+      ...(formData as NewFigureFormData),
+      videoSource: source,
+      // Uploads always start private; security rules enforce it too.
+      visibility: source === 'upload' ? 'private' : (formData.visibility ?? 'public'),
+      youtubeUrl: source === 'youtube' ? formData.youtubeUrl : undefined,
+      uploadedVideo: source === 'upload' ? (uploadedVideo ?? undefined) : undefined,
+    };
+
+    if (!onSubmit) {
+      handleClose();
+      return;
+    }
+
+    setSubmitError(null);
+    setIsSubmitting(true);
+    try {
+      await onSubmit(payload);
+      handleClose();
+    } catch {
+      // The caller already reported the failure; keep the form open with its
+      // data so the user can retry without re-converting the video.
+      setSubmitError(t('newFigure.upload.errors.uploadFailed'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
+    if (isSubmitting) return;
+    if (uploadedVideo) {
+      URL.revokeObjectURL(uploadedVideo.localPreviewUrl);
+    }
     setFormData({ phrasesCount: 4, videoLanguage: 'english', visibility: 'public' });
     setVideoId(null);
     setErrors({});
+    setSource('youtube');
+    setUploadedVideo(null);
+    setSubmitError(null);
     onClose();
   };
 
@@ -119,31 +172,67 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* YouTube URL */}
-          <div className="space-y-2">
-            <Label htmlFor="youtubeUrl">
-              {t('newFigure.youtubeUrl')} {t('newFigure.required')}
-            </Label>
-            <Input
-              id="youtubeUrl"
-              placeholder={t('newFigure.youtubeUrlPlaceholder')}
-              value={formData.youtubeUrl || ''}
-              onChange={(e) => setFormData({ ...formData, youtubeUrl: e.target.value })}
-              className={errors.youtubeUrl ? 'border-destructive' : ''}
-            />
-            {errors.youtubeUrl && <p className="text-sm text-destructive">{errors.youtubeUrl}</p>}
+          {/* Video source */}
+          <div className="grid grid-cols-2 gap-2 rounded-md bg-muted p-1">
+            {(['youtube', 'upload'] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  setSource(option);
+                  setErrors({});
+                  setSubmitError(null);
+                }}
+                disabled={isSubmitting}
+                className={`rounded px-3 py-2 text-sm font-medium transition-colors ${
+                  source === option
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {option === 'youtube' ? t('newFigure.sourceYoutube') : t('newFigure.sourceUpload')}
+              </button>
+            ))}
           </div>
 
-          {/* Thumbnail Preview */}
-          {videoId && (
-            <div className="space-y-2">
-              <Label>{t('newFigure.thumbnail')}</Label>
-              <img
-                src={getYouTubeThumbnail(videoId)}
-                alt="Video thumbnail"
-                className="w-full rounded-md"
-              />
-            </div>
+          {source === 'youtube' ? (
+            <>
+              {/* YouTube URL */}
+              <div className="space-y-2">
+                <Label htmlFor="youtubeUrl">
+                  {t('newFigure.youtubeUrl')} {t('newFigure.required')}
+                </Label>
+                <Input
+                  id="youtubeUrl"
+                  placeholder={t('newFigure.youtubeUrlPlaceholder')}
+                  value={formData.youtubeUrl || ''}
+                  onChange={(e) => setFormData({ ...formData, youtubeUrl: e.target.value })}
+                  className={errors.youtubeUrl ? 'border-destructive' : ''}
+                />
+                {errors.youtubeUrl && (
+                  <p className="text-sm text-destructive">{errors.youtubeUrl}</p>
+                )}
+              </div>
+
+              {/* Thumbnail Preview */}
+              {videoId && (
+                <div className="space-y-2">
+                  <Label>{t('newFigure.thumbnail')}</Label>
+                  <img
+                    src={getYouTubeThumbnail(videoId)}
+                    alt="Video thumbnail"
+                    className="w-full rounded-md"
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <VideoUploadField
+              value={uploadedVideo}
+              onChange={setUploadedVideo}
+              error={errors.uploadedVideo}
+              disabled={isSubmitting}
+            />
           )}
 
           {/* Short Title */}
@@ -400,38 +489,50 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
             </Select>
           </div>
 
-          {/* Visibility */}
-          <div className="space-y-2">
-            <Label htmlFor="visibility">
-              {t('newFigure.visibility')} {t('newFigure.required')}
-            </Label>
-            <Select
-              value={formData.visibility}
-              onValueChange={(value) =>
-                setFormData({
-                  ...formData,
-                  visibility: value as Visibility,
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('newFigure.visibilityPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">{t('badges.visibility.public')}</SelectItem>
-                <SelectItem value="private">{t('badges.visibility.private')}</SelectItem>
-                <SelectItem value="unlisted">{t('badges.visibility.unlisted')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Visibility - uploads are always created private, so the choice is
+              only offered for YouTube links. */}
+          {source === 'youtube' && (
+            <div className="space-y-2">
+              <Label htmlFor="visibility">
+                {t('newFigure.visibility')} {t('newFigure.required')}
+              </Label>
+              <Select
+                value={formData.visibility}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    visibility: value as Visibility,
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('newFigure.visibilityPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="public">{t('badges.visibility.public')}</SelectItem>
+                  <SelectItem value="private">{t('badges.visibility.private')}</SelectItem>
+                  <SelectItem value="unlisted">{t('badges.visibility.unlisted')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {submitError && <p className="text-sm text-destructive">{submitError}</p>}
 
           {/* Actions */}
           <div className="flex gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="flex-1"
+              disabled={isSubmitting}
+            >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" className="flex-1">
-              {t('newFigure.addButton')}
+            <Button type="submit" className="flex-1" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting ? t('newFigure.upload.sending') : t('newFigure.addButton')}
             </Button>
           </div>
         </form>

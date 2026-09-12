@@ -228,6 +228,23 @@
       "title": "À propos",
       "version": "V{{version}}",
       "developed": "Développé avec ❤️ par"
+    },
+    "myVideos": {
+      "title": "Mes vidéos",
+      "empty": "Vous n'avez encore importé aucune vidéo.",
+      "count_one": "{{count}} vidéo",
+      "count_other": "{{count}} vidéos",
+      "statusPrivate": "Privée",
+      "statusPending": "En cours de validation",
+      "statusApproved": "Dans le catalogue",
+      "statusRejected": "Non retenue",
+      "submit": "Proposer au catalogue",
+      "submitted": "Proposée",
+      "delete": "Supprimer",
+      "deleteConfirm": {
+        "title": "Supprimer cette vidéo ?",
+        "message": "La vidéo et sa figure seront définitivement supprimées. Cette action est irréversible."
+      }
     }
   },
   "figure": {
@@ -252,7 +269,8 @@
       "title": "Maîtrise du mouvement",
       "enter": "Entrer mon niveau de maîtrise",
       "updateTitle": "Niveau de maîtrise"
-    }
+    },
+    "linkCopied": "Lien copié dans le presse-papiers"
   },
   "badges": {
     "danceStyle": {
@@ -378,6 +396,31 @@
       "figureTypeRequired": "Le type de mouvement est requis",
       "complexityRequired": "La complexité est requise",
       "phrasesCountMin": "Le nombre de phrases doit être au moins 1"
+    },
+    "sourceYoutube": "Lien YouTube",
+    "sourceUpload": "Importer une vidéo",
+    "upload": {
+      "pickFile": "Choisir une vidéo",
+      "changeFile": "Choisir une autre vidéo",
+      "hint": "5 minutes maximum. La vidéo est convertie en 720p sur votre appareil avant l'envoi, pour que l'upload reste léger.",
+      "privacyNotice": "Votre vidéo reste privée. Toute personne à qui vous donnez le lien pourra la regarder.",
+      "analyzing": "Analyse de la vidéo…",
+      "compressing": "Conversion… {{percent}} %",
+      "compressingHint": "Gardez cet onglet ouvert.",
+      "uploading": "Envoi… {{percent}} %",
+      "ready": "Vidéo prête ({{size}})",
+      "cancel": "Annuler",
+      "errors": {
+        "unsupportedBrowser": "Votre navigateur ne sait pas convertir de vidéos. Essayez Chrome, Edge ou Safari 16.4 ou plus récent.",
+        "unreadableFile": "Ce fichier n'a pas pu être lu. Essayez une autre vidéo.",
+        "noVideoTrack": "Ce fichier ne contient aucune piste vidéo.",
+        "tooLong": "La vidéo est trop longue. La limite est de 5 minutes.",
+        "encodeFailed": "La conversion a échoué. Essayez une autre vidéo.",
+        "uploadFailed": "L'envoi a échoué. Vérifiez votre connexion et réessayez.",
+        "videoRequired": "Une vidéo est requise",
+        "offline": "Vous devez être en ligne pour envoyer une vidéo."
+      },
+      "sending": "Envoi…"
     }
   },
   "pwa": {

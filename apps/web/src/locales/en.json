@@ -228,6 +228,23 @@
       "title": "About",
       "version": "V{{version}}",
       "developed": "Developed with ❤️ by"
+    },
+    "myVideos": {
+      "title": "My videos",
+      "empty": "You haven't uploaded any video yet.",
+      "count_one": "{{count}} video",
+      "count_other": "{{count}} videos",
+      "statusPrivate": "Private",
+      "statusPending": "Under review",
+      "statusApproved": "In the catalogue",
+      "statusRejected": "Not accepted",
+      "submit": "Submit to the catalogue",
+      "submitted": "Submitted",
+      "delete": "Delete",
+      "deleteConfirm": {
+        "title": "Delete this video?",
+        "message": "The video and its figure will be permanently deleted. This cannot be undone."
+      }
     }
   },
   "figure": {
@@ -379,6 +396,31 @@
       "figureTypeRequired": "Movement type is required",
       "complexityRequired": "Complexity is required",
       "phrasesCountMin": "Phrases count must be at least 1"
+    },
+    "sourceYoutube": "YouTube link",
+    "sourceUpload": "Upload a video",
+    "upload": {
+      "pickFile": "Choose a video",
+      "changeFile": "Choose another video",
+      "hint": "5 minutes max. The video is converted to 720p on your device before being sent, so the upload stays light.",
+      "privacyNotice": "Your video stays private. Anyone you give the link to will be able to watch it.",
+      "analyzing": "Analysing the video…",
+      "compressing": "Converting… {{percent}}%",
+      "compressingHint": "Keep this tab open.",
+      "uploading": "Uploading… {{percent}}%",
+      "ready": "Video ready ({{size}})",
+      "cancel": "Cancel",
+      "errors": {
+        "unsupportedBrowser": "Your browser cannot convert videos. Try Chrome, Edge, or Safari 16.4 or later.",
+        "unreadableFile": "This file could not be read. Try another video.",
+        "noVideoTrack": "This file contains no video track.",
+        "tooLong": "Video is too long. The limit is 5 minutes.",
+        "encodeFailed": "Conversion failed. Try another video.",
+        "uploadFailed": "Upload failed. Check your connection and try again.",
+        "videoRequired": "A video is required",
+        "offline": "You need to be online to upload a video."
+      },
+      "sending": "Sending…"
     }
   },
   "pwa": {

@@ -228,6 +228,23 @@
       "title": "Acerca de",
       "version": "V{{version}}",
       "developed": "Desarrollado con ❤️ por"
+    },
+    "myVideos": {
+      "title": "Mis vídeos",
+      "empty": "Todavía no has subido ningún vídeo.",
+      "count_one": "{{count}} vídeo",
+      "count_other": "{{count}} vídeos",
+      "statusPrivate": "Privado",
+      "statusPending": "En revisión",
+      "statusApproved": "En el catálogo",
+      "statusRejected": "No aceptado",
+      "submit": "Proponer al catálogo",
+      "submitted": "Propuesto",
+      "delete": "Eliminar",
+      "deleteConfirm": {
+        "title": "¿Eliminar este vídeo?",
+        "message": "El vídeo y su figura se eliminarán permanentemente. Esta acción no se puede deshacer."
+      }
     }
   },
   "figure": {
@@ -379,6 +396,31 @@
       "figureTypeRequired": "El tipo de movimiento es requerido",
       "complexityRequired": "La complejidad es requerida",
       "phrasesCountMin": "El número de frases debe ser al menos 1"
+    },
+    "sourceYoutube": "Enlace de YouTube",
+    "sourceUpload": "Subir un vídeo",
+    "upload": {
+      "pickFile": "Elegir un vídeo",
+      "changeFile": "Elegir otro vídeo",
+      "hint": "5 minutos como máximo. El vídeo se convierte a 720p en tu dispositivo antes de enviarlo, para que la subida sea ligera.",
+      "privacyNotice": "Tu vídeo sigue siendo privado. Cualquier persona a la que des el enlace podrá verlo.",
+      "analyzing": "Analizando el vídeo…",
+      "compressing": "Convirtiendo… {{percent}} %",
+      "compressingHint": "Mantén esta pestaña abierta.",
+      "uploading": "Subiendo… {{percent}} %",
+      "ready": "Vídeo listo ({{size}})",
+      "cancel": "Cancelar",
+      "errors": {
+        "unsupportedBrowser": "Tu navegador no puede convertir vídeos. Prueba Chrome, Edge o Safari 16.4 o posterior.",
+        "unreadableFile": "No se ha podido leer este archivo. Prueba con otro vídeo.",
+        "noVideoTrack": "Este archivo no contiene ninguna pista de vídeo.",
+        "tooLong": "El vídeo es demasiado largo. El límite es de 5 minutos.",
+        "encodeFailed": "La conversión ha fallado. Prueba con otro vídeo.",
+        "uploadFailed": "La subida ha fallado. Comprueba tu conexión e inténtalo de nuevo.",
+        "videoRequired": "Se requiere un vídeo",
+        "offline": "Necesitas estar en línea para subir un vídeo."
+      },
+      "sending": "Enviando…"
     }
   },
   "pwa": {

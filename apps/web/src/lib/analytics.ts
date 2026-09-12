@@ -18,6 +18,16 @@ export const AnalyticsEvents = {
   SEARCH_PERFORMED: 'search_performed',
   FILTER_APPLIED: 'filter_applied',
   CHOREOGRAPHY_CREATED: 'choreography_created',
+  FIGURE_CREATED: 'figure_created',
+
+  // Video upload funnel. `drop_console: true` strips console.error in
+  // production, so these are the only visibility into upload failures.
+  VIDEO_UPLOAD_STARTED: 'video_upload_started',
+  VIDEO_COMPRESSION_COMPLETED: 'video_compression_completed',
+  VIDEO_UPLOAD_COMPLETED: 'video_upload_completed',
+  VIDEO_UPLOAD_FAILED: 'video_upload_failed',
+  FIGURE_SUBMITTED_FOR_REVIEW: 'figure_submitted_for_review',
+  FIGURE_DELETED: 'figure_deleted',
 
   // Auth events
   USER_SIGNED_IN: 'user_signed_in',

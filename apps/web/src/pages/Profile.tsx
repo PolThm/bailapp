@@ -3,6 +3,7 @@ import { LogIn, Globe, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AuthModal } from '@/components/AuthModal';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { MyVideosCard } from '@/components/MyVideosCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
@@ -58,6 +59,8 @@ export function Profile() {
                 </CardContent>
               </Card>
             )}
+
+            {user && <MyVideosCard />}
 
             {/* Language Preferences */}
             <Card>

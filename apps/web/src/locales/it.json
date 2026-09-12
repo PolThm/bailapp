@@ -228,6 +228,23 @@
       "title": "Informazioni",
       "version": "V{{version}}",
       "developed": "Sviluppata con ❤️ da"
+    },
+    "myVideos": {
+      "title": "I miei video",
+      "empty": "Non hai ancora caricato alcun video.",
+      "count_one": "{{count}} video",
+      "count_other": "{{count}} video",
+      "statusPrivate": "Privato",
+      "statusPending": "In revisione",
+      "statusApproved": "Nel catalogo",
+      "statusRejected": "Non accettato",
+      "submit": "Proponi al catalogo",
+      "submitted": "Proposto",
+      "delete": "Elimina",
+      "deleteConfirm": {
+        "title": "Eliminare questo video?",
+        "message": "Il video e la sua figura saranno eliminati definitivamente. L'azione è irreversibile."
+      }
     }
   },
   "figure": {
@@ -379,6 +396,31 @@
       "figureTypeRequired": "Il tipo di movimento è obbligatorio",
       "complexityRequired": "La complessità è obbligatoria",
       "phrasesCountMin": "Il numero di frasi deve essere almeno 1"
+    },
+    "sourceYoutube": "Link YouTube",
+    "sourceUpload": "Carica un video",
+    "upload": {
+      "pickFile": "Scegli un video",
+      "changeFile": "Scegli un altro video",
+      "hint": "5 minuti al massimo. Il video viene convertito in 720p sul tuo dispositivo prima dell'invio, così il caricamento resta leggero.",
+      "privacyNotice": "Il tuo video resta privato. Chiunque riceva il link potrà guardarlo.",
+      "analyzing": "Analisi del video…",
+      "compressing": "Conversione… {{percent}} %",
+      "compressingHint": "Tieni aperta questa scheda.",
+      "uploading": "Caricamento… {{percent}} %",
+      "ready": "Video pronto ({{size}})",
+      "cancel": "Annulla",
+      "errors": {
+        "unsupportedBrowser": "Il tuo browser non è in grado di convertire video. Prova Chrome, Edge o Safari 16.4 o successivo.",
+        "unreadableFile": "Non è stato possibile leggere questo file. Prova con un altro video.",
+        "noVideoTrack": "Questo file non contiene alcuna traccia video.",
+        "tooLong": "Il video è troppo lungo. Il limite è di 5 minuti.",
+        "encodeFailed": "Conversione non riuscita. Prova con un altro video.",
+        "uploadFailed": "Caricamento non riuscito. Controlla la connessione e riprova.",
+        "videoRequired": "È richiesto un video",
+        "offline": "Devi essere online per caricare un video."
+      },
+      "sending": "Invio…"
     }
   },
   "pwa": {

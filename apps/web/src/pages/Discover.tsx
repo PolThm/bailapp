@@ -1,10 +1,10 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Plus } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 import { useTranslation } from 'react-i18next';
 import type { Figure } from '@/types';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { AuthModal } from '@/components/AuthModal';
-import { ComingSoonModal } from '@/components/ComingSoonModal';
 import { EmptyState } from '@/components/EmptyState';
 import { FigureCard } from '@/components/FigureCard';
 import { Loader } from '@/components/Loader';
@@ -17,6 +17,12 @@ import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useFigures } from '@/hooks/useFigures';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
+import { createFigureInFirestore } from '@/lib/services/figureService';
+import {
+  deleteFigureVideoFromStorage,
+  uploadFigureVideoToStorage,
+} from '@/lib/services/figureUploadService';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import { isEmpty } from '@/lib/utils';
 
@@ -34,9 +40,9 @@ export function Discover() {
   const { t } = useTranslation();
   const { figures, shorts, addFigure } = useFigures();
   const { user } = useAuth();
+  const posthog = usePostHog();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
-  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(
     getStorageKey(StorageKey.DISCOVER_SHOW_IMAGES),
@@ -327,19 +333,102 @@ export function Discover() {
     if (!user) {
       setShowAuthModal(true);
     } else {
-      setShowComingSoonModal(true);
+      setShowNewFigureModal(true);
     }
   };
 
-  const handleSubmitFigure = (data: NewFigureFormData) => {
-    const newFigure: Figure = {
-      id: `figure-${Date.now()}`,
-      ...data,
-      importedBy: user?.displayName || 'User',
+  const handleSubmitFigure = async (data: NewFigureFormData) => {
+    if (!user) return;
+
+    const figureId = `user_${user.uid}_${Date.now()}`;
+    const baseFigure: Figure = {
+      id: figureId,
+      shortTitle: data.shortTitle,
+      fullTitle: data.fullTitle,
+      description: data.description,
+      videoAuthor: data.videoAuthor,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      danceStyle: data.danceStyle,
+      danceSubStyle: data.danceSubStyle,
+      figureType: data.figureType,
+      complexity: data.complexity,
+      phrasesCount: data.phrasesCount,
+      videoLanguage: data.videoLanguage,
+      visibility: data.visibility,
+      importedBy: user.displayName || 'User',
       createdAt: new Date().toISOString(),
+      ownerId: user.uid,
+      videoSource: data.videoSource,
+      moderationStatus: 'none',
     };
-    addFigure(newFigure);
-    setShowNewFigureModal(false);
+
+    if (data.videoSource === 'youtube') {
+      const figure: Figure = { ...baseFigure, youtubeUrl: data.youtubeUrl };
+      await createFigureInFirestore(figure);
+      addFigure(figure);
+      trackEvent(posthog, AnalyticsEvents.FIGURE_CREATED, { videoSource: 'youtube' });
+      return;
+    }
+
+    const draft = data.uploadedVideo;
+    if (!draft) {
+      throw new Error('Upload submitted without a converted video');
+    }
+
+    trackEvent(posthog, AnalyticsEvents.VIDEO_UPLOAD_STARTED, {
+      sizeBytes: draft.blob.size,
+      durationSeconds: Math.round(draft.durationSeconds),
+      videoFormat: draft.videoFormat,
+    });
+
+    let uploaded;
+    try {
+      uploaded = await uploadFigureVideoToStorage(
+        user.uid,
+        figureId,
+        draft.blob,
+        draft.thumbnailBlob
+      );
+    } catch (error) {
+      trackEvent(posthog, AnalyticsEvents.VIDEO_UPLOAD_FAILED, {
+        stage: 'storage',
+        message: error instanceof Error ? error.message : 'unknown',
+      });
+      throw error;
+    }
+
+    const figure: Figure = {
+      ...baseFigure,
+      // Uploads always start private, matching the security rules.
+      visibility: 'private',
+      videoUrl: uploaded.videoUrl,
+      thumbnailUrl: uploaded.thumbnailUrl,
+      storagePath: uploaded.storagePath,
+      videoFormat: draft.videoFormat,
+      durationSeconds: Math.round(draft.durationSeconds),
+      processingStatus: 'ready',
+    };
+
+    try {
+      await createFigureInFirestore(figure);
+    } catch (error) {
+      // Otherwise the bytes sit in Storage forever with nothing pointing at
+      // them, and nothing to delete them by.
+      await deleteFigureVideoFromStorage(uploaded.storagePath).catch(() => undefined);
+      trackEvent(posthog, AnalyticsEvents.VIDEO_UPLOAD_FAILED, {
+        stage: 'firestore',
+        message: error instanceof Error ? error.message : 'unknown',
+      });
+      throw error;
+    }
+
+    addFigure(figure);
+    trackEvent(posthog, AnalyticsEvents.VIDEO_UPLOAD_COMPLETED, {
+      sizeBytes: draft.blob.size,
+      durationSeconds: Math.round(draft.durationSeconds),
+    });
+    trackEvent(posthog, AnalyticsEvents.FIGURE_CREATED, { videoSource: 'upload' });
   };
 
   return (
@@ -499,9 +588,6 @@ export function Discover() {
 
       {/* Auth Dialog */}
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
-
-      {/* Coming Soon Modal */}
-      <ComingSoonModal open={showComingSoonModal} onClose={() => setShowComingSoonModal(false)} />
 
       {/* New Figure Modal */}
       <NewFigureModal
