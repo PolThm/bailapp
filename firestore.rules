@@ -75,6 +75,33 @@ service cloud.firestore {
       // Users can delete their own favorites
       allow delete: if isOwner(userId);
     }
+
+    // User-contributed figures (one document per figure, unlike the
+    // one-doc-per-user shape used by choreographies/favorites, because the
+    // catalogue must be queryable across users).
+    match /figures/{figureId} {
+      // NOTE: because this rule inspects resource.data.visibility, any client
+      // query MUST be constrained by where('visibility','==','public').
+      // A user's own private figures need a separate ownerId-constrained query.
+      allow read: if resource.data.visibility == 'public'
+        || (isAuthenticated() && request.auth.uid == resource.data.ownerId);
+
+      // Figures are always created private and unmoderated.
+      allow create: if isAuthenticated()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.visibility == 'private'
+        && request.resource.data.moderationStatus in ['none', 'pending'];
+
+      // The owner may edit metadata and submit for review, but may never
+      // change ownership or promote the figure themselves. Only moderation
+      // (Firebase console / custom claim) flips visibility to 'public'.
+      allow update: if isOwner(resource.data.ownerId)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.visibility == resource.data.visibility;
+
+      allow delete: if isOwner(resource.data.ownerId);
+    }
+
   }
 }
 

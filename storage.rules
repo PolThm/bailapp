@@ -1,0 +1,32 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // User-uploaded figure videos and their generated thumbnails.
+    // Layout: userVideos/{userId}/{figureId}/video.mp4
+    //         userVideos/{userId}/{figureId}/thumbnail.jpg
+    match /userVideos/{userId}/{figureId}/{fileName} {
+
+      // Path-based reads are owner-only. Playback for other users goes through
+      // the download URL returned by getDownloadURL(), which carries its own
+      // unguessable token and bypasses these rules by design.
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        // Keep in sync with MAX_VIDEO_FILE_SIZE_BYTES in @/lib/video/constants
+        && request.resource.size < 150 * 1024 * 1024
+        && (
+          request.resource.contentType == 'video/mp4'
+          || request.resource.contentType == 'image/jpeg'
+        );
+
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Everything else is closed.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

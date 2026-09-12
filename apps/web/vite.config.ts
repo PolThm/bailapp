@@ -90,12 +90,18 @@ export default defineConfig(() => {
           // Mobile-optimized caching strategy
           runtimeCaching: [
             {
-              urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
+              // Images only (figure thumbnails). User-uploaded videos are
+              // deliberately NOT runtime-cached: at ~70 MB each a CacheFirst
+              // entry list would consume GBs of origin storage quota, and the
+              // browser's native HTTP cache already handles video range
+              // requests correctly.
+              urlPattern:
+                /^https:\/\/firebasestorage\.googleapis\.com\/.*\.(?:jpg|jpeg|png|webp|svg)/i,
               handler: 'CacheFirst',
               options: {
-                cacheName: 'firebase-storage-cache',
+                cacheName: 'firebase-storage-image-cache',
                 expiration: {
-                  maxEntries: 50,
+                  maxEntries: 60,
                   maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
                 },
                 cacheableResponse: {
@@ -152,7 +158,12 @@ export default defineConfig(() => {
           manualChunks: {
             // Split vendor chunks for better caching on mobile
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+            'firebase-vendor': [
+              'firebase/app',
+              'firebase/auth',
+              'firebase/firestore',
+              'firebase/storage',
+            ],
             'ui-vendor': ['lucide-react', 'clsx', 'tailwind-merge'],
           },
         },
