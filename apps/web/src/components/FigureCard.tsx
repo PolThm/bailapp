@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { useNetworkQuality } from '@/hooks/useNetworkQuality';
-import { getYouTubeVideoId, getYouTubeThumbnail, getYouTubePreviewUrl } from '@/utils/youtube';
+import { getFigurePreviewTarget, getFigureThumbnail } from '@/utils/figureVideo';
 
 interface FigureCardProps {
   figure: Figure;
@@ -32,11 +32,11 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
   const showPreviewRef = useRef(false);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const readyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const videoId = getYouTubeVideoId(figure.youtubeUrl);
-  const thumbnail = videoId ? getYouTubeThumbnail(videoId, 'medium') : '/placeholder-video.jpg';
-  const previewUrl = videoId
-    ? getYouTubePreviewUrl(videoId, figure.startTime, figure.endTime, figure.previewStartTime)
-    : null;
+  const thumbnail = getFigureThumbnail(figure, 'medium');
+  const previewTarget = getFigurePreviewTarget(figure);
+  // Kept as a plain string: effects below depend on it, and an object would
+  // change identity on every render and re-run them in a loop.
+  const previewUrl = previewTarget?.url ?? null;
 
   const isFav = isFavorite(figure.id);
 
@@ -226,6 +226,87 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
     };
   }, [previewUrl, isDesktop]);
 
+  // Shared by both preview renderers. An iframe only reports that it loaded,
+  // not that it is painting, so YouTube needs a reveal delay to avoid flashing
+  // a black rectangle. A <video> firing `playing` is already showing frames,
+  // so it passes skipRevealDelay.
+  const handlePreviewLoaded = (skipRevealDelay = false) => {
+    previewLoadedRef.current = true;
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+    if (readyTimeoutRef.current) {
+      clearTimeout(readyTimeoutRef.current);
+      readyTimeoutRef.current = null;
+    }
+
+    // On desktop, show faster for better UX on hover
+    if (isDesktop) {
+      setPreviewReady(true);
+      return;
+    }
+
+    // For mobile, adjust delay based on connection quality
+    const delay = (() => {
+      switch (networkQuality.slowLevel) {
+        case 'slight':
+          return 2000; // 2 seconds for slightly slow connections
+        case 'moderate':
+          return 4000; // 4 seconds for moderately slow connections
+        case 'very':
+          // Don't show preview for very slow connections
+          return null;
+        default:
+          // Good connection, wait for YouTube to fully initialize
+          return 800;
+      }
+    })();
+
+    if (delay === null) {
+      // Very slow connection - don't show preview, keep thumbnail
+      setShowPreview(false);
+      showPreviewRef.current = false;
+      setPreviewReady(false);
+      return;
+    }
+
+    if (skipRevealDelay) {
+      setPreviewReady(true);
+      return;
+    }
+
+    readyTimeoutRef.current = setTimeout(() => {
+      setPreviewReady(true);
+    }, delay);
+  };
+
+  const handlePreviewError = () => {
+    // If the preview fails to load, keep showing the thumbnail
+    previewLoadedRef.current = false;
+    setShowPreview(false);
+    setPreviewReady(false);
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+    if (readyTimeoutRef.current) {
+      clearTimeout(readyTimeoutRef.current);
+      readyTimeoutRef.current = null;
+    }
+  };
+
+  // `loop` alone restarts at the top of the file, not at the excerpt, so the
+  // preview window is enforced by hand.
+  const handlePreviewTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (previewTarget?.kind !== 'video') return;
+    const element = e.currentTarget;
+    const { startSeconds, endSeconds } = previewTarget;
+    if (endSeconds !== null && element.currentTime >= endSeconds) {
+      element.currentTime = startSeconds ?? 0;
+    }
+  };
+
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -275,8 +356,8 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                 onError={() => setThumbnailError(true)}
               />
             )}
-            {/* Iframe - keep at normal size but hidden until ready */}
-            {showPreview && previewUrl && (
+            {/* Preview - keep at normal size but hidden until ready */}
+            {showPreview && previewTarget && (
               <div
                 className="absolute inset-0 h-full w-full overflow-hidden"
                 style={{
@@ -284,78 +365,45 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                   opacity: previewReady ? 1 : 0,
                 }}
               >
-                <iframe
-                  src={previewUrl}
-                  className="pointer-events-none h-full w-full"
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen={false}
-                  title={figure.shortTitle}
-                  style={{
-                    border: 'none',
-                    width: '100%',
-                    height: '100%',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                  }}
-                  onLoad={() => {
-                    previewLoadedRef.current = true;
-                    // Clear timeout when loaded successfully
-                    if (loadTimeoutRef.current) {
-                      clearTimeout(loadTimeoutRef.current);
-                      loadTimeoutRef.current = null;
-                    }
-                    // Wait before revealing the video to avoid black screen
-                    if (readyTimeoutRef.current) {
-                      clearTimeout(readyTimeoutRef.current);
-                    }
-                    if (isDesktop) {
-                      // On desktop, show faster for better UX on hover
-                      setPreviewReady(true);
-                    } else {
-                      // For mobile, adjust delay based on connection quality
-                      const delay = (() => {
-                        switch (networkQuality.slowLevel) {
-                          case 'slight':
-                            return 2000; // 2 seconds for slightly slow connections
-                          case 'moderate':
-                            return 4000; // 4 seconds for moderately slow connections
-                          case 'very':
-                            // Don't show preview for very slow connections
-                            return null;
-                          default:
-                            // Good connection, wait for YouTube to fully initialize
-                            return 800;
-                        }
-                      })();
-
-                      if (delay !== null) {
-                        readyTimeoutRef.current = setTimeout(() => {
-                          setPreviewReady(true);
-                        }, delay);
-                      } else {
-                        // Very slow connection - don't show preview, keep thumbnail
-                        setShowPreview(false);
-                        showPreviewRef.current = false;
-                        setPreviewReady(false);
-                      }
-                    }
-                  }}
-                  onError={() => {
-                    // If iframe fails to load, keep showing thumbnail
-                    previewLoadedRef.current = false;
-                    setShowPreview(false);
-                    setPreviewReady(false);
-                    if (loadTimeoutRef.current) {
-                      clearTimeout(loadTimeoutRef.current);
-                      loadTimeoutRef.current = null;
-                    }
-                    if (readyTimeoutRef.current) {
-                      clearTimeout(readyTimeoutRef.current);
-                      readyTimeoutRef.current = null;
-                    }
-                  }}
-                />
+                {previewTarget.kind === 'iframe' ? (
+                  <iframe
+                    src={previewTarget.url}
+                    className="pointer-events-none h-full w-full"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen={false}
+                    title={figure.shortTitle}
+                    style={{
+                      border: 'none',
+                      width: '100%',
+                      height: '100%',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                    }}
+                    onLoad={() => handlePreviewLoaded()}
+                    onError={handlePreviewError}
+                  />
+                ) : (
+                  <video
+                    src={previewTarget.url}
+                    className="pointer-events-none h-full w-full object-cover"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                    }}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    onPlaying={() => handlePreviewLoaded(true)}
+                    onTimeUpdate={handlePreviewTimeUpdate}
+                    onError={handlePreviewError}
+                  />
+                )}
               </div>
             )}
             {/* Duration badge if time range specified */}

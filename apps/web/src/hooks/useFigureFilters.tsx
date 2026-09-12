@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { AdvancedFilters } from '@/components/AdvancedFiltersModal';
 import type { DanceStyle, Figure } from '@/types';
-import { isYouTubeShort } from '@/utils/youtube';
+import { getFigureVideoFormat } from '@/utils/figureVideo';
 
 export function useFigureFilters(figures: Figure[]) {
   const [selectedStyle, setSelectedStyle] = useState<DanceStyle | 'all'>('all');
@@ -43,10 +43,9 @@ export function useFigureFilters(figures: Figure[]) {
     }
 
     if (advancedFilters.videoFormat) {
-      filtered = filtered.filter((figure) => {
-        const isShort = isYouTubeShort(figure.youtubeUrl);
-        return advancedFilters.videoFormat === 'short' ? isShort : !isShort;
-      });
+      filtered = filtered.filter(
+        (figure) => getFigureVideoFormat(figure) === advancedFilters.videoFormat
+      );
     }
 
     if (advancedFilters.danceSubStyle) {

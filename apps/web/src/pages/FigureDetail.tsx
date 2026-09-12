@@ -19,7 +19,8 @@ import { useFavorites } from '@/context/FavoritesContext';
 import { useFigures } from '@/hooks/useFigures';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { useOrientation } from '@/hooks/useOrientation';
-import { getYouTubeVideoId, getYouTubeEmbedUrl } from '@/utils/youtube';
+import { getFigurePlayerTarget } from '@/utils/figureVideo';
+import { parseTimeToSeconds } from '@/utils/timeParser';
 
 // YouTube IFrame Player API types
 interface YTPlayer {
@@ -87,6 +88,7 @@ export function FigureDetail() {
 
   // Initialize refs at the top level (before any conditional returns)
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerRef = useRef<YTPlayer | null>(null);
   const hasPassedEndTimeRef = useRef<boolean>(false);
   const descriptionRef = useRef<HTMLParagraphElement | null>(null);
@@ -198,22 +200,13 @@ export function FigureDetail() {
   useEffect(() => {
     if (!figure) return;
 
-    const videoId = getYouTubeVideoId(figure.youtubeUrl);
-    const endTimeSeconds = figure.endTime
-      ? (() => {
-          const parts = figure.endTime.split(':').map((p) => parseInt(p, 10));
-          if (parts.some(isNaN)) return null;
-          if (parts.length === 2) return parts[0] * 60 + parts[1];
-          if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-          return null;
-        })()
-      : null;
+    // Uploaded videos enforce their excerpt through onTimeUpdate on the
+    // element itself; only the YouTube iframe needs the Player API.
+    const target = getFigurePlayerTarget(figure);
+    if (target?.kind !== 'iframe') return;
 
-    const embedUrl = videoId
-      ? getYouTubeEmbedUrl(videoId, figure.startTime, undefined, true)
-      : null;
-
-    if (!videoId || !embedUrl || !endTimeSeconds) return;
+    const endTimeSeconds = figure.endTime ? parseTimeToSeconds(figure.endTime) : null;
+    if (!endTimeSeconds) return;
 
     // Reset ref when figure changes
     hasPassedEndTimeRef.current = false;
@@ -303,12 +296,23 @@ export function FigureDetail() {
     );
   }
 
-  const videoId = getYouTubeVideoId(figure.youtubeUrl);
-  // Create embed URL without end time to allow pausing instead of stopping
-  // Enable JS API to control the player
-  const embedUrl = videoId ? getYouTubeEmbedUrl(videoId, figure.startTime, undefined, true) : null;
+  // Embed URL carries no end time, so the player pauses instead of stopping.
+  const playerTarget = getFigurePlayerTarget(figure);
 
   const isFav = isFavorite(figure.id);
+
+  // Native equivalent of the IFrame API polling above: pause rather than stop
+  // at the excerpt's end, and re-arm if the viewer seeks back.
+  const handlePlayerTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (playerTarget?.kind !== 'video' || playerTarget.endSeconds === null) return;
+    const element = e.currentTarget;
+    if (element.currentTime >= playerTarget.endSeconds && !hasPassedEndTimeRef.current) {
+      hasPassedEndTimeRef.current = true;
+      element.pause();
+    } else if (element.currentTime < playerTarget.endSeconds) {
+      hasPassedEndTimeRef.current = false;
+    }
+  };
 
   const handleToggleFavorite = () => {
     if (!user) {
@@ -361,7 +365,7 @@ export function FigureDetail() {
         className={`mx-auto w-full max-w-4xl ${isLandscape ? 'fixed inset-0 z-[55] bg-black' : ''}`}
       >
         {/* Video Player */}
-        {embedUrl && (
+        {playerTarget && (
           <div
             className={`${
               isLandscape
@@ -369,16 +373,33 @@ export function FigureDetail() {
                 : 'mx-auto mb-6 aspect-video w-full rounded-lg bg-black sm:w-96 lg:w-full'
             }`}
           >
-            <iframe
-              ref={iframeRef}
-              id={`youtube-player-${videoId}`}
-              src={embedUrl}
-              title={figure.fullTitle}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className={`h-full w-full ${isLandscape ? '' : 'rounded-lg'}`}
-              style={{ border: 0, display: 'block' }}
-            />
+            {playerTarget.kind === 'iframe' ? (
+              <iframe
+                ref={iframeRef}
+                id={`youtube-player-${playerTarget.videoId}`}
+                src={playerTarget.url}
+                title={figure.fullTitle}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className={`h-full w-full ${isLandscape ? '' : 'rounded-lg'}`}
+                style={{ border: 0, display: 'block' }}
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                src={playerTarget.url}
+                poster={figure.thumbnailUrl}
+                title={figure.fullTitle}
+                controls
+                playsInline
+                preload="metadata"
+                // object-contain so a vertical upload letterboxes in the 16:9
+                // frame instead of being cropped.
+                className={`h-full w-full object-contain ${isLandscape ? '' : 'rounded-lg'}`}
+                style={{ display: 'block' }}
+                onTimeUpdate={handlePlayerTimeUpdate}
+              />
+            )}
           </div>
         )}
 

@@ -6,7 +6,7 @@ import { DanceStyleBadge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useNetworkQuality } from '@/hooks/useNetworkQuality';
-import { getYouTubeVideoId, getYouTubeThumbnail, getYouTubeShortPreviewUrl } from '@/utils/youtube';
+import { getFigurePreviewTarget, getFigureThumbnail } from '@/utils/figureVideo';
 
 interface ShortCardProps {
   figure: Figure;
@@ -24,11 +24,11 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
   const showPreviewRef = useRef(false);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const readyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const videoId = getYouTubeVideoId(figure.youtubeUrl);
-  const thumbnail = videoId ? getYouTubeThumbnail(videoId, 'high') : '/placeholder-video.jpg';
-  const previewUrl = videoId
-    ? getYouTubeShortPreviewUrl(videoId, figure.startTime, figure.endTime, figure.previewStartTime)
-    : null;
+  const thumbnail = getFigureThumbnail(figure, 'high');
+  const previewTarget = getFigurePreviewTarget(figure);
+  // Kept as a plain string: effects below depend on it, and an object would
+  // change identity on every render and re-run them in a loop.
+  const previewUrl = previewTarget?.url ?? null;
 
   const isFav = isFavorite(figure.id);
 
@@ -247,6 +247,81 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
     };
   }, [previewUrl, isDesktop]);
 
+  // Shared by both preview renderers. An iframe only reports that it loaded,
+  // not that it is painting, so YouTube needs a reveal delay to avoid flashing
+  // a black rectangle. A <video> firing `playing` is already showing frames,
+  // so it passes skipRevealDelay.
+  const handlePreviewLoaded = (skipRevealDelay = false) => {
+    previewLoadedRef.current = true;
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+    if (readyTimeoutRef.current) {
+      clearTimeout(readyTimeoutRef.current);
+      readyTimeoutRef.current = null;
+    }
+
+    if (isDesktop) {
+      setPreviewReady(true);
+      return;
+    }
+
+    const delay = (() => {
+      switch (networkQuality.slowLevel) {
+        case 'slight':
+          return 2000;
+        case 'moderate':
+          return 4000;
+        case 'very':
+          return null;
+        default:
+          return 800;
+      }
+    })();
+
+    if (delay === null) {
+      setShowPreview(false);
+      showPreviewRef.current = false;
+      setPreviewReady(false);
+      return;
+    }
+
+    if (skipRevealDelay) {
+      setPreviewReady(true);
+      return;
+    }
+
+    readyTimeoutRef.current = setTimeout(() => {
+      setPreviewReady(true);
+    }, delay);
+  };
+
+  const handlePreviewError = () => {
+    previewLoadedRef.current = false;
+    setShowPreview(false);
+    setPreviewReady(false);
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+    if (readyTimeoutRef.current) {
+      clearTimeout(readyTimeoutRef.current);
+      readyTimeoutRef.current = null;
+    }
+  };
+
+  // `loop` alone restarts at the top of the file, not at the excerpt, so the
+  // preview window is enforced by hand.
+  const handlePreviewTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (previewTarget?.kind !== 'video') return;
+    const element = e.currentTarget;
+    const { startSeconds, endSeconds } = previewTarget;
+    if (endSeconds !== null && element.currentTime >= endSeconds) {
+      element.currentTime = startSeconds ?? 0;
+    }
+  };
+
   return (
     <Link
       to={`/figure/${figure.id}`}
@@ -289,8 +364,8 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
               onError={() => setThumbnailError(true)}
             />
           )}
-          {/* Iframe - keep at normal size but hidden until ready */}
-          {showPreview && previewUrl && (
+          {/* Preview - keep at normal size but hidden until ready */}
+          {showPreview && previewTarget && (
             <div
               className="absolute inset-0 h-full w-full overflow-hidden"
               style={{
@@ -303,70 +378,45 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
                 transition: 'opacity 0.2s ease-in-out',
               }}
             >
-              <iframe
-                src={previewUrl}
-                className="pointer-events-none h-full w-full"
-                allow="autoplay; encrypted-media"
-                allowFullScreen={false}
-                title={figure.shortTitle}
-                style={{
-                  border: 'none',
-                  width: '100%',
-                  height: '100%',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                }}
-                onLoad={() => {
-                  previewLoadedRef.current = true;
-                  if (loadTimeoutRef.current) {
-                    clearTimeout(loadTimeoutRef.current);
-                    loadTimeoutRef.current = null;
-                  }
-                  if (readyTimeoutRef.current) {
-                    clearTimeout(readyTimeoutRef.current);
-                  }
-                  if (isDesktop) {
-                    setPreviewReady(true);
-                  } else {
-                    const delay = (() => {
-                      switch (networkQuality.slowLevel) {
-                        case 'slight':
-                          return 2000;
-                        case 'moderate':
-                          return 4000;
-                        case 'very':
-                          return null;
-                        default:
-                          return 800;
-                      }
-                    })();
-
-                    if (delay !== null) {
-                      readyTimeoutRef.current = setTimeout(() => {
-                        setPreviewReady(true);
-                      }, delay);
-                    } else {
-                      setShowPreview(false);
-                      showPreviewRef.current = false;
-                      setPreviewReady(false);
-                    }
-                  }
-                }}
-                onError={() => {
-                  previewLoadedRef.current = false;
-                  setShowPreview(false);
-                  setPreviewReady(false);
-                  if (loadTimeoutRef.current) {
-                    clearTimeout(loadTimeoutRef.current);
-                    loadTimeoutRef.current = null;
-                  }
-                  if (readyTimeoutRef.current) {
-                    clearTimeout(readyTimeoutRef.current);
-                    readyTimeoutRef.current = null;
-                  }
-                }}
-              />
+              {previewTarget.kind === 'iframe' ? (
+                <iframe
+                  src={previewTarget.url}
+                  className="pointer-events-none h-full w-full"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen={false}
+                  title={figure.shortTitle}
+                  style={{
+                    border: 'none',
+                    width: '100%',
+                    height: '100%',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                  }}
+                  onLoad={() => handlePreviewLoaded()}
+                  onError={handlePreviewError}
+                />
+              ) : (
+                <video
+                  src={previewTarget.url}
+                  className="pointer-events-none h-full w-full object-cover"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                  }}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  onPlaying={() => handlePreviewLoaded(true)}
+                  onTimeUpdate={handlePreviewTimeUpdate}
+                  onError={handlePreviewError}
+                />
+              )}
             </div>
           )}
           {/* Badge in absolute position - bottom left */}

@@ -13,6 +13,15 @@ export type VideoLanguage = 'french' | 'english' | 'spanish' | 'italian';
 
 export type VideoFormat = 'classic' | 'short';
 
+/** Where a figure's video actually lives. Absent means 'youtube' (the static catalogue). */
+export type VideoSource = 'youtube' | 'upload';
+
+/** Lifecycle of a user-uploaded video. */
+export type FigureProcessingStatus = 'uploading' | 'ready' | 'failed';
+
+/** Review state for a figure its owner submitted to the public catalogue. */
+export type ModerationStatus = 'none' | 'pending' | 'approved' | 'rejected';
+
 export type Visibility = 'public' | 'private' | 'unlisted';
 
 export type DanceSubStyle =
@@ -34,7 +43,12 @@ export type DanceSubStyle =
 
 export interface Figure {
   id: string;
-  youtubeUrl: string;
+  /**
+   * Present for YouTube-backed figures (the whole static catalogue).
+   * Optional since figures can now also be user uploads — read it through the
+   * helpers in `@/utils/figureVideo` rather than directly.
+   */
+  youtubeUrl?: string;
   shortTitle: string;
   fullTitle: string;
   description?: string;
@@ -52,6 +66,22 @@ export interface Figure {
   importedBy: string;
   createdAt: string;
   lastOpenedAt?: string;
+
+  // --- User-uploaded videos (Firebase Storage) ---------------------------
+  /** Defaults to 'youtube' when absent, so the static lists need no migration. */
+  videoSource?: VideoSource;
+  /** Storage download URL of the video itself. */
+  videoUrl?: string;
+  /** Storage download URL of the poster frame generated at upload time. */
+  thumbnailUrl?: string;
+  /** Storage path, kept so the objects can be deleted alongside the document. */
+  storagePath?: string;
+  /** Explicit format for uploads; YouTube figures still fall back to URL sniffing. */
+  videoFormat?: VideoFormat;
+  durationSeconds?: number;
+  ownerId?: string;
+  processingStatus?: FigureProcessingStatus;
+  moderationStatus?: ModerationStatus;
 }
 
 export type MentionType = 'choreography' | 'figure';
