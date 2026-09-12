@@ -18,7 +18,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
-    "type-check": "bun --cwd apps/web run type-check",
+    "type-check": "bun --cwd apps/web type-check",
     "prepare": "husky",
     "ngrok": "bun scripts/ngrok.ts"
   },
