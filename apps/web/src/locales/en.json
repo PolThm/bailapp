@@ -420,7 +420,8 @@
       "sending": "Sending…",
       "captureFrame": "Use this frame",
       "thumbnailAlt": "Chosen preview image",
-      "thumbnailHint": "Pause the video where you want, then use that frame as the preview image."
+      "thumbnailHint": "Pause the video on the frame you want, then capture it.",
+      "thumbnailLabel": "Preview image"
     },
     "created": "Figure added",
     "moreOptions": "More options",

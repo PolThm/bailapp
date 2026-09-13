@@ -420,7 +420,8 @@
       "sending": "Envoi…",
       "captureFrame": "Utiliser cette image",
       "thumbnailAlt": "Image d'aperçu choisie",
-      "thumbnailHint": "Mettez la vidéo en pause où vous voulez, puis utilisez cette image comme aperçu."
+      "thumbnailHint": "Mettez la vidéo en pause sur l'image voulue, puis capturez-la.",
+      "thumbnailLabel": "Image d'aperçu"
     },
     "created": "Figure ajoutée",
     "moreOptions": "Plus d'options",

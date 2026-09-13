@@ -420,7 +420,8 @@
       "sending": "Invio…",
       "captureFrame": "Usa questo fotogramma",
       "thumbnailAlt": "Immagine di anteprima scelta",
-      "thumbnailHint": "Metti in pausa il video dove vuoi, poi usa quel fotogramma come anteprima."
+      "thumbnailHint": "Metti in pausa il video sul fotogramma che vuoi, poi catturalo.",
+      "thumbnailLabel": "Immagine di anteprima"
     },
     "created": "Figura aggiunta",
     "moreOptions": "Altre opzioni",

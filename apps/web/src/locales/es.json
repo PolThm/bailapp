@@ -420,7 +420,8 @@
       "sending": "Enviando…",
       "captureFrame": "Usar este fotograma",
       "thumbnailAlt": "Imagen de vista previa elegida",
-      "thumbnailHint": "Pausa el vídeo donde quieras y usa ese fotograma como vista previa."
+      "thumbnailHint": "Pausa el vídeo en el fotograma que quieras y captúralo.",
+      "thumbnailLabel": "Imagen de vista previa"
     },
     "created": "Figura añadida",
     "moreOptions": "Más opciones",

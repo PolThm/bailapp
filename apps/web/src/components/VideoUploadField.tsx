@@ -186,24 +186,32 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
             preload="metadata"
           />
 
-          {/* Poster picker: pause anywhere, then grab that frame. */}
-          <div className="flex items-center gap-3 rounded-md border border-input p-2">
-            {thumbnailPreviewUrl ? (
-              <img
-                src={thumbnailPreviewUrl}
-                alt={t('newFigure.upload.thumbnailAlt')}
-                className="h-12 w-20 shrink-0 rounded object-cover"
-              />
-            ) : (
-              <div className="h-12 w-20 shrink-0 rounded bg-muted" />
-            )}
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted-foreground">{t('newFigure.upload.thumbnailHint')}</p>
+          {/* Poster picker. Thumbnail and hint share the first row; the button
+              takes its own, since a narrow modal cannot fit all three without
+              crushing the text to one word per line. */}
+          <div className="space-y-3 rounded-md border border-input p-3">
+            <p className="text-sm font-medium">{t('newFigure.upload.thumbnailLabel')}</p>
+
+            <div className="flex items-center gap-3">
+              {thumbnailPreviewUrl ? (
+                <img
+                  src={thumbnailPreviewUrl}
+                  alt={t('newFigure.upload.thumbnailAlt')}
+                  className="h-14 w-24 shrink-0 rounded bg-muted object-cover"
+                />
+              ) : (
+                <div className="h-14 w-24 shrink-0 rounded bg-muted" />
+              )}
+              <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">
+                {t('newFigure.upload.thumbnailHint')}
+              </p>
             </div>
+
             <Button
               type="button"
               variant="outline"
               size="sm"
+              className="w-full"
               onClick={handleCaptureFrame}
               disabled={disabled || isCapturingFrame}
             >
@@ -211,12 +219,13 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  <ImageDown className="mr-1 h-4 w-4" />
+                  <ImageDown className="mr-2 h-4 w-4" />
                   {t('newFigure.upload.captureFrame')}
                 </>
               )}
             </Button>
           </div>
+
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm text-muted-foreground">
               {t('newFigure.upload.ready', { size: formatBytes(value.blob.size) })}
