@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type {
+  Complexity,
   DanceStyle,
   DanceSubStyle,
   FigureType,
-  Complexity,
+  VideoFormat,
   VideoLanguage,
   VideoSource,
-  Visibility,
 } from '@/types';
 import { Button } from '@/components/ui/button';
+import { Collapsible } from '@/components/ui/collapsible';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,15 +25,21 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { VideoUploadField, type UploadedVideoDraft } from '@/components/VideoUploadField';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-import { getYouTubeVideoId, getYouTubeThumbnail } from '@/utils/youtube';
+import { fetchYouTubeMeta } from '@/lib/youtubeOembed';
+import { getYouTubeThumbnail, getYouTubeVideoId, isYouTubeShort } from '@/utils/youtube';
 
 interface NewFigureModalProps {
   open: boolean;
   onClose: () => void;
   /** May be async: the modal stays open, showing progress, until it settles. */
-  onSubmit?: (data: NewFigureFormData) => void | Promise<void>;
+  onSubmit?: (data: NewFigureFormData) => void | Promise<unknown>;
 }
 
+/**
+ * Only three fields are required: a video, a title, and a dance style.
+ * Everything else has a sensible default and lives behind a disclosure, so the
+ * form does not read as a wall of obligations.
+ */
 export interface NewFigureFormData {
   videoSource: VideoSource;
   /** Present when videoSource is 'youtube'. */
@@ -40,95 +47,183 @@ export interface NewFigureFormData {
   /** Present when videoSource is 'upload': converted, not yet sent to Storage. */
   uploadedVideo?: UploadedVideoDraft;
   shortTitle: string;
+  /** Falls back to shortTitle; for YouTube it is the real video title. */
   fullTitle: string;
+  videoFormat: VideoFormat;
+  danceStyle: DanceStyle;
   description?: string;
   videoAuthor?: string;
   startTime?: string;
   endTime?: string;
-  danceStyle: DanceStyle;
   danceSubStyle?: DanceSubStyle;
-  figureType: FigureType;
-  complexity: Complexity;
+  figureType?: FigureType;
+  complexity?: Complexity;
   phrasesCount?: number;
-  videoLanguage: VideoLanguage;
-  visibility: Visibility;
+  videoLanguage?: VideoLanguage;
 }
+
+type FormState = {
+  youtubeUrl: string;
+  shortTitle: string;
+  description: string;
+  videoAuthor: string;
+  startTime: string;
+  endTime: string;
+  danceStyle?: DanceStyle;
+  danceSubStyle?: DanceSubStyle;
+  figureType?: FigureType;
+  complexity?: Complexity;
+  phrasesCount: string;
+  videoLanguage?: VideoLanguage;
+  /** Undefined means "follow the video" (URL shape, or uploaded aspect ratio). */
+  videoFormat?: VideoFormat;
+};
+
+const EMPTY_FORM: FormState = {
+  youtubeUrl: '',
+  shortTitle: '',
+  description: '',
+  videoAuthor: '',
+  startTime: '',
+  endTime: '',
+  phrasesCount: '',
+};
 
 export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps) {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState<Partial<NewFigureFormData>>({
-    phrasesCount: 4,
-    videoLanguage: 'english',
-    visibility: 'public',
-  });
-  const [videoId, setVideoId] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [source, setSource] = useState<VideoSource>('youtube');
-  const [uploadedVideo, setUploadedVideo] = useState<UploadedVideoDraft | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const { isOffline } = useOfflineStatus();
 
-  // Auto-extract video ID when YouTube URL changes
+  const [source, setSource] = useState<VideoSource>('youtube');
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [uploadedVideo, setUploadedVideo] = useState<UploadedVideoDraft | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // The real YouTube title, kept apart so a user-shortened title does not lose it.
+  const [resolvedFullTitle, setResolvedFullTitle] = useState<string | null>(null);
+  const [isResolvingMeta, setIsResolvingMeta] = useState(false);
+  // Once the title field is touched, autofill must never overwrite it again.
+  const titleTouchedRef = useRef(false);
+
+  const videoId = source === 'youtube' ? getYouTubeVideoId(form.youtubeUrl) : null;
+
+  const update = (patch: Partial<FormState>) => setForm((prev) => ({ ...prev, ...patch }));
+
+  // Resolve the real title and channel from YouTube's oEmbed endpoint.
   useEffect(() => {
-    if (source !== 'youtube') {
-      setVideoId(null);
+    if (source !== 'youtube' || !videoId) {
+      setResolvedFullTitle(null);
       return;
     }
-    if (formData.youtubeUrl) {
-      const id = getYouTubeVideoId(formData.youtubeUrl);
-      setVideoId(id);
-      // Auto-generate title from video ID (in real app, would fetch from YouTube API)
-      if (id && !formData.shortTitle) {
-        setFormData((prev) => ({
+
+    const controller = new AbortController();
+    setIsResolvingMeta(true);
+
+    fetchYouTubeMeta(form.youtubeUrl, controller.signal)
+      .then((meta) => {
+        if (controller.signal.aborted) return;
+        if (!meta) {
+          setResolvedFullTitle(null);
+          return;
+        }
+        setResolvedFullTitle(meta.title);
+        setForm((prev) => ({
           ...prev,
-          shortTitle: `Video ${id}`,
-          fullTitle: `Video ${id} - Full Title`,
+          // Never clobber what the user typed.
+          shortTitle: titleTouchedRef.current ? prev.shortTitle : meta.title,
+          videoAuthor: prev.videoAuthor || meta.authorName,
         }));
-      }
-    } else {
-      setVideoId(null);
-    }
-  }, [formData.youtubeUrl, formData.shortTitle, source]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsResolvingMeta(false);
+      });
+
+    return () => controller.abort();
+    // form.youtubeUrl is intentionally read through videoId: re-resolving on
+    // every keystroke of the same video would spam the endpoint.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source, videoId]);
+
+  const resetAll = () => {
+    if (uploadedVideo) URL.revokeObjectURL(uploadedVideo.localPreviewUrl);
+    setForm(EMPTY_FORM);
+    setSource('youtube');
+    setUploadedVideo(null);
+    setErrors({});
+    setSubmitError(null);
+    setResolvedFullTitle(null);
+    titleTouchedRef.current = false;
+  };
+
+  const handleClose = () => {
+    if (isSubmitting) return;
+    resetAll();
+    onClose();
+  };
+
+  const switchSource = (next: VideoSource) => {
+    setSource(next);
+    setErrors({});
+    setSubmitError(null);
+    titleTouchedRef.current = false;
+    setResolvedFullTitle(null);
+  };
+
+  /** Format follows the video unless the user overrode it. */
+  const effectiveFormat = (): VideoFormat => {
+    if (form.videoFormat) return form.videoFormat;
+    if (source === 'upload') return uploadedVideo?.videoFormat ?? 'classic';
+    return isYouTubeShort(form.youtubeUrl) ? 'short' : 'classic';
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    // Validation
-    const newErrors: Record<string, string> = {};
+    const nextErrors: Record<string, string> = {};
     if (source === 'youtube') {
-      if (!formData.youtubeUrl) newErrors.youtubeUrl = t('newFigure.errors.youtubeUrlRequired');
+      if (!form.youtubeUrl.trim()) {
+        nextErrors.youtubeUrl = t('newFigure.errors.youtubeUrlRequired');
+      } else if (!videoId) {
+        nextErrors.youtubeUrl = t('newFigure.errors.youtubeUrlInvalid');
+      }
     } else if (!uploadedVideo) {
-      newErrors.uploadedVideo = t('newFigure.upload.errors.videoRequired');
+      nextErrors.uploadedVideo = t('newFigure.upload.errors.videoRequired');
     }
-    if (!formData.shortTitle) newErrors.shortTitle = t('newFigure.errors.titleRequired');
-    if (!formData.fullTitle) newErrors.fullTitle = t('newFigure.errors.titleRequired');
-    if (!formData.danceStyle) newErrors.danceStyle = t('newFigure.errors.danceStyleRequired');
-    if (!formData.figureType) newErrors.figureType = t('newFigure.errors.figureTypeRequired');
-    if (!formData.complexity) newErrors.complexity = t('newFigure.errors.complexityRequired');
-    if (!formData.phrasesCount || formData.phrasesCount < 1) {
-      newErrors.phrasesCount = t('newFigure.errors.phrasesCountMin');
-    }
+    if (!form.shortTitle.trim()) nextErrors.shortTitle = t('newFigure.errors.titleRequired');
+    if (!form.danceStyle) nextErrors.danceStyle = t('newFigure.errors.danceStyleRequired');
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
       return;
     }
 
-    // Bytes cannot be queued: the offline sync queue stores strings only.
     if (source === 'upload' && isOffline) {
       setSubmitError(t('newFigure.upload.errors.offline'));
       return;
     }
 
+    const title = form.shortTitle.trim();
+    const parsedPhrases = parseInt(form.phrasesCount, 10);
+
     const payload: NewFigureFormData = {
-      ...(formData as NewFigureFormData),
       videoSource: source,
-      // Uploads always start private; security rules enforce it too.
-      visibility: source === 'upload' ? 'private' : (formData.visibility ?? 'public'),
-      youtubeUrl: source === 'youtube' ? formData.youtubeUrl : undefined,
+      youtubeUrl: source === 'youtube' ? form.youtubeUrl.trim() : undefined,
       uploadedVideo: source === 'upload' ? (uploadedVideo ?? undefined) : undefined,
+      shortTitle: title,
+      fullTitle: resolvedFullTitle ?? title,
+      videoFormat: effectiveFormat(),
+      danceStyle: form.danceStyle as DanceStyle,
+      description: form.description.trim() || undefined,
+      videoAuthor: form.videoAuthor.trim() || undefined,
+      startTime: form.startTime.trim() || undefined,
+      endTime: form.endTime.trim() || undefined,
+      danceSubStyle: form.danceSubStyle,
+      figureType: form.figureType,
+      complexity: form.complexity,
+      phrasesCount: Number.isFinite(parsedPhrases) && parsedPhrases > 0 ? parsedPhrases : undefined,
+      videoLanguage: form.videoLanguage,
     };
 
     if (!onSubmit) {
@@ -140,29 +235,17 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
     setIsSubmitting(true);
     try {
       await onSubmit(payload);
-      handleClose();
+      resetAll();
+      onClose();
     } catch {
-      // The caller already reported the failure; keep the form open with its
-      // data so the user can retry without re-converting the video.
+      // Keep the form and the converted video so a retry costs nothing.
       setSubmitError(t('newFigure.upload.errors.uploadFailed'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleClose = () => {
-    if (isSubmitting) return;
-    if (uploadedVideo) {
-      URL.revokeObjectURL(uploadedVideo.localPreviewUrl);
-    }
-    setFormData({ phrasesCount: 4, videoLanguage: 'english', visibility: 'public' });
-    setVideoId(null);
-    setErrors({});
-    setSource('youtube');
-    setUploadedVideo(null);
-    setSubmitError(null);
-    onClose();
-  };
+  const format = effectiveFormat();
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -178,11 +261,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
               <button
                 key={option}
                 type="button"
-                onClick={() => {
-                  setSource(option);
-                  setErrors({});
-                  setSubmitError(null);
-                }}
+                onClick={() => switchSource(option)}
                 disabled={isSubmitting}
                 className={`rounded px-3 py-2 text-sm font-medium transition-colors ${
                   source === option
@@ -196,36 +275,27 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
           </div>
 
           {source === 'youtube' ? (
-            <>
-              {/* YouTube URL */}
-              <div className="space-y-2">
-                <Label htmlFor="youtubeUrl">
-                  {t('newFigure.youtubeUrl')} {t('newFigure.required')}
-                </Label>
-                <Input
-                  id="youtubeUrl"
-                  placeholder={t('newFigure.youtubeUrlPlaceholder')}
-                  value={formData.youtubeUrl || ''}
-                  onChange={(e) => setFormData({ ...formData, youtubeUrl: e.target.value })}
-                  className={errors.youtubeUrl ? 'border-destructive' : ''}
-                />
-                {errors.youtubeUrl && (
-                  <p className="text-sm text-destructive">{errors.youtubeUrl}</p>
-                )}
-              </div>
-
-              {/* Thumbnail Preview */}
+            <div className="space-y-2">
+              <Label htmlFor="youtubeUrl">
+                {t('newFigure.youtubeUrl')} {t('newFigure.required')}
+              </Label>
+              <Input
+                id="youtubeUrl"
+                placeholder={t('newFigure.youtubeUrlPlaceholder')}
+                value={form.youtubeUrl}
+                onChange={(e) => update({ youtubeUrl: e.target.value })}
+                className={errors.youtubeUrl ? 'border-destructive' : ''}
+              />
+              {errors.youtubeUrl && <p className="text-sm text-destructive">{errors.youtubeUrl}</p>}
               {videoId && (
-                <div className="space-y-2">
-                  <Label>{t('newFigure.thumbnail')}</Label>
-                  <img
-                    src={getYouTubeThumbnail(videoId)}
-                    alt="Video thumbnail"
-                    className="w-full rounded-md"
-                  />
-                </div>
+                <img
+                  src={getYouTubeThumbnail(videoId)}
+                  alt=""
+                  className="w-full rounded-md"
+                  loading="lazy"
+                />
               )}
-            </>
+            </div>
           ) : (
             <VideoUploadField
               value={uploadedVideo}
@@ -235,292 +305,239 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
             />
           )}
 
-          {/* Short Title */}
+          {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="shortTitle">
-              {t('newFigure.shortTitle')} {t('newFigure.required')}
+              {t('newFigure.figureTitle')} {t('newFigure.required')}
+              {isResolvingMeta && (
+                <Loader2 className="ml-2 inline h-3 w-3 animate-spin text-muted-foreground" />
+              )}
             </Label>
             <Input
               id="shortTitle"
-              placeholder={t('newFigure.shortTitlePlaceholder')}
-              value={formData.shortTitle || ''}
-              onChange={(e) => setFormData({ ...formData, shortTitle: e.target.value })}
+              placeholder={t('newFigure.titlePlaceholder')}
+              value={form.shortTitle}
+              onChange={(e) => {
+                titleTouchedRef.current = true;
+                update({ shortTitle: e.target.value });
+              }}
               className={errors.shortTitle ? 'border-destructive' : ''}
             />
             {errors.shortTitle && <p className="text-sm text-destructive">{errors.shortTitle}</p>}
           </div>
 
-          {/* Full Title */}
-          <div className="space-y-2">
-            <Label htmlFor="fullTitle">
-              {t('newFigure.fullTitle')} {t('newFigure.required')}
-            </Label>
-            <Input
-              id="fullTitle"
-              placeholder={t('newFigure.fullTitlePlaceholder')}
-              value={formData.fullTitle || ''}
-              onChange={(e) => setFormData({ ...formData, fullTitle: e.target.value })}
-              className={errors.fullTitle ? 'border-destructive' : ''}
-            />
-            {errors.fullTitle && <p className="text-sm text-destructive">{errors.fullTitle}</p>}
-          </div>
-
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">{t('newFigure.description')}</Label>
-            <Textarea
-              id="description"
-              placeholder={t('newFigure.descriptionPlaceholder')}
-              rows={3}
-              value={formData.description || ''}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            />
-          </div>
-
-          {/* Video Author */}
-          <div className="space-y-2">
-            <Label htmlFor="videoAuthor">{t('newFigure.videoAuthor')}</Label>
-            <Input
-              id="videoAuthor"
-              placeholder={t('newFigure.videoAuthorPlaceholder')}
-              value={formData.videoAuthor || ''}
-              onChange={(e) => setFormData({ ...formData, videoAuthor: e.target.value })}
-            />
-          </div>
-
-          {/* Time Range */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startTime">{t('newFigure.startTime')}</Label>
-              <Input
-                id="startTime"
-                placeholder={t('newFigure.timePlaceholder')}
-                value={formData.startTime || ''}
-                onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="endTime">{t('newFigure.endTime')}</Label>
-              <Input
-                id="endTime"
-                placeholder={t('newFigure.timePlaceholder')}
-                value={formData.endTime || ''}
-                onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-              />
-            </div>
-          </div>
-
-          {/* Dance Style */}
+          {/* Dance style */}
           <div className="space-y-2">
             <Label htmlFor="danceStyle">
               {t('newFigure.danceStyle')} {t('newFigure.required')}
             </Label>
-            <Select
-              value={formData.danceStyle}
-              onValueChange={(value) =>
-                setFormData({
-                  ...formData,
-                  danceStyle: value as DanceStyle,
-                  danceSubStyle: undefined,
-                })
-              }
-            >
-              <SelectTrigger className={errors.danceStyle ? 'border-destructive' : ''}>
-                <SelectValue placeholder={t('newFigure.danceStylePlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="salsa">{t('badges.danceStyle.salsa')}</SelectItem>
-                <SelectItem value="bachata">{t('badges.danceStyle.bachata')}</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-2 gap-2">
+              {(['salsa', 'bachata'] as const).map((style) => (
+                <button
+                  key={style}
+                  type="button"
+                  onClick={() => update({ danceStyle: style, danceSubStyle: undefined })}
+                  className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                    form.danceStyle === style
+                      ? 'border-primary bg-primary/10 text-foreground'
+                      : errors.danceStyle
+                        ? 'border-destructive text-muted-foreground'
+                        : 'border-input text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t(`badges.danceStyle.${style}`)}
+                </button>
+              ))}
+            </div>
             {errors.danceStyle && <p className="text-sm text-destructive">{errors.danceStyle}</p>}
           </div>
 
-          {/* Dance Sub-Style */}
-          {formData.danceStyle && (
-            <div className="space-y-2">
-              <Label htmlFor="danceSubStyle">{t('newFigure.danceSubStyle')}</Label>
-              <Select
-                value={formData.danceSubStyle}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, danceSubStyle: value as DanceSubStyle })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('newFigure.danceSubStylePlaceholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {formData.danceStyle === 'salsa' && (
-                    <>
-                      <SelectItem value="cuban">{t('badges.danceSubStyle.cuban')}</SelectItem>
-                      <SelectItem value="la-style">{t('badges.danceSubStyle.la-style')}</SelectItem>
-                      <SelectItem value="ny-style">{t('badges.danceSubStyle.ny-style')}</SelectItem>
-                      <SelectItem value="puerto-rican">
-                        {t('badges.danceSubStyle.puerto-rican')}
-                      </SelectItem>
-                      <SelectItem value="colombian">
-                        {t('badges.danceSubStyle.colombian')}
-                      </SelectItem>
-                      <SelectItem value="rueda-de-casino">
-                        {t('badges.danceSubStyle.ruedadecasino')}
-                      </SelectItem>
-                      <SelectItem value="romantica">
-                        {t('badges.danceSubStyle.romantica')}
-                      </SelectItem>
-                    </>
-                  )}
-                  {formData.danceStyle === 'bachata' && (
-                    <>
-                      <SelectItem value="dominican">
-                        {t('badges.danceSubStyle.dominican')}
-                      </SelectItem>
-                      <SelectItem value="modern">{t('badges.danceSubStyle.modern')}</SelectItem>
-                      <SelectItem value="sensual">{t('badges.danceSubStyle.sensual')}</SelectItem>
-                      <SelectItem value="urban">{t('badges.danceSubStyle.urban')}</SelectItem>
-                      <SelectItem value="fusion">{t('badges.danceSubStyle.fusion')}</SelectItem>
-                      <SelectItem value="ballroom">{t('badges.danceSubStyle.ballroom')}</SelectItem>
-                    </>
-                  )}
-                </SelectContent>
-              </Select>
+          {/* Format */}
+          <div className="space-y-2">
+            <Label>{t('newFigure.videoFormat')}</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {(['classic', 'short'] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() =>
+                    update({ videoFormat: form.videoFormat === option ? undefined : option })
+                  }
+                  className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                    format === option
+                      ? 'border-primary bg-primary/10 text-foreground'
+                      : 'border-input text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t(`badges.videoFormat.${option}`)}
+                </button>
+              ))}
             </div>
-          )}
-
-          {/* Figure Type */}
-          <div className="space-y-2">
-            <Label htmlFor="figureType">
-              {t('newFigure.figureType')} {t('newFigure.required')}
-            </Label>
-            <Select
-              value={formData.figureType}
-              onValueChange={(value) =>
-                setFormData({ ...formData, figureType: value as FigureType })
-              }
-            >
-              <SelectTrigger className={errors.figureType ? 'border-destructive' : ''}>
-                <SelectValue placeholder={t('newFigure.figureTypePlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="figure">{t('badges.figureType.figure')}</SelectItem>
-                <SelectItem value="basic-step">{t('badges.figureType.basicStep')}</SelectItem>
-                <SelectItem value="complex-step">{t('badges.figureType.complexStep')}</SelectItem>
-                <SelectItem value="mix">{t('badges.figureType.mix')}</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.figureType && <p className="text-sm text-destructive">{errors.figureType}</p>}
+            <p className="text-xs text-muted-foreground">{t('newFigure.videoFormatHint')}</p>
           </div>
 
-          {/* Complexity */}
-          <div className="space-y-2">
-            <Label htmlFor="complexity">
-              {t('newFigure.complexity')} {t('newFigure.required')}
-            </Label>
-            <Select
-              value={formData.complexity}
-              onValueChange={(value) =>
-                setFormData({ ...formData, complexity: value as Complexity })
-              }
-            >
-              <SelectTrigger className={errors.complexity ? 'border-destructive' : ''}>
-                <SelectValue placeholder={t('newFigure.complexityPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="basic">{t('badges.complexity.basic')}</SelectItem>
-                <SelectItem value="basic-intermediate">
-                  {t('badges.complexity.basicIntermediate')}
-                </SelectItem>
-                <SelectItem value="intermediate">{t('badges.complexity.intermediate')}</SelectItem>
-                <SelectItem value="intermediate-advanced">
-                  {t('badges.complexity.intermediateAdvanced')}
-                </SelectItem>
-                <SelectItem value="advanced">{t('badges.complexity.advanced')}</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.complexity && <p className="text-sm text-destructive">{errors.complexity}</p>}
-          </div>
+          {/* Everything below is optional */}
+          <Collapsible title={t('newFigure.moreOptions')} hint={t('newFigure.moreOptionsHint')}>
+            <div className="space-y-2">
+              <Label htmlFor="description">{t('newFigure.description')}</Label>
+              <Textarea
+                id="description"
+                placeholder={t('newFigure.descriptionPlaceholder')}
+                rows={3}
+                value={form.description}
+                onChange={(e) => update({ description: e.target.value })}
+              />
+            </div>
 
-          {/* Phrases Count */}
-          <div className="space-y-2">
-            <Label htmlFor="phrasesCount">
-              {t('newFigure.phrasesCount')} {t('newFigure.required')}
-            </Label>
-            <Input
-              id="phrasesCount"
-              type="number"
-              min="1"
-              placeholder={t('newFigure.phrasesCountPlaceholder')}
-              value={formData.phrasesCount || ''}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  phrasesCount: parseInt(e.target.value) || 0,
-                })
-              }
-              className={errors.phrasesCount ? 'border-destructive' : ''}
-            />
-            {errors.phrasesCount && (
-              <p className="text-sm text-destructive">{errors.phrasesCount}</p>
+            {form.danceStyle && (
+              <div className="space-y-2">
+                <Label>{t('newFigure.danceSubStyle')}</Label>
+                <Select
+                  value={form.danceSubStyle}
+                  onValueChange={(value) => update({ danceSubStyle: value as DanceSubStyle })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('newFigure.danceSubStylePlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(form.danceStyle === 'salsa'
+                      ? ([
+                          ['cuban', 'cuban'],
+                          ['la-style', 'la-style'],
+                          ['ny-style', 'ny-style'],
+                          ['puerto-rican', 'puerto-rican'],
+                          ['colombian', 'colombian'],
+                          ['rueda-de-casino', 'ruedadecasino'],
+                          ['romantica', 'romantica'],
+                        ] as const)
+                      : ([
+                          ['dominican', 'dominican'],
+                          ['modern', 'modern'],
+                          ['sensual', 'sensual'],
+                          ['urban', 'urban'],
+                          ['fusion', 'fusion'],
+                          ['ballroom', 'ballroom'],
+                        ] as const)
+                    ).map(([value, key]) => (
+                      <SelectItem key={value} value={value}>
+                        {t(`badges.danceSubStyle.${key}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             )}
-          </div>
 
-          {/* Video Language */}
-          <div className="space-y-2">
-            <Label htmlFor="videoLanguage">
-              {t('newFigure.videoLanguage')} {t('newFigure.required')}
-            </Label>
-            <Select
-              value={formData.videoLanguage}
-              onValueChange={(value) =>
-                setFormData({
-                  ...formData,
-                  videoLanguage: value as VideoLanguage,
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="french">🇫🇷 {t('badges.videoLanguage.french')}</SelectItem>
-                <SelectItem value="english">🇬🇧 {t('badges.videoLanguage.english')}</SelectItem>
-                <SelectItem value="spanish">🇪🇸 {t('badges.videoLanguage.spanish')}</SelectItem>
-                <SelectItem value="italian">🇮🇹 {t('badges.videoLanguage.italian')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Visibility - uploads are always created private, so the choice is
-              only offered for YouTube links. */}
-          {source === 'youtube' && (
             <div className="space-y-2">
-              <Label htmlFor="visibility">
-                {t('newFigure.visibility')} {t('newFigure.required')}
-              </Label>
+              <Label>{t('newFigure.complexity')}</Label>
               <Select
-                value={formData.visibility}
-                onValueChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    visibility: value as Visibility,
-                  })
-                }
+                value={form.complexity}
+                onValueChange={(value) => update({ complexity: value as Complexity })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('newFigure.visibilityPlaceholder')} />
+                  <SelectValue placeholder={t('newFigure.complexityPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="public">{t('badges.visibility.public')}</SelectItem>
-                  <SelectItem value="private">{t('badges.visibility.private')}</SelectItem>
-                  <SelectItem value="unlisted">{t('badges.visibility.unlisted')}</SelectItem>
+                  <SelectItem value="basic">{t('badges.complexity.basic')}</SelectItem>
+                  <SelectItem value="basic-intermediate">
+                    {t('badges.complexity.basicIntermediate')}
+                  </SelectItem>
+                  <SelectItem value="intermediate">
+                    {t('badges.complexity.intermediate')}
+                  </SelectItem>
+                  <SelectItem value="intermediate-advanced">
+                    {t('badges.complexity.intermediateAdvanced')}
+                  </SelectItem>
+                  <SelectItem value="advanced">{t('badges.complexity.advanced')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          )}
+
+            <div className="space-y-2">
+              <Label>{t('newFigure.figureType')}</Label>
+              <Select
+                value={form.figureType}
+                onValueChange={(value) => update({ figureType: value as FigureType })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('newFigure.figureTypePlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="figure">{t('badges.figureType.figure')}</SelectItem>
+                  <SelectItem value="basic-step">{t('badges.figureType.basicStep')}</SelectItem>
+                  <SelectItem value="complex-step">{t('badges.figureType.complexStep')}</SelectItem>
+                  <SelectItem value="mix">{t('badges.figureType.mix')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startTime">{t('newFigure.startTime')}</Label>
+                <Input
+                  id="startTime"
+                  placeholder={t('newFigure.timePlaceholder')}
+                  value={form.startTime}
+                  onChange={(e) => update({ startTime: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="endTime">{t('newFigure.endTime')}</Label>
+                <Input
+                  id="endTime"
+                  placeholder={t('newFigure.timePlaceholder')}
+                  value={form.endTime}
+                  onChange={(e) => update({ endTime: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phrasesCount">{t('newFigure.phrasesCount')}</Label>
+              <Input
+                id="phrasesCount"
+                type="number"
+                min="1"
+                placeholder={t('newFigure.phrasesCountPlaceholder')}
+                value={form.phrasesCount}
+                onChange={(e) => update({ phrasesCount: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="videoAuthor">{t('newFigure.videoAuthor')}</Label>
+              <Input
+                id="videoAuthor"
+                placeholder={t('newFigure.videoAuthorPlaceholder')}
+                value={form.videoAuthor}
+                onChange={(e) => update({ videoAuthor: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t('newFigure.videoLanguage')}</Label>
+              <Select
+                value={form.videoLanguage}
+                onValueChange={(value) => update({ videoLanguage: value as VideoLanguage })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('newFigure.videoLanguagePlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="french">🇫🇷 {t('badges.videoLanguage.french')}</SelectItem>
+                  <SelectItem value="english">🇬🇧 {t('badges.videoLanguage.english')}</SelectItem>
+                  <SelectItem value="spanish">🇪🇸 {t('badges.videoLanguage.spanish')}</SelectItem>
+                  <SelectItem value="italian">🇮🇹 {t('badges.videoLanguage.italian')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </Collapsible>
+
+          <p className="text-xs text-muted-foreground">{t('newFigure.privacyExplainer')}</p>
 
           {submitError && <p className="text-sm text-destructive">{submitError}</p>}
 
-          {/* Actions */}
-          <div className="flex gap-2 pt-4">
+          <div className="flex gap-2 pt-2">
             <Button
               type="button"
               variant="outline"

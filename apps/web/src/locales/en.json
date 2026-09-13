@@ -360,7 +360,6 @@
     "title": "Add New Figure",
     "youtubeUrl": "YouTube URL",
     "youtubeUrlPlaceholder": "https://www.youtube.com/watch?v=...",
-    "thumbnail": "Thumbnail",
     "figureTitle": "Title",
     "titlePlaceholder": "Figure name or description",
     "description": "Description (optional)",
@@ -374,10 +373,6 @@
     "danceStylePlaceholder": "Select dance style",
     "danceSubStyle": "Dance Sub-Style (optional)",
     "danceSubStylePlaceholder": "Select dance sub-style",
-    "shortTitle": "Short Title",
-    "shortTitlePlaceholder": "Brief figure name",
-    "fullTitle": "Full Title",
-    "fullTitlePlaceholder": "Complete figure name",
     "figureType": "Movement Type",
     "figureTypePlaceholder": "Select movement type",
     "complexity": "Complexity (optional)",
@@ -385,8 +380,6 @@
     "phrasesCount": "Phrases Count",
     "phrasesCountPlaceholder": "4",
     "videoLanguage": "Video Language",
-    "visibility": "Visibility",
-    "visibilityPlaceholder": "Select visibility",
     "addButton": "Add Figure",
     "required": "*",
     "errors": {
@@ -395,7 +388,8 @@
       "danceStyleRequired": "Dance style is required",
       "figureTypeRequired": "Movement type is required",
       "complexityRequired": "Complexity is required",
-      "phrasesCountMin": "Phrases count must be at least 1"
+      "phrasesCountMin": "Phrases count must be at least 1",
+      "youtubeUrlInvalid": "This doesn't look like a YouTube link"
     },
     "sourceYoutube": "YouTube link",
     "sourceUpload": "Upload a video",
@@ -421,7 +415,14 @@
         "offline": "You need to be online to upload a video."
       },
       "sending": "Sending…"
-    }
+    },
+    "created": "Figure added",
+    "moreOptions": "More options",
+    "moreOptionsHint": "Description, level, timing, language — all optional",
+    "videoFormat": "Format",
+    "videoFormatHint": "Detected automatically. Change it only if it looks wrong.",
+    "videoLanguagePlaceholder": "Select a language",
+    "privacyExplainer": "Your figure stays private: only you can see it. You can submit it to the public catalogue later, from your profile."
   },
   "pwa": {
     "update": {

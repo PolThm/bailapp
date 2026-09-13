@@ -1,6 +1,7 @@
 import { usePostHog } from 'posthog-js/react';
+import { useTranslation } from 'react-i18next';
 import type { NewFigureFormData } from '@/components/NewFigureModal';
-import type { Figure } from '@/types';
+import type { Figure, VideoLanguage } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useFigures } from '@/hooks/useFigures';
 import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
@@ -16,13 +17,22 @@ import {
  * Shared by every page that can open that modal, so the upload/rollback
  * sequence lives in one place rather than being duplicated per entry point.
  */
+/** The form no longer asks for a language; the UI locale is a better guess than nothing. */
+const LANGUAGE_BY_LOCALE: Record<string, VideoLanguage> = {
+  fr: 'french',
+  en: 'english',
+  es: 'spanish',
+  it: 'italian',
+};
+
 export function useCreateFigure() {
   const { user } = useAuth();
   const { addFigure } = useFigures();
   const posthog = usePostHog();
+  const { i18n } = useTranslation();
 
-  return async (data: NewFigureFormData) => {
-    if (!user) return;
+  return async (data: NewFigureFormData): Promise<Figure | undefined> => {
+    if (!user) return undefined;
 
     const figureId = `user_${user.uid}_${Date.now()}`;
     const baseFigure: Figure = {
@@ -36,10 +46,16 @@ export function useCreateFigure() {
       danceStyle: data.danceStyle,
       danceSubStyle: data.danceSubStyle,
       figureType: data.figureType,
-      complexity: data.complexity,
+      // Defaulted rather than made optional, so filters and badges always
+      // have something to show.
+      complexity: data.complexity ?? 'intermediate',
       phrasesCount: data.phrasesCount,
-      videoLanguage: data.videoLanguage,
-      visibility: data.visibility,
+      videoLanguage:
+        data.videoLanguage ?? LANGUAGE_BY_LOCALE[i18n.language?.split('-')[0]] ?? 'english',
+      // Every figure starts private; the security rules enforce it too.
+      // Going public happens through review, from the profile.
+      visibility: 'private',
+      videoFormat: data.videoFormat,
       importedBy: user.displayName || 'User',
       createdAt: new Date().toISOString(),
       ownerId: user.uid,
@@ -52,7 +68,7 @@ export function useCreateFigure() {
       await createFigureInFirestore(figure);
       addFigure(figure);
       trackEvent(posthog, AnalyticsEvents.FIGURE_CREATED, { videoSource: 'youtube' });
-      return;
+      return figure;
     }
 
     const draft = data.uploadedVideo;
@@ -84,12 +100,11 @@ export function useCreateFigure() {
 
     const figure: Figure = {
       ...baseFigure,
-      // Uploads always start private, matching the security rules.
-      visibility: 'private',
       videoUrl: uploaded.videoUrl,
       thumbnailUrl: uploaded.thumbnailUrl,
       storagePath: uploaded.storagePath,
-      videoFormat: draft.videoFormat,
+      // The form's explicit choice wins over the detected aspect ratio.
+      videoFormat: data.videoFormat ?? draft.videoFormat,
       durationSeconds: Math.round(draft.durationSeconds),
       processingStatus: 'ready',
     };
@@ -113,5 +128,6 @@ export function useCreateFigure() {
       durationSeconds: Math.round(draft.durationSeconds),
     });
     trackEvent(posthog, AnalyticsEvents.FIGURE_CREATED, { videoSource: 'upload' });
+    return figure;
   };
 }

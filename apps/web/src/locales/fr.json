@@ -360,7 +360,6 @@
     "title": "Ajouter une nouvelle figure",
     "youtubeUrl": "URL YouTube",
     "youtubeUrlPlaceholder": "https://www.youtube.com/watch?v=...",
-    "thumbnail": "Miniature",
     "figureTitle": "Titre",
     "titlePlaceholder": "Nom ou description de la figure",
     "description": "Description (optionnel)",
@@ -374,10 +373,6 @@
     "danceStylePlaceholder": "Sélectionner le style",
     "danceSubStyle": "Sous-style de danse (optionnel)",
     "danceSubStylePlaceholder": "Sélectionner le sous-style",
-    "shortTitle": "Titre court",
-    "shortTitlePlaceholder": "Nom court de la figure",
-    "fullTitle": "Titre complet",
-    "fullTitlePlaceholder": "Nom complet de la figure",
     "figureType": "Type de mouvement",
     "figureTypePlaceholder": "Sélectionner le type",
     "complexity": "Complexité (optionnel)",
@@ -385,8 +380,6 @@
     "phrasesCount": "Nombre de phrases",
     "phrasesCountPlaceholder": "4",
     "videoLanguage": "Langue de la vidéo",
-    "visibility": "Visibilité",
-    "visibilityPlaceholder": "Sélectionner la visibilité",
     "addButton": "Ajouter la figure",
     "required": "*",
     "errors": {
@@ -395,7 +388,8 @@
       "danceStyleRequired": "Le style de danse est requis",
       "figureTypeRequired": "Le type de mouvement est requis",
       "complexityRequired": "La complexité est requise",
-      "phrasesCountMin": "Le nombre de phrases doit être au moins 1"
+      "phrasesCountMin": "Le nombre de phrases doit être au moins 1",
+      "youtubeUrlInvalid": "Ce lien ne ressemble pas à un lien YouTube"
     },
     "sourceYoutube": "Lien YouTube",
     "sourceUpload": "Importer une vidéo",
@@ -421,7 +415,14 @@
         "offline": "Vous devez être en ligne pour envoyer une vidéo."
       },
       "sending": "Envoi…"
-    }
+    },
+    "created": "Figure ajoutée",
+    "moreOptions": "Plus d'options",
+    "moreOptionsHint": "Description, niveau, minutage, langue — tout est facultatif",
+    "videoFormat": "Format",
+    "videoFormatHint": "Détecté automatiquement. Ne le changez que si le résultat vous semble faux.",
+    "videoLanguagePlaceholder": "Choisir une langue",
+    "privacyExplainer": "Votre figure reste privée : vous seul pouvez la voir. Vous pourrez la proposer au catalogue public plus tard, depuis votre profil."
   },
   "pwa": {
     "update": {

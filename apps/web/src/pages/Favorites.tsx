@@ -7,7 +7,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { EmptyState } from '@/components/EmptyState';
 import { FigureCard } from '@/components/FigureCard';
 import { Loader } from '@/components/Loader';
-import { NewFigureModal } from '@/components/NewFigureModal';
+import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureModal';
 import { ResultsSummary } from '@/components/ResultsSummary';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
 import { useAuth } from '@/context/AuthContext';
@@ -16,6 +16,7 @@ import { useCreateFigure } from '@/hooks/useCreateFigure';
 import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useFigures } from '@/hooks/useFigures';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
+import { useToast } from '@/hooks/useToast';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import { isEmpty, sortByLastOpened } from '@/lib/utils';
 
@@ -24,6 +25,7 @@ export function Favorites() {
   const navigate = useNavigate();
   const { favorites, isLoading } = useFavorites();
   const { figures, shorts } = useFigures();
+  const { showToast } = useToast();
   const { user } = useAuth();
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -58,7 +60,15 @@ export function Favorites() {
     clearFilters,
   } = useFigureFilters(favoriteFiguresData);
 
-  const handleSubmitFigure = useCreateFigure();
+  const createFigure = useCreateFigure();
+
+  const handleSubmitFigure = async (data: NewFigureFormData) => {
+    const figure = await createFigure(data);
+    if (!figure) return;
+    // Land the user on what they just made, so success is self-evident.
+    showToast(t('newFigure.created'), 'success');
+    navigate(`/figure/${figure.id}`);
+  };
 
   const handleAddFigure = () => {
     if (!user) {

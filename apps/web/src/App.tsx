@@ -11,6 +11,7 @@ import { ChoreographiesProvider } from '@/context/ChoreographiesContext';
 import { FavoritesProvider } from '@/context/FavoritesContext';
 import { FiguresProvider } from '@/context/FiguresContext';
 import { PullToRefreshProvider } from '@/context/PullToRefreshContext';
+import { ToastProvider } from '@/context/ToastContext';
 import { useSyncQueue } from '@/hooks/useSyncQueue';
 import { Choreographies } from '@/pages/Choreographies';
 import { ChoreographyDetail } from '@/pages/ChoreographyDetail';
@@ -78,15 +79,17 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <FavoritesProvider>
-          <FiguresProvider>
-            <ChoreographiesProvider>
-              <PullToRefreshProvider>
-                <AppContent />
-              </PullToRefreshProvider>
-            </ChoreographiesProvider>
-          </FiguresProvider>
-        </FavoritesProvider>
+        <ToastProvider>
+          <FavoritesProvider>
+            <FiguresProvider>
+              <ChoreographiesProvider>
+                <PullToRefreshProvider>
+                  <AppContent />
+                </PullToRefreshProvider>
+              </ChoreographiesProvider>
+            </FiguresProvider>
+          </FavoritesProvider>
+        </ToastProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

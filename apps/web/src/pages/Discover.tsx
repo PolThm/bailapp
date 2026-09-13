@@ -1,13 +1,14 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import type { Figure } from '@/types';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { AuthModal } from '@/components/AuthModal';
 import { EmptyState } from '@/components/EmptyState';
 import { FigureCard } from '@/components/FigureCard';
 import { Loader } from '@/components/Loader';
-import { NewFigureModal } from '@/components/NewFigureModal';
+import { NewFigureModal, type NewFigureFormData } from '@/components/NewFigureModal';
 import { ResultsSummary } from '@/components/ResultsSummary';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
 import { ShortsCarousel } from '@/components/ShortsCarousel';
@@ -17,6 +18,7 @@ import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useFigures } from '@/hooks/useFigures';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { useToast } from '@/hooks/useToast';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import { isEmpty } from '@/lib/utils';
 
@@ -33,8 +35,18 @@ function shuffleArray<T>(array: T[]): T[] {
 export function Discover() {
   const { t } = useTranslation();
   const { figures, shorts } = useFigures();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
   const { user } = useAuth();
-  const handleSubmitFigure = useCreateFigure();
+  const createFigure = useCreateFigure();
+
+  const handleSubmitFigure = async (data: NewFigureFormData) => {
+    const figure = await createFigure(data);
+    if (!figure) return;
+    // Land the user on what they just made, so success is self-evident.
+    showToast(t('newFigure.created'), 'success');
+    navigate(`/figure/${figure.id}`);
+  };
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -146,16 +158,21 @@ export function Discover() {
       });
     }
 
+    // Figures added after the initial shuffle (a fresh upload, say) have no
+    // stored position. Register them at the end now, so they sort stably
+    // instead of drifting on every render.
+    for (const figure of filteredFigures) {
+      if (!figureOrderRef.current.has(figure.id)) {
+        figureOrderRef.current.set(figure.id, figureOrderRef.current.size);
+      }
+    }
+
     // Apply the stored random order to filtered figures
-    const orderedFigures = [...filteredFigures].sort((a, b) => {
+    return [...filteredFigures].sort((a, b) => {
       const orderA = figureOrderRef.current.get(a.id) ?? Infinity;
       const orderB = figureOrderRef.current.get(b.id) ?? Infinity;
       return orderA - orderB;
     });
-
-    // Add any new figures that weren't in the original order at the end
-    const newFigures = filteredFigures.filter((f) => !figureOrderRef.current.has(f.id));
-    return [...orderedFigures, ...newFigures];
   }, [filteredFigures, figures, shorts, advancedFilters.sortByDate]);
 
   // Get paginated figures (only show displayedCount items)

@@ -360,7 +360,6 @@
     "title": "Aggiungi Nuova Figura",
     "youtubeUrl": "URL YouTube",
     "youtubeUrlPlaceholder": "https://www.youtube.com/watch?v=...",
-    "thumbnail": "Miniatura",
     "figureTitle": "Titolo",
     "titlePlaceholder": "Nome o descrizione della figura",
     "description": "Descrizione (opzionale)",
@@ -374,10 +373,6 @@
     "danceStylePlaceholder": "Seleziona stile di danza",
     "danceSubStyle": "Sotto-Stile di Danza (opzionale)",
     "danceSubStylePlaceholder": "Seleziona sotto-stile di danza",
-    "shortTitle": "Titolo Breve",
-    "shortTitlePlaceholder": "Nome breve della figura",
-    "fullTitle": "Titolo Completo",
-    "fullTitlePlaceholder": "Nome completo della figura",
     "figureType": "Tipo di Movimento",
     "figureTypePlaceholder": "Seleziona tipo di movimento",
     "complexity": "Complessità (opzionale)",
@@ -385,8 +380,6 @@
     "phrasesCount": "Numero di Frasi",
     "phrasesCountPlaceholder": "4",
     "videoLanguage": "Lingua Video",
-    "visibility": "Visibilità",
-    "visibilityPlaceholder": "Seleziona visibilità",
     "addButton": "Aggiungi Figura",
     "required": "*",
     "errors": {
@@ -395,7 +388,8 @@
       "danceStyleRequired": "Lo stile di danza è obbligatorio",
       "figureTypeRequired": "Il tipo di movimento è obbligatorio",
       "complexityRequired": "La complessità è obbligatoria",
-      "phrasesCountMin": "Il numero di frasi deve essere almeno 1"
+      "phrasesCountMin": "Il numero di frasi deve essere almeno 1",
+      "youtubeUrlInvalid": "Questo non sembra un link di YouTube"
     },
     "sourceYoutube": "Link YouTube",
     "sourceUpload": "Carica un video",
@@ -421,7 +415,14 @@
         "offline": "Devi essere online per caricare un video."
       },
       "sending": "Invio…"
-    }
+    },
+    "created": "Figura aggiunta",
+    "moreOptions": "Altre opzioni",
+    "moreOptionsHint": "Descrizione, livello, tempi, lingua — tutto facoltativo",
+    "videoFormat": "Formato",
+    "videoFormatHint": "Rilevato automaticamente. Cambialo solo se ti sembra sbagliato.",
+    "videoLanguagePlaceholder": "Scegli una lingua",
+    "privacyExplainer": "La tua figura resta privata: solo tu puoi vederla. Potrai proporla al catalogo pubblico più avanti, dal tuo profilo."
   },
   "pwa": {
     "update": {
