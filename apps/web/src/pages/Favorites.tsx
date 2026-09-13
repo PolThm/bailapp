@@ -4,14 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { AuthModal } from '@/components/AuthModal';
-import { ComingSoonModal } from '@/components/ComingSoonModal';
 import { EmptyState } from '@/components/EmptyState';
 import { FigureCard } from '@/components/FigureCard';
 import { Loader } from '@/components/Loader';
+import { NewFigureModal } from '@/components/NewFigureModal';
 import { ResultsSummary } from '@/components/ResultsSummary';
 import { SearchAndFilters } from '@/components/SearchAndFilters';
 import { useAuth } from '@/context/AuthContext';
 import { useFavorites } from '@/context/FavoritesContext';
+import { useCreateFigure } from '@/hooks/useCreateFigure';
 import { useFigureFilters } from '@/hooks/useFigureFilters';
 import { useFigures } from '@/hooks/useFigures';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
@@ -24,7 +25,7 @@ export function Favorites() {
   const { favorites, isLoading } = useFavorites();
   const { figures, shorts } = useFigures();
   const { user } = useAuth();
-  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
+  const [showNewFigureModal, setShowNewFigureModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showImages, setShowImages] = useIndexedDB(
@@ -57,8 +58,14 @@ export function Favorites() {
     clearFilters,
   } = useFigureFilters(favoriteFiguresData);
 
+  const handleSubmitFigure = useCreateFigure();
+
   const handleAddFigure = () => {
-    setShowComingSoonModal(true);
+    if (!user) {
+      setShowAuthModal(true);
+    } else {
+      setShowNewFigureModal(true);
+    }
   };
 
   return (
@@ -148,7 +155,11 @@ export function Favorites() {
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       {/* Coming Soon Modal */}
-      <ComingSoonModal open={showComingSoonModal} onClose={() => setShowComingSoonModal(false)} />
+      <NewFigureModal
+        open={showNewFigureModal}
+        onClose={() => setShowNewFigureModal(false)}
+        onSubmit={handleSubmitFigure}
+      />
 
       {/* Advanced Filters Modal */}
       <AdvancedFiltersModal
