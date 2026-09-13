@@ -166,8 +166,10 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
         ref={inputRef}
         type="file"
         accept="video/*"
-        // Lets mobile users film the figure straight from the form.
-        capture="environment"
+        // No `capture` attribute on purpose: it forces the camera open and
+        // removes the choice, when most people are picking an existing clip.
+        // Without it, mobile shows the native chooser - camera, gallery or
+        // files - so filming is still one tap away.
         className="hidden"
         onChange={handleFileChange}
         disabled={disabled || isBusy}
