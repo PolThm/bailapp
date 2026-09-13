@@ -345,6 +345,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
               onChange={setUploadedVideo}
               error={errors.uploadedVideo}
               disabled={isSubmitting}
+              format={format}
             />
           )}
 

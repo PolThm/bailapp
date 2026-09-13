@@ -35,6 +35,11 @@ interface VideoUploadFieldProps {
   onChange: (draft: UploadedVideoDraft | null) => void;
   error?: string;
   disabled?: boolean;
+  /**
+   * Format the figure will be published as. Comes from the modal because the
+   * user may override what the video's own aspect ratio suggested.
+   */
+  format?: VideoFormat;
 }
 
 type Stage = 'idle' | 'analyzing' | 'compressing' | 'ready';
@@ -49,7 +54,13 @@ const ERROR_KEY_BY_CODE: Record<VideoCompressionErrorCode, string> = {
   'encode-failed': 'encodeFailed',
 };
 
-export function VideoUploadField({ value, onChange, error, disabled }: VideoUploadFieldProps) {
+export function VideoUploadField({
+  value,
+  onChange,
+  error,
+  disabled,
+  format,
+}: VideoUploadFieldProps) {
   const { t } = useTranslation();
   const posthog = usePostHog();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -187,6 +198,9 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
     setErrorDetail(null);
   };
 
+  // Falls back to what the video itself suggests until the modal says otherwise.
+  const previewFormat = format ?? value?.videoFormat ?? 'classic';
+
   const isBusy = stage === 'analyzing' || stage === 'compressing';
   const displayedError = internalError ?? error;
 
@@ -211,25 +225,39 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
 
       {value && stage === 'ready' ? (
         <div className="space-y-2">
-          <video
-            ref={previewRef}
-            src={value.localPreviewUrl}
-            className="max-h-64 w-full rounded-md bg-black object-contain"
-            controls
-            playsInline
-            muted
-            // 'auto', not 'metadata': metadata yields duration but no frame, so
-            // the player opened on a black rectangle until first played.
-            preload="auto"
-            // Seeking a hair past zero is what makes iOS decode and paint the
-            // first frame, which also gives the capture button something to read.
-            onLoadedMetadata={(e) => {
-              const element = e.currentTarget;
-              if (element.currentTime === 0 && element.duration > 0.1) {
-                element.currentTime = 0.05;
-              }
-            }}
-          />
+          {/* The frame follows the chosen format, so the preview shows what
+              other people will actually see. object-contain on a black ground
+              letterboxes a portrait video inside a landscape frame instead of
+              cropping into it. */}
+          <div
+            className={`mx-auto w-full overflow-hidden rounded-md bg-black ${
+              previewFormat === 'short' ? 'aspect-[9/16] max-w-[15rem]' : 'aspect-video'
+            }`}
+          >
+            <video
+              ref={previewRef}
+              src={value.localPreviewUrl}
+              className="h-full w-full object-contain"
+              controls
+              playsInline
+              muted
+              preload="auto"
+              // The generated thumbnail doubles as the opening image. Waiting for
+              // the element to decode a frame was unreliable: loadedmetadata fires
+              // before any video data exists, so the seek that was meant to paint
+              // the first frame had nothing to seek into and the player stayed
+              // black until first played.
+              poster={thumbnailPreviewUrl ?? undefined}
+              // Still nudge once real data arrives, so the element holds a decoded
+              // frame for the capture button even if the poster is missing.
+              onLoadedData={(e) => {
+                const element = e.currentTarget;
+                if (element.currentTime === 0 && element.duration > 0.1) {
+                  element.currentTime = 0.05;
+                }
+              }}
+            />
+          </div>
 
           {/* Poster picker. Thumbnail and hint share the first row; the button
               takes its own, since a narrow modal cannot fit all three without
@@ -238,14 +266,22 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
             <p className="text-sm font-medium">{t('newFigure.upload.thumbnailLabel')}</p>
 
             <div className="flex items-center gap-3">
+              {/* Matches the card that will display it: portrait for a short,
+                  landscape otherwise, cropped the same way. */}
               {thumbnailPreviewUrl ? (
                 <img
                   src={thumbnailPreviewUrl}
                   alt={t('newFigure.upload.thumbnailAlt')}
-                  className="h-14 w-24 shrink-0 rounded bg-muted object-cover"
+                  className={`shrink-0 rounded bg-muted object-cover ${
+                    previewFormat === 'short' ? 'h-20 w-[45px]' : 'h-14 w-24'
+                  }`}
                 />
               ) : (
-                <div className="h-14 w-24 shrink-0 rounded bg-muted" />
+                <div
+                  className={`shrink-0 rounded bg-muted ${
+                    previewFormat === 'short' ? 'h-20 w-[45px]' : 'h-14 w-24'
+                  }`}
+                />
               )}
               <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">
                 {t('newFigure.upload.thumbnailHint')}
