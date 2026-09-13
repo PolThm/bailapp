@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Loader2, Send, Trash2 } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 import { usePostHog } from 'posthog-js/react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -9,10 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFigures } from '@/hooks/useFigures';
 import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
-import {
-  deleteFigureFromFirestore,
-  submitFigureForReviewInFirestore,
-} from '@/lib/services/figureService';
+import { deleteFigureFromFirestore } from '@/lib/services/figureService';
 import { deleteFigureVideoFromStorage } from '@/lib/services/figureUploadService';
 import { getFigureThumbnail } from '@/utils/figureVideo';
 
@@ -20,11 +17,12 @@ import { getFigureThumbnail } from '@/utils/figureVideo';
 export function MyVideosCard() {
   const { t } = useTranslation();
   const posthog = usePostHog();
-  const { userFigures, updateFigure, removeFigure } = useFigures();
+  const { userFigures, removeFigure } = useFigures();
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [figureToDelete, setFigureToDelete] = useState<Figure | null>(null);
 
-  const uploads = userFigures.filter((figure) => figure.videoSource === 'upload');
+  // Everything the user added, YouTube links included - not just uploads.
+  const figures = userFigures;
 
   const statusLabel = (figure: Figure): string => {
     if (figure.visibility === 'public') return t('profile.myVideos.statusApproved');
@@ -35,19 +33,6 @@ export function MyVideosCard() {
         return t('profile.myVideos.statusRejected');
       default:
         return t('profile.myVideos.statusPrivate');
-    }
-  };
-
-  const handleSubmitForReview = async (figure: Figure) => {
-    setPendingId(figure.id);
-    try {
-      await submitFigureForReviewInFirestore(figure.id);
-      updateFigure(figure.id, { moderationStatus: 'pending' });
-      trackEvent(posthog, AnalyticsEvents.FIGURE_SUBMITTED_FOR_REVIEW, { figureId: figure.id });
-    } catch {
-      // Service already logged it; leave the row as-is so the user can retry.
-    } finally {
-      setPendingId(null);
     }
   };
 
@@ -76,13 +61,11 @@ export function MyVideosCard() {
           <CardTitle>{t('profile.myVideos.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {uploads.length === 0 ? (
+          {figures.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t('profile.myVideos.empty')}</p>
           ) : (
-            uploads.map((figure) => {
+            figures.map((figure) => {
               const isBusy = pendingId === figure.id;
-              const canSubmit =
-                figure.visibility !== 'public' && figure.moderationStatus !== 'pending';
 
               return (
                 <div key={figure.id} className="flex items-center gap-3">
@@ -104,28 +87,15 @@ export function MyVideosCard() {
                     {isBusy ? (
                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                     ) : (
-                      <>
-                        {canSubmit && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            title={t('profile.myVideos.submit')}
-                            aria-label={t('profile.myVideos.submit')}
-                            onClick={() => handleSubmitForReview(figure)}
-                          >
-                            <Send className="h-4 w-4" />
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title={t('profile.myVideos.delete')}
-                          aria-label={t('profile.myVideos.delete')}
-                          onClick={() => setFigureToDelete(figure)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title={t('profile.myVideos.delete')}
+                        aria-label={t('profile.myVideos.delete')}
+                        onClick={() => setFigureToDelete(figure)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     )}
                   </div>
                 </div>

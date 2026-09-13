@@ -231,19 +231,17 @@
     },
     "myVideos": {
       "title": "I miei video",
-      "empty": "Non hai ancora caricato alcun video.",
+      "empty": "Non hai ancora aggiunto alcun video.",
       "count_one": "{{count}} video",
       "count_other": "{{count}} video",
       "statusPrivate": "Privato",
       "statusPending": "In revisione",
       "statusApproved": "Nel catalogo",
       "statusRejected": "Non accettato",
-      "submit": "Proponi al catalogo",
-      "submitted": "Proposto",
       "delete": "Elimina",
       "deleteConfirm": {
-        "title": "Eliminare questo video?",
-        "message": "Il video e la sua figura saranno eliminati definitivamente. L'azione è irreversibile."
+        "title": "Eliminare questa figura?",
+        "message": "La figura sarà eliminata definitivamente, insieme al file video se ne hai caricato uno. L'azione è irreversibile."
       }
     }
   },

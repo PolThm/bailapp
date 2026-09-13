@@ -231,19 +231,17 @@
     },
     "myVideos": {
       "title": "Mis vídeos",
-      "empty": "Todavía no has subido ningún vídeo.",
+      "empty": "Todavía no has añadido ningún vídeo.",
       "count_one": "{{count}} vídeo",
       "count_other": "{{count}} vídeos",
       "statusPrivate": "Privado",
       "statusPending": "En revisión",
       "statusApproved": "En el catálogo",
       "statusRejected": "No aceptado",
-      "submit": "Proponer al catálogo",
-      "submitted": "Propuesto",
       "delete": "Eliminar",
       "deleteConfirm": {
-        "title": "¿Eliminar este vídeo?",
-        "message": "El vídeo y su figura se eliminarán permanentemente. Esta acción no se puede deshacer."
+        "title": "¿Eliminar esta figura?",
+        "message": "La figura se eliminará permanentemente, junto con el archivo de vídeo si subiste uno. Esta acción no se puede deshacer."
       }
     }
   },

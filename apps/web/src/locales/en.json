@@ -231,19 +231,17 @@
     },
     "myVideos": {
       "title": "My videos",
-      "empty": "You haven't uploaded any video yet.",
+      "empty": "You haven't added any video yet.",
       "count_one": "{{count}} video",
       "count_other": "{{count}} videos",
       "statusPrivate": "Private",
       "statusPending": "Under review",
       "statusApproved": "In the catalogue",
       "statusRejected": "Not accepted",
-      "submit": "Submit to the catalogue",
-      "submitted": "Submitted",
       "delete": "Delete",
       "deleteConfirm": {
-        "title": "Delete this video?",
-        "message": "The video and its figure will be permanently deleted. This cannot be undone."
+        "title": "Delete this figure?",
+        "message": "The figure will be permanently deleted, along with the video file if you uploaded one. This cannot be undone."
       }
     }
   },
