@@ -50,11 +50,39 @@ export async function extractThumbnail(
   // muted + playsInline keep mobile Safari willing to decode a frame without
   // a user gesture.
   video.muted = true;
+  video.defaultMuted = true;
   video.playsInline = true;
+  video.setAttribute('muted', '');
+  video.setAttribute('playsinline', '');
   video.preload = 'auto';
+
+  // iOS will not fetch media for an element that is not in the document, and
+  // ignores preload on one that never plays. Parking it off-screen - rather
+  // than display:none, which iOS also treats as "no need to decode" - is what
+  // makes loadeddata fire at all.
+  video.style.position = 'fixed';
+  video.style.opacity = '0';
+  video.style.pointerEvents = 'none';
+  video.style.width = '1px';
+  video.style.height = '1px';
+  video.style.left = '-1px';
+  video.style.top = '-1px';
+  document.body.appendChild(video);
+
   video.src = objectUrl;
 
   try {
+    // load() is required on iOS: assigning src alone does not start fetching.
+    video.load();
+
+    // Nudging playback is what actually forces iOS to decode a frame. It is
+    // paused again immediately; failure is fine, since desktop browsers reach
+    // loadeddata on their own.
+    const nudge = video.play();
+    if (nudge) {
+      await nudge.then(() => video.pause()).catch(() => undefined);
+    }
+
     await waitForEvent(video, 'loadeddata', LOAD_TIMEOUT_MS);
 
     // Seeking at or past the end never fires `seeked`, so stay just inside it.
@@ -64,7 +92,9 @@ export async function extractThumbnail(
     if (Math.abs(video.currentTime - target) > 0.01) {
       const seeked = waitForEvent(video, 'seeked', SEEK_TIMEOUT_MS);
       video.currentTime = target;
-      await seeked;
+      // A seek that never completes should not cost the whole poster: fall
+      // back to whatever frame is already decoded.
+      await seeked.catch(() => undefined);
     }
 
     const canvas = document.createElement('canvas');
@@ -93,6 +123,7 @@ export async function extractThumbnail(
   } finally {
     video.removeAttribute('src');
     video.load();
+    video.remove();
     URL.revokeObjectURL(objectUrl);
   }
 }

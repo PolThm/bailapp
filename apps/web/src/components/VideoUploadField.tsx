@@ -18,7 +18,8 @@ import { extractThumbnail } from '@/lib/video/extractThumbnail';
 /** A converted video held in memory, ready to be uploaded on submit. */
 export interface UploadedVideoDraft {
   blob: Blob;
-  thumbnailBlob: Blob;
+  /** Absent when the device refused to decode a frame; the figure then has no poster. */
+  thumbnailBlob: Blob | null;
   durationSeconds: number;
   width: number;
   height: number;
@@ -99,7 +100,10 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
         THUMBNAIL_CAPTURE_FALLBACK_SECONDS,
         compressed.durationSeconds / 2
       );
-      const thumbnailBlob = await extractThumbnail(compressed.blob, posterTime);
+      // A poster is a nicety. Losing a successful conversion because the
+      // device would not decode a still frame is not acceptable, so failure
+      // here is swallowed and the figure simply has no poster.
+      const thumbnailBlob = await extractThumbnail(compressed.blob, posterTime).catch(() => null);
 
       if (!isMountedRef.current) return;
 
@@ -113,7 +117,9 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
         localPreviewUrl: URL.createObjectURL(compressed.blob),
         thumbnailTime: posterTime,
       });
-      setThumbnailPreviewUrl(URL.createObjectURL(thumbnailBlob));
+      if (thumbnailBlob) {
+        setThumbnailPreviewUrl(URL.createObjectURL(thumbnailBlob));
+      }
       setStage('ready');
     } catch (caught) {
       if (!isMountedRef.current) return;

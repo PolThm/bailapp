@@ -18,7 +18,8 @@ import { MAX_VIDEO_FILE_SIZE_BYTES } from '@/lib/video/constants';
 
 export interface FigureUploadResult {
   videoUrl: string;
-  thumbnailUrl: string;
+  /** Absent when no poster frame could be captured. */
+  thumbnailUrl?: string;
   storagePath: string;
 }
 
@@ -78,7 +79,7 @@ export async function uploadFigureVideoToStorage(
   userId: string,
   figureId: string,
   video: Blob,
-  thumbnail: Blob,
+  thumbnail: Blob | null,
   options?: FigureUploadOptions
 ): Promise<FigureUploadResult> {
   try {
@@ -101,16 +102,13 @@ export async function uploadFigureVideoToStorage(
       }
     );
 
-    const thumbnailUrl = await uploadBlob(
-      ref(storage, `${storagePath}/thumbnail.jpg`),
-      thumbnail,
-      'image/jpeg',
-      {
-        onProgress: (progress) =>
-          options?.onProgress?.(VIDEO_PROGRESS_SHARE + progress * (1 - VIDEO_PROGRESS_SHARE)),
-        signal: options?.signal,
-      }
-    );
+    const thumbnailUrl = thumbnail
+      ? await uploadBlob(ref(storage, `${storagePath}/thumbnail.jpg`), thumbnail, 'image/jpeg', {
+          onProgress: (progress) =>
+            options?.onProgress?.(VIDEO_PROGRESS_SHARE + progress * (1 - VIDEO_PROGRESS_SHARE)),
+          signal: options?.signal,
+        })
+      : undefined;
 
     return { videoUrl, thumbnailUrl, storagePath };
   } catch (error) {
