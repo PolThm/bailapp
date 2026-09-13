@@ -7,11 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { UnlistedFigureBadge } from '@/components/UnlistedFigureNotice';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useNetworkQuality } from '@/hooks/useNetworkQuality';
-import {
-  getFigurePreviewTarget,
-  getFigureThumbnail,
-  shouldLetterboxFigure,
-} from '@/utils/figureVideo';
+import { getFigurePreviewTarget, getFigureThumbnail } from '@/utils/figureVideo';
 
 interface ShortCardProps {
   figure: Figure;
@@ -31,9 +27,6 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
   const readyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const thumbnail = getFigureThumbnail(figure, 'high');
   const previewTarget = getFigurePreviewTarget(figure);
-  // Contain rather than crop when the video's shape does not match its frame,
-  // so a portrait clip posted as a classic is letterboxed, not zoomed into.
-  const mediaFit = shouldLetterboxFigure(figure) ? 'object-contain' : 'object-cover';
   // Kept as a plain string: effects below depend on it, and an object would
   // change identity on every render and re-run them in a loop.
   const previewUrl = previewTarget?.url ?? null;
@@ -358,7 +351,7 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
             <img
               src={thumbnail}
               alt={figure.shortTitle}
-              className={`relative h-full w-full ${mediaFit} ${
+              className={`relative h-full w-full object-cover ${
                 showPreview && previewReady ? 'z-0 opacity-0' : 'z-10 opacity-100'
               }`}
               style={{
@@ -408,7 +401,7 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
               ) : (
                 <video
                   src={previewTarget.url}
-                  className={`pointer-events-none h-full w-full ${mediaFit}`}
+                  className="pointer-events-none h-full w-full object-cover"
                   style={{
                     width: '100%',
                     height: '100%',

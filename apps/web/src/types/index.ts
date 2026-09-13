@@ -79,9 +79,6 @@ export interface Figure {
   /** Explicit format for uploads; YouTube figures still fall back to URL sniffing. */
   videoFormat?: VideoFormat;
   durationSeconds?: number;
-  /** Pixel dimensions of the stored video, so its real shape is known when rendering. */
-  width?: number;
-  height?: number;
   ownerId?: string;
   processingStatus?: FigureProcessingStatus;
   moderationStatus?: ModerationStatus;

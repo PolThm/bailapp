@@ -107,8 +107,6 @@ export function useCreateFigure() {
       // The form's explicit choice wins over the detected aspect ratio.
       videoFormat: data.videoFormat ?? draft.videoFormat,
       durationSeconds: Math.round(draft.durationSeconds),
-      width: draft.width,
-      height: draft.height,
       processingStatus: 'ready',
     };
 
