@@ -13,7 +13,7 @@ import {
   type VideoCompressionErrorCode,
 } from '@/lib/video/compressVideo';
 import { THUMBNAIL_CAPTURE_FALLBACK_SECONDS } from '@/lib/video/constants';
-import { extractThumbnail } from '@/lib/video/extractThumbnail';
+import { captureFrameFromElement, extractThumbnail } from '@/lib/video/extractThumbnail';
 
 /** A converted video held in memory, ready to be uploaded on submit. */
 export interface UploadedVideoDraft {
@@ -154,7 +154,13 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
     const atSeconds = element.currentTime;
     setIsCapturingFrame(true);
     try {
-      const thumbnailBlob = await extractThumbnail(value.blob, atSeconds);
+      // Read the frame off the element on screen: it is already decoded, so
+      // nothing has to be loaded or seeked again. Decoding the file a second
+      // time in a hidden element is the slow path, kept only as a fallback for
+      // when the preview has not painted yet.
+      const thumbnailBlob = await captureFrameFromElement(element).catch(() =>
+        extractThumbnail(value.blob, atSeconds)
+      );
       if (!isMountedRef.current) return;
       if (thumbnailPreviewUrl) URL.revokeObjectURL(thumbnailPreviewUrl);
       setThumbnailPreviewUrl(URL.createObjectURL(thumbnailBlob));
@@ -211,7 +217,18 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
             className="max-h-64 w-full rounded-md bg-black object-contain"
             controls
             playsInline
-            preload="metadata"
+            muted
+            // 'auto', not 'metadata': metadata yields duration but no frame, so
+            // the player opened on a black rectangle until first played.
+            preload="auto"
+            // Seeking a hair past zero is what makes iOS decode and paint the
+            // first frame, which also gives the capture button something to read.
+            onLoadedMetadata={(e) => {
+              const element = e.currentTarget;
+              if (element.currentTime === 0 && element.duration > 0.1) {
+                element.currentTime = 0.05;
+              }
+            }}
           />
 
           {/* Poster picker. Thumbnail and hint share the first row; the button

@@ -12,6 +12,37 @@ const LOAD_TIMEOUT_MS = 15_000;
 const SEEK_TIMEOUT_MS = 15_000;
 const JPEG_QUALITY = 0.8;
 
+/**
+ * Draws whatever frame a live <video> is currently showing.
+ *
+ * Far more reliable than decoding the file a second time in a hidden element:
+ * this one is on screen, already decoded, and needed no autoplay permission.
+ * iOS in particular resists decoding for off-screen elements.
+ */
+export async function captureFrameFromElement(element: HTMLVideoElement): Promise<Blob> {
+  const canvas = document.createElement('canvas');
+  canvas.width = element.videoWidth;
+  canvas.height = element.videoHeight;
+
+  if (!canvas.width || !canvas.height) {
+    throw new Error('Video has no decoded frame yet');
+  }
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error('Could not acquire a 2D canvas context');
+  }
+  context.drawImage(element, 0, 0, canvas.width, canvas.height);
+
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error('Canvas produced no image'))),
+      'image/jpeg',
+      JPEG_QUALITY
+    );
+  });
+}
+
 function waitForEvent(
   element: HTMLVideoElement,
   eventName: 'loadeddata' | 'seeked',
