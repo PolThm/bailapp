@@ -415,7 +415,9 @@
         "encodeFailed": "La conversión ha fallado. Prueba con otro vídeo.",
         "uploadFailed": "La subida ha fallado. Comprueba tu conexión e inténtalo de nuevo.",
         "videoRequired": "Se requiere un vídeo",
-        "offline": "Necesitas estar en línea para subir un vídeo."
+        "offline": "Necesitas estar en línea para subir un vídeo.",
+        "cannotDecode": "Tu navegador no puede leer el formato de este vídeo. En iPhone, prueba a exportarlo primero desde Fotos.",
+        "noEncoder": "Tu dispositivo no puede convertir un vídeo de este tamaño. Prueba con un clip más corto o más pequeño."
       },
       "sending": "Enviando…",
       "captureFrame": "Usar este fotograma",

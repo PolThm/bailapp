@@ -415,7 +415,9 @@
         "encodeFailed": "Conversione non riuscita. Prova con un altro video.",
         "uploadFailed": "Caricamento non riuscito. Controlla la connessione e riprova.",
         "videoRequired": "È richiesto un video",
-        "offline": "Devi essere online per caricare un video."
+        "offline": "Devi essere online per caricare un video.",
+        "cannotDecode": "Il tuo browser non riesce a leggere il formato di questo video. Su iPhone, prova prima a esportarlo da Foto.",
+        "noEncoder": "Il tuo dispositivo non può convertire un video di queste dimensioni. Prova con una clip più breve o più piccola."
       },
       "sending": "Invio…",
       "captureFrame": "Usa questo fotogramma",

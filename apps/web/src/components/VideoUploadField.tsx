@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, Film, ImageDown, Loader2, Upload, X } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 import { useTranslation } from 'react-i18next';
 import type { VideoFormat } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { formatBytes } from '@/lib/utils';
 import {
   VideoCompressionError,
@@ -40,17 +42,21 @@ const ERROR_KEY_BY_CODE: Record<VideoCompressionErrorCode, string> = {
   'unsupported-browser': 'unsupportedBrowser',
   'unreadable-file': 'unreadableFile',
   'no-video-track': 'noVideoTrack',
+  'cannot-decode': 'cannotDecode',
+  'no-encoder': 'noEncoder',
   'too-long': 'tooLong',
   'encode-failed': 'encodeFailed',
 };
 
 export function VideoUploadField({ value, onChange, error, disabled }: VideoUploadFieldProps) {
   const { t } = useTranslation();
+  const posthog = usePostHog();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const previewRef = useRef<HTMLVideoElement | null>(null);
   const [stage, setStage] = useState<Stage>(value ? 'ready' : 'idle');
   const [progress, setProgress] = useState(0);
   const [internalError, setInternalError] = useState<string | null>(null);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [isCapturingFrame, setIsCapturingFrame] = useState(false);
   const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(null);
 
@@ -76,6 +82,7 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
     }
 
     setInternalError(null);
+    setErrorDetail(null);
     setProgress(0);
     setStage('analyzing');
 
@@ -111,8 +118,22 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
     } catch (caught) {
       if (!isMountedRef.current) return;
       const code = caught instanceof VideoCompressionError ? caught.code : 'encode-failed';
+      const detail = caught instanceof Error ? caught.message : String(caught);
+
       setInternalError(t(`newFigure.upload.errors.${ERROR_KEY_BY_CODE[code]}`));
+      // Shown because these failures depend on the device's codec support, and
+      // "try another video" alone leaves the user with nothing to report.
+      setErrorDetail(code === 'too-long' ? null : detail);
       setStage('idle');
+
+      // The only visibility in production: drop_console strips console.error.
+      trackEvent(posthog, AnalyticsEvents.VIDEO_UPLOAD_FAILED, {
+        stage: 'compression',
+        code,
+        message: detail,
+        fileType: file.type,
+        fileSizeBytes: file.size,
+      });
     }
   };
 
@@ -151,6 +172,7 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
     setStage('idle');
     setProgress(0);
     setInternalError(null);
+    setErrorDetail(null);
   };
 
   const isBusy = stage === 'analyzing' || stage === 'compressing';
@@ -291,10 +313,15 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
       )}
 
       {displayedError && (
-        <p className="flex items-start gap-1.5 text-sm text-destructive">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          {displayedError}
-        </p>
+        <div className="space-y-1">
+          <p className="flex items-start gap-1.5 text-sm text-destructive">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            {displayedError}
+          </p>
+          {errorDetail && (
+            <p className="break-words pl-[1.375rem] text-xs text-muted-foreground">{errorDetail}</p>
+          )}
+        </div>
       )}
 
       <p className="text-xs text-muted-foreground">{t('newFigure.upload.privacyNotice')}</p>

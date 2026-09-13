@@ -36,7 +36,6 @@ export const TARGET_VIDEO_SHORT_SIDE_PX = 540;
  * 540p carries about half the pixels of 720p, so the bitrate drops with it.
  */
 export const TARGET_VIDEO_BITRATE = 1_000_000;
-export const TARGET_AUDIO_BITRATE = 96_000;
 
 /** Where the generated poster frame is grabbed, when no previewStartTime is set. */
 export const THUMBNAIL_CAPTURE_FALLBACK_SECONDS = 1;

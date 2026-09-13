@@ -1,7 +1,6 @@
 import type { VideoFormat } from '@/types';
 import {
   MAX_VIDEO_DURATION_SECONDS,
-  TARGET_AUDIO_BITRATE,
   TARGET_VIDEO_BITRATE,
   SHORT_MAX_DURATION_SECONDS,
   TARGET_VIDEO_SHORT_SIDE_PX,
@@ -38,6 +37,8 @@ export type VideoCompressionErrorCode =
   | 'unsupported-browser'
   | 'unreadable-file'
   | 'no-video-track'
+  | 'cannot-decode'
+  | 'no-encoder'
   | 'too-long'
   | 'encode-failed';
 
@@ -50,6 +51,8 @@ export class VideoCompressionError extends Error {
     this.code = code;
   }
 }
+
+type VideoCodecChoice = 'avc' | 'hevc' | 'vp9' | 'av1';
 
 export interface CompressedVideo {
   blob: Blob;
@@ -98,6 +101,9 @@ export async function probeVideo(file: File): Promise<{
   durationSeconds: number;
   width: number;
   height: number;
+  /** Codec string, for diagnostics: phones record HEVC, desktops usually H.264. */
+  codec: string | null;
+  canDecode: boolean;
 }> {
   const { ALL_FORMATS, BlobSource, Input } = await loadMediabunny();
   const input = new Input({ formats: ALL_FORMATS, source: new BlobSource(file) });
@@ -122,6 +128,8 @@ export async function probeVideo(file: File): Promise<{
     durationSeconds,
     width: track.displayWidth,
     height: track.displayHeight,
+    codec: track.codec,
+    canDecode: await track.canDecode().catch(() => false),
   };
 }
 
@@ -164,7 +172,32 @@ export async function compressVideo(
     Mp4OutputFormat,
     Output,
     Quality,
+    canEncodeVideo,
+    getFirstEncodableVideoCodec,
   } = await loadMediabunny();
+
+  // Capability has to be checked at the dimensions and bitrate actually used:
+  // a bare canEncodeVideo('avc') can pass while the real configuration fails,
+  // which is how this surfaced as a generic encode error on iPhone.
+  const quality = new Quality({ bitrate: TARGET_VIDEO_BITRATE });
+  let codec: VideoCodecChoice = 'avc';
+
+  if (!(await canEncodeVideo('avc', { width, height, quality }))) {
+    // H.264 stays first: it is the only codec every target plays back. The
+    // rest are fallbacks so a capable device is not turned away outright.
+    const fallback = await getFirstEncodableVideoCodec(['avc', 'hevc', 'vp9', 'av1'], {
+      width,
+      height,
+      quality,
+    });
+    if (!fallback) {
+      throw new VideoCompressionError(
+        'no-encoder',
+        `No encoder for ${width}x${height} at ${TARGET_VIDEO_BITRATE} bps`
+      );
+    }
+    codec = fallback as VideoCodecChoice;
+  }
 
   const input = new Input({ formats: ALL_FORMATS, source: new BlobSource(file) });
   const target = new BufferTarget();
@@ -182,14 +215,12 @@ export async function compressVideo(
       width,
       height,
       fit: 'contain',
-      codec: 'avc',
-      quality: new Quality({ bitrate: TARGET_VIDEO_BITRATE }),
+      codec,
+      quality,
     },
-    audio: {
-      // Codec deliberately unset: mediabunny picks one the container and this
-      // browser can both handle, rather than failing on a hardcoded AAC.
-      quality: new Quality({ bitrate: TARGET_AUDIO_BITRATE }),
-    },
+    // Audio is left alone. Phones already record AAC at a modest bitrate, so
+    // re-encoding saves almost nothing while adding a failure mode on browsers
+    // with a thinner AudioEncoder. Untouched, it is copied through.
   });
 
   if (!conversion.isValid) {
