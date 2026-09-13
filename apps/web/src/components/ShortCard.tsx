@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import type { Figure } from '@/types';
 import { DanceStyleBadge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { UnlistedFigureBadge } from '@/components/UnlistedFigureNotice';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useNetworkQuality } from '@/hooks/useNetworkQuality';
 import { getFigurePreviewTarget, getFigureThumbnail } from '@/utils/figureVideo';
@@ -364,6 +365,7 @@ export function ShortCard({ figure, shouldShowPreview = false }: ShortCardProps)
               onError={() => setThumbnailError(true)}
             />
           )}
+          <UnlistedFigureBadge figure={figure} />
           {/* Preview - keep at normal size but hidden until ready */}
           {showPreview && previewTarget && (
             <div

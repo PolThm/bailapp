@@ -9,6 +9,7 @@ import {
   ComplexityBadge,
 } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { UnlistedFigureBadge } from '@/components/UnlistedFigureNotice';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { useNetworkQuality } from '@/hooks/useNetworkQuality';
@@ -356,6 +357,7 @@ export function FigureCard({ figure, showImage = true, showMastery = false }: Fi
                 onError={() => setThumbnailError(true)}
               />
             )}
+            <UnlistedFigureBadge figure={figure} />
             {/* Preview - keep at normal size but hidden until ready */}
             {showPreview && previewTarget && (
               <div

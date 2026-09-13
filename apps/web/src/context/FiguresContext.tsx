@@ -6,13 +6,14 @@ import { classicVideoList } from '@/data/classicVideoList';
 import { shortVideoList } from '@/data/shortVideoList';
 import { FiguresContext } from '@/hooks/useFigures';
 import {
+  getFiguresByIdsFromFirestore,
   getPublicFiguresFromFirestore,
   getUserFiguresFromFirestore,
 } from '@/lib/services/figureService';
 import { getFigureVideoFormat } from '@/utils/figureVideo';
 
 export function FiguresProvider({ children }: { children: ReactNode }) {
-  const { lastOpenedAt } = useFavorites();
+  const { lastOpenedAt, favorites } = useFavorites();
   const { user } = useAuth();
   // Figures held in Firestore: the signed-in user's own (any visibility) plus
   // everything moderation has promoted to the public catalogue.
@@ -34,11 +35,32 @@ export function FiguresProvider({ children }: { children: ReactNode }) {
       for (const figure of [...publicFigures, ...ownFigures]) {
         byId.set(figure.id, figure);
       }
+
+      // Favourited figures that no query can return: an unlisted figure the
+      // user reached through someone's link. Fetched by id, the only path the
+      // security rules allow for those.
+      const staticIds = new Set([
+        ...classicVideoList.map((figure) => figure.id),
+        ...shortVideoList.map((figure) => figure.id),
+      ]);
+      const missingFavouriteIds = favorites.filter(
+        (favoriteId) => !byId.has(favoriteId) && !staticIds.has(favoriteId)
+      );
+
+      if (missingFavouriteIds.length > 0) {
+        const favouriteFigures = await getFiguresByIdsFromFirestore(missingFavouriteIds).catch(
+          () => [] as Figure[]
+        );
+        for (const figure of favouriteFigures) {
+          byId.set(figure.id, figure);
+        }
+      }
+
       setRemoteFigures([...byId.values()]);
     } finally {
       setIsLoadingUserFigures(false);
     }
-  }, [user]);
+  }, [user, favorites]);
 
   useEffect(() => {
     void loadRemoteFigures();

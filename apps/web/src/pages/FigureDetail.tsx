@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { Heart, Share2, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import type { Figure } from '@/types';
 import { AuthModal } from '@/components/AuthModal';
 import { HeaderBackTitle } from '@/components/HeaderBackTitle';
+import { Loader } from '@/components/Loader';
 import { MasteryLevelModal } from '@/components/MasteryLevelModal';
 import { Toast } from '@/components/Toast';
 import {
@@ -14,11 +16,13 @@ import {
 } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { UnlistedFigureNotice } from '@/components/UnlistedFigureNotice';
 import { useAuth } from '@/context/AuthContext';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useFigures } from '@/hooks/useFigures';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { useOrientation } from '@/hooks/useOrientation';
+import { getFigureFromFirestore } from '@/lib/services/figureService';
 import { getFigurePlayerTarget } from '@/utils/figureVideo';
 import { parseTimeToSeconds } from '@/utils/timeParser';
 
@@ -82,7 +86,37 @@ export function FigureDetail() {
   const [isFullscreenExited, setIsFullscreenExited] = useState(false);
   const [isLandscape, setIsLandscape] = useState(() => isLandscapeMobile && !isFullscreenExited);
 
-  const figure = id ? getFigure(id) : undefined;
+  const contextFigure = id ? getFigure(id) : undefined;
+  // An unlisted figure reached through a shared link is in nobody's catalogue
+  // query, so it is absent from context. Fetch it by id, the only path the
+  // security rules allow for it.
+  const [fetchedFigure, setFetchedFigure] = useState<Figure | null>(null);
+  const [isFetchingFigure, setIsFetchingFigure] = useState(false);
+
+  useEffect(() => {
+    if (!id || contextFigure) {
+      setFetchedFigure(null);
+      return;
+    }
+
+    let cancelled = false;
+    setIsFetchingFigure(true);
+    getFigureFromFirestore(id)
+      .catch(() => null)
+      .then((result) => {
+        if (cancelled) return;
+        setFetchedFigure(result);
+      })
+      .finally(() => {
+        if (!cancelled) setIsFetchingFigure(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, contextFigure]);
+
+  const figure = contextFigure ?? fetchedFigure ?? undefined;
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
   const lastUpdatedIdRef = useRef<string | null>(null);
 
@@ -286,6 +320,9 @@ export function FigureDetail() {
   }, [figure]);
 
   if (!figure) {
+    if (isFetchingFigure) {
+      return <Loader />;
+    }
     return (
       <div className="flex flex-1 flex-col items-center justify-center">
         <p className="text-lg text-muted-foreground">{t('figure.notFound')}</p>
@@ -405,6 +442,7 @@ export function FigureDetail() {
 
         {/* Details Section */}
         <div className={`space-y-6 ${isLandscape ? 'hidden' : ''}`}>
+          <UnlistedFigureNotice figure={figure} />
           {/* Action Buttons */}
           <div className="flex gap-2">
             <Button

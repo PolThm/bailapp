@@ -268,7 +268,12 @@
       "enter": "Entrer mon niveau de maîtrise",
       "updateTitle": "Niveau de maîtrise"
     },
-    "linkCopied": "Lien copié dans le presse-papiers"
+    "linkCopied": "Lien copié dans le presse-papiers",
+    "unlisted": {
+      "title": "Vidéo privée ajoutée par {{author}}",
+      "badge": "Privée",
+      "description": "Absente du catalogue. Toute personne ayant le lien peut la regarder."
+    }
   },
   "badges": {
     "danceStyle": {

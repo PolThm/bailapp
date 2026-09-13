@@ -268,6 +268,11 @@
       "title": "Dominio del movimiento",
       "enter": "Ingresar mi nivel de dominio",
       "updateTitle": "Nivel de dominio"
+    },
+    "unlisted": {
+      "title": "Vídeo privado añadido por {{author}}",
+      "badge": "Privado",
+      "description": "No está en el catálogo. Cualquiera con el enlace puede verlo."
     }
   },
   "badges": {

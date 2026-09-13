@@ -100,14 +100,15 @@ function figureToFirestoreFigure(figure: Figure): FirestoreFigure {
 }
 
 /**
- * Creates a figure. Always private and unmoderated to begin with — security
- * rules enforce the same thing, so anything else is rejected server-side.
+ * Creates a figure. Always unlisted and unmoderated to begin with: reachable
+ * by anyone holding the link, absent from the catalogue. Security rules
+ * enforce the same thing, so anything else is rejected server-side.
  */
 export async function createFigureInFirestore(figure: Figure): Promise<void> {
   try {
     const data = figureToFirestoreFigure({
       ...figure,
-      visibility: 'private',
+      visibility: 'unlisted',
       moderationStatus: figure.moderationStatus ?? 'none',
     });
     await setDoc(doc(db, FIGURES_COLLECTION, figure.id), data);
@@ -128,6 +129,32 @@ export async function getFigureFromFirestore(figureId: string): Promise<Figure |
     console.error('Getting figure from Firestore:', error);
     throw error;
   }
+}
+
+/**
+ * Fetches figures by id, skipping any the caller may not read.
+ *
+ * This is the `get` path, the only one that reaches an unlisted figure: a
+ * query would never return it. Used for figures a user favourited after
+ * following someone's link.
+ */
+export async function getFiguresByIdsFromFirestore(figureIds: string[]): Promise<Figure[]> {
+  if (figureIds.length === 0) {
+    return [];
+  }
+
+  const results = await Promise.all(
+    figureIds.map(async (figureId) => {
+      try {
+        return await getFigureFromFirestore(figureId);
+      } catch {
+        // Deleted, or no longer readable: drop it rather than failing the lot.
+        return null;
+      }
+    })
+  );
+
+  return results.filter((figure): figure is Figure => figure !== null);
 }
 
 /**

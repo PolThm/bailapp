@@ -268,6 +268,11 @@
       "title": "Padronanza del Movimento",
       "enter": "Inserisci il mio livello di padronanza",
       "updateTitle": "Livello di Padronanza"
+    },
+    "unlisted": {
+      "title": "Video privato aggiunto da {{author}}",
+      "badge": "Privato",
+      "description": "Non è nel catalogo. Chiunque abbia il link può guardarlo."
     }
   },
   "badges": {

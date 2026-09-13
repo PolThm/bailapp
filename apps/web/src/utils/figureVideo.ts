@@ -46,6 +46,14 @@ export function isUploadedFigure(figure: Figure): boolean {
 }
 
 /**
+ * A figure that is not in the public catalogue: reachable only by link.
+ * The ownerId check keeps the static catalogue out, since those are public.
+ */
+export function isUnlistedFigure(figure: Figure): boolean {
+  return figure.visibility === 'unlisted' && Boolean(figure.ownerId);
+}
+
+/**
  * Classic vs short. Uploads carry it explicitly (derived from the video's own
  * aspect ratio); YouTube figures keep falling back to URL sniffing so the
  * static lists need no migration.

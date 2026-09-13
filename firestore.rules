@@ -80,16 +80,25 @@ service cloud.firestore {
     // one-doc-per-user shape used by choreographies/favorites, because the
     // catalogue must be queryable across users).
     match /figures/{figureId} {
-      // NOTE: because this rule inspects resource.data.visibility, any client
-      // query MUST be constrained by where('visibility','==','public').
-      // A user's own private figures need a separate ownerId-constrained query.
-      allow read: if resource.data.visibility == 'public'
+      // 'get' and 'list' are split deliberately: that split IS the unlisted
+      // model. A single document can be fetched by id, so anyone holding the
+      // link can open an unlisted figure. Queries only ever return public
+      // figures, so unlisted ones never surface in Discover. Enforced here
+      // rather than in the client, so a hand-written query cannot bypass it.
+      allow get: if resource.data.visibility in ['public', 'unlisted']
         || (isAuthenticated() && request.auth.uid == resource.data.ownerId);
 
-      // Figures are always created private and unmoderated.
+      // NOTE: because this rule inspects resource.data, any client query MUST
+      // be constrained by where('visibility','==','public') or by ownerId,
+      // otherwise the whole query is refused.
+      allow list: if resource.data.visibility == 'public'
+        || (isAuthenticated() && request.auth.uid == resource.data.ownerId);
+
+      // Figures are created unlisted: reachable by link, absent from the
+      // catalogue until moderation promotes them.
       allow create: if isAuthenticated()
         && request.resource.data.ownerId == request.auth.uid
-        && request.resource.data.visibility == 'private'
+        && request.resource.data.visibility == 'unlisted'
         && request.resource.data.moderationStatus in ['none', 'pending'];
 
       // The owner may edit metadata and submit for review, but may never
