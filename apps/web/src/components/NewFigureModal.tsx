@@ -349,6 +349,36 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
             />
           )}
 
+          {/* Format */}
+          <div className="space-y-2">
+            <Label>{t('newFigure.videoFormat')}</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {(['classic', 'short'] as const).map((option) => {
+                const disabled = option === 'short' && !eligibility.allowed;
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() =>
+                      update({ videoFormat: form.videoFormat === option ? undefined : option })
+                    }
+                    className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                      format === option
+                        ? 'border-primary bg-primary/10 text-foreground'
+                        : 'border-input text-muted-foreground hover:text-foreground'
+                    } ${disabled ? 'cursor-not-allowed opacity-40' : ''}`}
+                  >
+                    {t(`badges.videoFormat.${option}`)}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {eligibility.reason ?? t('newFigure.videoFormatHint')}
+            </p>
+          </div>
+
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="shortTitle">
@@ -394,36 +424,6 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
               ))}
             </div>
             {errors.danceStyle && <p className="text-sm text-destructive">{errors.danceStyle}</p>}
-          </div>
-
-          {/* Format */}
-          <div className="space-y-2">
-            <Label>{t('newFigure.videoFormat')}</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {(['classic', 'short'] as const).map((option) => {
-                const disabled = option === 'short' && !eligibility.allowed;
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    disabled={disabled}
-                    onClick={() =>
-                      update({ videoFormat: form.videoFormat === option ? undefined : option })
-                    }
-                    className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
-                      format === option
-                        ? 'border-primary bg-primary/10 text-foreground'
-                        : 'border-input text-muted-foreground hover:text-foreground'
-                    } ${disabled ? 'cursor-not-allowed opacity-40' : ''}`}
-                  >
-                    {t(`badges.videoFormat.${option}`)}
-                  </button>
-                );
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {eligibility.reason ?? t('newFigure.videoFormatHint')}
-            </p>
           </div>
 
           {/* Everything below is optional */}
