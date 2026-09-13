@@ -433,10 +433,19 @@ export function Discover() {
 
   return (
     <>
-      {/* Header */}
-      <div className="pb-3">
-        <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
-        <p className="mt-1 text-muted-foreground">{t('discover.subtitle')}</p>
+      {/* Header with Add Button */}
+      <div className="flex items-start justify-between pb-3">
+        <div className="flex-1 pr-4">
+          <h1 className="text-3xl font-bold">{t('discover.title')}</h1>
+          <p className="mt-1 text-muted-foreground">{t('discover.subtitle')}</p>
+        </div>
+        <button
+          onClick={handleAddFigure}
+          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-all hover:shadow-lg active:scale-95"
+          aria-label={t('discover.empty.action')}
+        >
+          <Plus className="h-6 w-6" />
+        </button>
       </div>
 
       {/* Filters */}
