@@ -15,7 +15,7 @@ service firebase.storage {
       allow create, update: if request.auth != null
         && request.auth.uid == userId
         // Keep in sync with MAX_VIDEO_FILE_SIZE_BYTES in @/lib/video/constants
-        && request.resource.size < 150 * 1024 * 1024
+        && request.resource.size < 100 * 1024 * 1024
         && (
           request.resource.contentType == 'video/mp4'
           || request.resource.contentType == 'image/jpeg'

@@ -11,7 +11,7 @@ import {
  *
  * Phones routinely produce 4K H.265 files of several hundred megabytes for a
  * few minutes of footage, which is neither uploadable on mobile data nor
- * playable everywhere. Everything is normalised to 720p H.264 MP4 before it
+ * playable everywhere. Everything is normalised to 540p H.264 MP4 before it
  * ever reaches Storage.
  *
  * ffmpeg.wasm was deliberately not used: it needs SharedArrayBuffer, which
@@ -117,7 +117,7 @@ export async function probeVideo(file: File): Promise<{
 }
 
 /**
- * Transcodes to a 720p H.264 MP4 with the moov atom up front, so the result
+ * Transcodes to a 540p H.264 MP4 with the moov atom up front, so the result
  * can be seeked and progressively streamed straight from a Storage URL.
  *
  * `onProgress` receives 0..1.

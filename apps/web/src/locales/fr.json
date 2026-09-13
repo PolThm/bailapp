@@ -402,7 +402,7 @@
     "upload": {
       "pickFile": "Choisir une vidéo",
       "changeFile": "Choisir une autre vidéo",
-      "hint": "5 minutes maximum. La vidéo est convertie en 720p sur votre appareil avant l'envoi, pour que l'upload reste léger.",
+      "hint": "5 minutes maximum. La vidéo est convertie en 540p sur votre appareil avant l'envoi, pour que l'upload reste léger.",
       "privacyNotice": "Votre vidéo reste privée. Toute personne à qui vous donnez le lien pourra la regarder.",
       "analyzing": "Analyse de la vidéo…",
       "compressing": "Conversion… {{percent}} %",
