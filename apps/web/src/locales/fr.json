@@ -414,7 +414,10 @@
         "videoRequired": "Une vidéo est requise",
         "offline": "Vous devez être en ligne pour envoyer une vidéo."
       },
-      "sending": "Envoi…"
+      "sending": "Envoi…",
+      "captureFrame": "Utiliser cette image",
+      "thumbnailAlt": "Image d'aperçu choisie",
+      "thumbnailHint": "Mettez la vidéo en pause où vous voulez, puis utilisez cette image comme aperçu."
     },
     "created": "Figure ajoutée",
     "moreOptions": "Plus d'options",
@@ -422,7 +425,11 @@
     "videoFormat": "Format",
     "videoFormatHint": "Détecté automatiquement. Ne le changez que si le résultat vous semble faux.",
     "videoLanguagePlaceholder": "Choisir une langue",
-    "privacyExplainer": "Votre figure reste privée : vous seul pouvez la voir. Vous pourrez la proposer au catalogue public plus tard, depuis votre profil."
+    "privacyExplainer": "Votre figure reste privée : vous seul pouvez la voir. Vous pourrez la proposer au catalogue public plus tard, depuis votre profil.",
+    "previewStartTime": "Début de l'aperçu",
+    "previewStartTimeHint": "Où démarre l'aperçu au survol. Par défaut, l'image que vous avez choisie.",
+    "shortNeedsPortrait": "Les shorts doivent être des vidéos en format portrait.",
+    "shortTooLong": "Un short ne peut pas dépasser 1 minute."
   },
   "pwa": {
     "update": {

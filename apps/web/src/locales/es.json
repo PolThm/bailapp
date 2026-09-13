@@ -414,7 +414,10 @@
         "videoRequired": "Se requiere un vídeo",
         "offline": "Necesitas estar en línea para subir un vídeo."
       },
-      "sending": "Enviando…"
+      "sending": "Enviando…",
+      "captureFrame": "Usar este fotograma",
+      "thumbnailAlt": "Imagen de vista previa elegida",
+      "thumbnailHint": "Pausa el vídeo donde quieras y usa ese fotograma como vista previa."
     },
     "created": "Figura añadida",
     "moreOptions": "Más opciones",
@@ -422,7 +425,11 @@
     "videoFormat": "Formato",
     "videoFormatHint": "Detectado automáticamente. Cámbialo solo si parece incorrecto.",
     "videoLanguagePlaceholder": "Elegir un idioma",
-    "privacyExplainer": "Tu figura sigue siendo privada: solo tú puedes verla. Podrás proponerla al catálogo público más adelante, desde tu perfil."
+    "privacyExplainer": "Tu figura sigue siendo privada: solo tú puedes verla. Podrás proponerla al catálogo público más adelante, desde tu perfil.",
+    "previewStartTime": "Inicio de la vista previa",
+    "previewStartTimeHint": "Dónde empieza la vista previa al pasar el cursor. Por defecto, el fotograma elegido.",
+    "shortNeedsPortrait": "Los shorts deben ser vídeos en formato vertical.",
+    "shortTooLong": "Un short no puede superar 1 minuto."
   },
   "pwa": {
     "update": {

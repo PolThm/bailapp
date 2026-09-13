@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AlertCircle, Film, Loader2, Upload, X } from 'lucide-react';
+import { AlertCircle, Film, ImageDown, Loader2, Upload, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { VideoFormat } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,8 @@ export interface UploadedVideoDraft {
   videoFormat: VideoFormat;
   /** Object URL for the local preview; revoked when the draft is replaced. */
   localPreviewUrl: string;
+  /** Where the poster frame was captured, in seconds. */
+  thumbnailTime: number;
 }
 
 interface VideoUploadFieldProps {
@@ -45,9 +47,12 @@ const ERROR_KEY_BY_CODE: Record<VideoCompressionErrorCode, string> = {
 export function VideoUploadField({ value, onChange, error, disabled }: VideoUploadFieldProps) {
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const previewRef = useRef<HTMLVideoElement | null>(null);
   const [stage, setStage] = useState<Stage>(value ? 'ready' : 'idle');
   const [progress, setProgress] = useState(0);
   const [internalError, setInternalError] = useState<string | null>(null);
+  const [isCapturingFrame, setIsCapturingFrame] = useState(false);
+  const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(null);
 
   // Conversion keeps running after unmount otherwise, and would then write to
   // a dead component.
@@ -83,10 +88,11 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
 
       // Grab the poster a moment in, so it is not the black frame many
       // recordings open on.
-      const thumbnailBlob = await extractThumbnail(
-        compressed.blob,
-        Math.min(THUMBNAIL_CAPTURE_FALLBACK_SECONDS, compressed.durationSeconds / 2)
+      const posterTime = Math.min(
+        THUMBNAIL_CAPTURE_FALLBACK_SECONDS,
+        compressed.durationSeconds / 2
       );
+      const thumbnailBlob = await extractThumbnail(compressed.blob, posterTime);
 
       if (!isMountedRef.current) return;
 
@@ -98,7 +104,9 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
         height: compressed.height,
         videoFormat: compressed.videoFormat,
         localPreviewUrl: URL.createObjectURL(compressed.blob),
+        thumbnailTime: posterTime,
       });
+      setThumbnailPreviewUrl(URL.createObjectURL(thumbnailBlob));
       setStage('ready');
     } catch (caught) {
       if (!isMountedRef.current) return;
@@ -108,9 +116,36 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
     }
   };
 
+  /**
+   * Re-captures the poster from wherever the viewer paused the preview. The
+   * video's own timeline is the scrubber, so no second slider is needed.
+   */
+  const handleCaptureFrame = async () => {
+    const element = previewRef.current;
+    if (!element || !value) return;
+
+    const atSeconds = element.currentTime;
+    setIsCapturingFrame(true);
+    try {
+      const thumbnailBlob = await extractThumbnail(value.blob, atSeconds);
+      if (!isMountedRef.current) return;
+      if (thumbnailPreviewUrl) URL.revokeObjectURL(thumbnailPreviewUrl);
+      setThumbnailPreviewUrl(URL.createObjectURL(thumbnailBlob));
+      onChange({ ...value, thumbnailBlob, thumbnailTime: atSeconds });
+    } catch {
+      // Keep the existing poster; nothing is lost.
+    } finally {
+      if (isMountedRef.current) setIsCapturingFrame(false);
+    }
+  };
+
   const handleClear = () => {
     if (value) {
       URL.revokeObjectURL(value.localPreviewUrl);
+    }
+    if (thumbnailPreviewUrl) {
+      URL.revokeObjectURL(thumbnailPreviewUrl);
+      setThumbnailPreviewUrl(null);
     }
     onChange(null);
     setStage('idle');
@@ -141,12 +176,45 @@ export function VideoUploadField({ value, onChange, error, disabled }: VideoUplo
       {value && stage === 'ready' ? (
         <div className="space-y-2">
           <video
+            ref={previewRef}
             src={value.localPreviewUrl}
             className="max-h-64 w-full rounded-md bg-black object-contain"
             controls
             playsInline
             preload="metadata"
           />
+
+          {/* Poster picker: pause anywhere, then grab that frame. */}
+          <div className="flex items-center gap-3 rounded-md border border-input p-2">
+            {thumbnailPreviewUrl ? (
+              <img
+                src={thumbnailPreviewUrl}
+                alt={t('newFigure.upload.thumbnailAlt')}
+                className="h-12 w-20 shrink-0 rounded object-cover"
+              />
+            ) : (
+              <div className="h-12 w-20 shrink-0 rounded bg-muted" />
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-muted-foreground">{t('newFigure.upload.thumbnailHint')}</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleCaptureFrame}
+              disabled={disabled || isCapturingFrame}
+            >
+              {isCapturingFrame ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <ImageDown className="mr-1 h-4 w-4" />
+                  {t('newFigure.upload.captureFrame')}
+                </>
+              )}
+            </Button>
+          </div>
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm text-muted-foreground">
               {t('newFigure.upload.ready', { size: formatBytes(value.blob.size) })}

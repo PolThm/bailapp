@@ -3,6 +3,7 @@ import {
   MAX_VIDEO_DURATION_SECONDS,
   TARGET_AUDIO_BITRATE,
   TARGET_VIDEO_BITRATE,
+  SHORT_MAX_DURATION_SECONDS,
   TARGET_VIDEO_SHORT_SIDE_PX,
 } from '@/lib/video/constants';
 
@@ -55,7 +56,7 @@ export interface CompressedVideo {
   durationSeconds: number;
   width: number;
   height: number;
-  /** Portrait footage becomes a short, landscape a classic. */
+  /** Portrait and at most a minute makes a short; everything else is a classic. */
   videoFormat: VideoFormat;
 }
 
@@ -74,6 +75,14 @@ export async function canCompressVideo(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/**
+ * Shorts are portrait and at most a minute long. A portrait video that runs
+ * longer is a perfectly valid classic, so orientation alone is not enough.
+ */
+export function isEligibleAsShort(width: number, height: number, durationSeconds: number): boolean {
+  return height > width && durationSeconds <= SHORT_MAX_DURATION_SECONDS;
 }
 
 /** H.264 in 4:2:0 needs even dimensions. */
@@ -210,6 +219,6 @@ export async function compressVideo(
     durationSeconds,
     width,
     height,
-    videoFormat: height > width ? 'short' : 'classic',
+    videoFormat: isEligibleAsShort(width, height, durationSeconds) ? 'short' : 'classic',
   };
 }

@@ -43,6 +43,7 @@ export function useCreateFigure() {
       videoAuthor: data.videoAuthor,
       startTime: data.startTime,
       endTime: data.endTime,
+      previewStartTime: data.previewStartTime,
       danceStyle: data.danceStyle,
       danceSubStyle: data.danceSubStyle,
       figureType: data.figureType,

@@ -9,6 +9,13 @@
 export const MAX_VIDEO_DURATION_SECONDS = 300; // 5 minutes
 
 /**
+ * A short is a portrait video of at most a minute. Anything longer, or in
+ * landscape, is a classic video — classics may be either orientation, so the
+ * aspect ratio alone never decides the format.
+ */
+export const SHORT_MAX_DURATION_SECONDS = 60;
+
+/**
  * Hard cap on the size of the file actually sent to Storage. Generous headroom
  * over the ~40 MB a full 5 minutes should produce, so an unusually noisy clip
  * is not rejected for being a little over budget.
