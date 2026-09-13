@@ -1,7 +1,7 @@
 ---
 name: PostHog integration
 description: Apply when interacting with PostHog/analytics tasks
-applyTo: "**"
+applyTo: '**'
 ---
 
 Never hallucinate an API key. Instead, always use the API key populated in the .env file.
