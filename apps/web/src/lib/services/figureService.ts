@@ -79,6 +79,8 @@ function figureToFirestoreFigure(figure: Figure): FirestoreFigure {
     'storagePath',
     'videoFormat',
     'durationSeconds',
+    'width',
+    'height',
     'ownerId',
     'processingStatus',
     'moderationStatus',

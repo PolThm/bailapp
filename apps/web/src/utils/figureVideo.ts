@@ -66,6 +66,26 @@ export function getFigureVideoFormat(figure: Figure): VideoFormat {
 }
 
 /**
+ * Whether a figure's media should be letterboxed rather than cropped.
+ *
+ * True for an upload whose own shape does not match the format it is published
+ * as - a portrait video posted as a classic, say. Cropping one of those into a
+ * 16:9 frame zooms into the middle of the dancer; contain shows the whole
+ * frame with bars down the sides.
+ *
+ * YouTube figures are excluded: their thumbnails are always 16:9 regardless of
+ * the video, so cover is what fills the card cleanly.
+ */
+export function shouldLetterboxFigure(figure: Figure): boolean {
+  if (!isUploadedFigure(figure) || !figure.width || !figure.height) {
+    return false;
+  }
+  const isPortraitSource = figure.height > figure.width;
+  const isPortraitFrame = getFigureVideoFormat(figure) === 'short';
+  return isPortraitSource !== isPortraitFrame;
+}
+
+/**
  * Poster image. YouTube thumbnails are synthesised from the video id, while
  * uploads carry a frame captured at upload time.
  */
