@@ -1,4 +1,4 @@
-import { Compass, Heart, Music, ArrowRight } from 'lucide-react';
+import { Compass, Heart, Music, ArrowRight, Upload } from 'lucide-react';
 import { usePostHog } from 'posthog-js/react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -65,50 +65,93 @@ export function Home() {
           </div>
         </div>
 
-        {/* Options Grid */}
-        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center gap-6 py-4 lg:grid lg:max-w-5xl lg:grid-cols-3 lg:grid-rows-1 lg:items-start">
-          {options.map((option, index) => (
+        <div className="flex flex-1 flex-col justify-center gap-4">
+          {/* Options Grid */}
+          <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-6 py-4 lg:grid lg:max-w-5xl lg:grid-cols-3 lg:grid-rows-1 lg:items-start">
+            {options.map((option, index) => (
+              <Link
+                key={option.link}
+                to={option.link}
+                className="w-full touch-manipulation transition-all duration-200 active:scale-[0.97]"
+                style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => {
+                  trackEvent(posthog, AnalyticsEvents.HOME_CARD_CLICKED, {
+                    card_title: option.title,
+                    destination: option.link,
+                  });
+                }}
+              >
+                <Card className="group relative overflow-hidden border-0 bg-card/80 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl lg:h-[170px] lg:text-center lg:hover:-translate-y-1">
+                  <div className={`absolute inset-0 opacity-5 ${option.bgGradient}`} />
+
+                  <CardHeader className="relative flex h-full justify-center p-4 lg:p-5">
+                    <div className="flex items-center justify-between lg:flex-col lg:items-center lg:justify-center lg:gap-4">
+                      {/* Text + Icon */}
+                      <div className="flex-1 space-y-1 lg:flex lg:flex-col lg:items-center lg:space-y-2">
+                        <div className="flex items-center gap-2 lg:flex-col lg:gap-3">
+                          <option.icon className={`h-5 w-5 lg:h-7 lg:w-7 ${option.iconColor}`} />
+                          <CardTitle className="text-lg font-semibold leading-tight lg:text-xl">
+                            {option.title}
+                          </CardTitle>
+                        </div>
+
+                        <CardDescription className="max-w-xs text-sm text-muted-foreground lg:flex lg:items-center lg:justify-center lg:gap-1.5 lg:text-center">
+                          <ArrowRight className="hidden h-3.5 w-3.5 shrink-0 text-muted-foreground/70 lg:inline-block" />
+                          <span>{option.description}</span>
+                        </CardDescription>
+                      </div>
+
+                      {/* Arrow */}
+                      <div className="ml-3 flex h-8 w-8 items-center justify-center rounded-full bg-muted/50 transition-colors hover:bg-muted/70 lg:hidden">
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          {/* Upload banner. Deliberately not a fourth card: the three above are
+            destinations - sections of the app - while this is an action, and a
+            fourth would also break the three-column grid. The link opens the
+            new-figure modal directly rather than dropping the user on Discover
+            to hunt for the button. */}
+          <div className="mx-auto w-full max-w-lg pb-4 lg:max-w-5xl">
             <Link
-              key={option.link}
-              to={option.link}
-              className="w-full touch-manipulation transition-all duration-200 active:scale-[0.97]"
-              style={{ animationDelay: `${index * 100}ms` }}
+              to="/discover?new=1"
+              className="block touch-manipulation transition-all duration-200 active:scale-[0.98]"
               onClick={() => {
                 trackEvent(posthog, AnalyticsEvents.HOME_CARD_CLICKED, {
-                  card_title: option.title,
-                  destination: option.link,
+                  card_title: 'upload',
+                  destination: '/discover?new=1',
                 });
               }}
             >
-              <Card className="group relative overflow-hidden border-0 bg-card/80 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl lg:h-[170px] lg:text-center lg:hover:-translate-y-1">
-                <div className={`absolute inset-0 opacity-5 ${option.bgGradient}`} />
+              <Card className="group relative overflow-hidden border border-primary/30 bg-card/80 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 opacity-60" />
 
-                <CardHeader className="relative flex h-full justify-center p-4 lg:p-5">
-                  <div className="flex items-center justify-between lg:flex-col lg:items-center lg:justify-center lg:gap-4">
-                    {/* Text + Icon */}
-                    <div className="flex-1 space-y-1 lg:flex lg:flex-col lg:items-center lg:space-y-2">
-                      <div className="flex items-center gap-2 lg:flex-col lg:gap-3">
-                        <option.icon className={`h-5 w-5 lg:h-7 lg:w-7 ${option.iconColor}`} />
-                        <CardTitle className="text-lg font-semibold leading-tight lg:text-xl">
-                          {option.title}
-                        </CardTitle>
-                      </div>
+                <CardHeader className="relative flex-row items-center gap-4 p-4 lg:p-5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15">
+                    <Upload className="h-5 w-5 text-primary" />
+                  </div>
 
-                      <CardDescription className="max-w-xs text-sm text-muted-foreground lg:flex lg:items-center lg:justify-center lg:gap-1.5 lg:text-center">
-                        <ArrowRight className="hidden h-3.5 w-3.5 shrink-0 text-muted-foreground/70 lg:inline-block" />
-                        <span>{option.description}</span>
-                      </CardDescription>
-                    </div>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <CardTitle className="text-base font-semibold leading-tight lg:text-lg">
+                      {t('home.upload.title')}
+                    </CardTitle>
+                    <CardDescription className="text-sm text-muted-foreground">
+                      {t('home.upload.description')}
+                    </CardDescription>
+                  </div>
 
-                    {/* Arrow */}
-                    <div className="ml-3 flex h-8 w-8 items-center justify-center rounded-full bg-muted/50 transition-colors hover:bg-muted/70 lg:hidden">
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 transition-colors group-hover:bg-primary/25">
+                    <ArrowRight className="h-4 w-4 text-primary" />
                   </div>
                 </CardHeader>
               </Card>
             </Link>
-          ))}
+          </div>
         </div>
       </div>
     </>

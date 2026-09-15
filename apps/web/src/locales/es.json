@@ -29,6 +29,10 @@
         "title": "Mejorar tus coreografías",
         "description": "Crear y refinar tus secuencias"
       }
+    },
+    "upload": {
+      "title": "Añade tus propios vídeos",
+      "description": "Graba una figura o importa un vídeo. Queda privado y se comparte por enlace."
     }
   },
   "discover": {

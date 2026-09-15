@@ -29,6 +29,10 @@
         "title": "Polish your choreographies",
         "description": "Create and refine your sequences"
       }
+    },
+    "upload": {
+      "title": "Add your own videos",
+      "description": "Film a figure or import a clip. It stays private and you share it by link."
     }
   },
   "discover": {

@@ -29,6 +29,10 @@
         "title": "Perfeziona le tue coreografie",
         "description": "Crea e affina le tue sequenze"
       }
+    },
+    "upload": {
+      "title": "Aggiungi i tuoi video",
+      "description": "Filma una figura o importa un video. Resta privato e si condivide tramite link."
     }
   },
   "discover": {

@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { Figure } from '@/types';
 import { AdvancedFiltersModal } from '@/components/AdvancedFiltersModal';
 import { AuthModal } from '@/components/AuthModal';
@@ -36,6 +36,7 @@ export function Discover() {
   const { t } = useTranslation();
   const { catalogueFigures: figures, catalogueShorts: shorts } = useFigures();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
   const { user } = useAuth();
   const createFigure = useCreateFigure();
@@ -339,6 +340,28 @@ export function Discover() {
 
     return positions;
   }, [distributedShortsBySection.length, screenSize]);
+
+  // Entry point for the home banner: land straight on the form rather than on
+  // a page where the button still has to be found. The parameter is consumed
+  // immediately so a refresh or a back navigation does not reopen the modal.
+  useEffect(() => {
+    if (searchParams.get('new') === null) return;
+
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.delete('new');
+        return next;
+      },
+      { replace: true }
+    );
+
+    if (user) {
+      setShowNewFigureModal(true);
+    } else {
+      setShowAuthModal(true);
+    }
+  }, [searchParams, setSearchParams, user]);
 
   const handleAddFigure = () => {
     if (!user) {

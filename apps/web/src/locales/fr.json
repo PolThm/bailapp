@@ -29,6 +29,10 @@
         "title": "Peaufiner tes chorégraphies",
         "description": "Créer et affiner tes séquences"
       }
+    },
+    "upload": {
+      "title": "Ajoutez vos propres vidéos",
+      "description": "Filmez une figure ou importez une vidéo. Elle reste privée et se partage par lien."
     }
   },
   "discover": {
