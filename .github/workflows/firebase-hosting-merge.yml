@@ -52,3 +52,29 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BAILAPP_POLTHM }}
           channelId: live
           projectId: bailapp-polthm
+
+      # Hosting alone is not the whole deploy: the app depends on Firestore
+      # rules, indexes and Storage rules that live in this repo too. Shipping
+      # code without them leaves production running against stale rules, which
+      # fails at runtime with no build error to point at it.
+      - name: Check whether rules or indexes changed
+        id: rules_changed
+        run: |
+          if git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" \
+            | grep -qE '^(firestore\.rules|storage\.rules|firestore\.indexes\.json)$'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy Firestore and Storage rules
+        if: steps.rules_changed.outputs.changed == 'true'
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/service-account.json"
+          bunx firebase-tools deploy \
+            --only firestore:rules,firestore:indexes,storage \
+            --project bailapp-polthm \
+            --non-interactive
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BAILAPP_POLTHM }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/service-account.json
