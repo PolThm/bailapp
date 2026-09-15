@@ -6,6 +6,7 @@ export enum StorageKey {
   FAVORITES_SHOW_IMAGES = 'favorites_showImages',
   CHOREOGRAPHIES = 'choreographies',
   EXAMPLE_CHOREOGRAPHY_SHOWN = 'exampleChoreographyShown',
+  AUTO_FAVOURITED_FIGURES = 'autoFavouritedFigures',
 }
 
 /**
