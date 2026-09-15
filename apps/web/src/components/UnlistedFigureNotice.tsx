@@ -22,14 +22,9 @@ export function UnlistedFigureNotice({ figure }: { figure: Figure }) {
   return (
     <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2">
       <EyeOff className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-      <div className="min-w-0">
-        <p className="text-sm font-medium">
-          {t('figure.unlisted.title', { author: figure.importedBy })}
-        </p>
-        {/* Says plainly that the link is the access control, so nobody mistakes
-            "private" for "nobody else can see it". */}
-        <p className="text-xs text-muted-foreground">{t('figure.unlisted.description')}</p>
-      </div>
+      <p className="min-w-0 text-sm font-medium">
+        {t('figure.unlisted.title', { author: figure.importedBy })}
+      </p>
     </div>
   );
 }

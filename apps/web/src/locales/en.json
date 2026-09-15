@@ -275,8 +275,7 @@
     },
     "unlisted": {
       "title": "Private video added by {{author}}",
-      "badge": "Private",
-      "description": "Not in the catalogue, visible with the link."
+      "badge": "Private"
     }
   },
   "badges": {
