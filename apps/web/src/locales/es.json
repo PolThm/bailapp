@@ -276,7 +276,7 @@
     "unlisted": {
       "title": "Vídeo privado añadido por {{author}}",
       "badge": "Privado",
-      "description": "No está en el catálogo. Cualquiera con el enlace puede verlo."
+      "description": "Fuera del catálogo, visible con el enlace."
     }
   },
   "badges": {
