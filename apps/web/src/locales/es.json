@@ -425,7 +425,10 @@
       "thumbnailAlt": "Imagen de vista previa elegida",
       "thumbnailHint": "Pausa el vídeo en el fotograma que quieras y captúralo.",
       "thumbnailLabel": "Imagen de vista previa",
-      "preparing": "Preparando…"
+      "preparing": "Preparando…",
+      "waiting": "Esperando el vídeo…",
+      "waitingHint": "Tu teléfono está preparando el archivo. Puede tardar un momento si el vídeo es largo.",
+      "pickHint": "Tras elegirlo, tu teléfono puede tardar un momento en preparar el archivo."
     },
     "created": "Figura añadida",
     "moreOptions": "Más opciones",

@@ -425,7 +425,10 @@
       "thumbnailAlt": "Image d'aperçu choisie",
       "thumbnailHint": "Mettez la vidéo en pause sur l'image voulue, puis capturez-la.",
       "thumbnailLabel": "Image d'aperçu",
-      "preparing": "Préparation…"
+      "preparing": "Préparation…",
+      "waiting": "En attente de la vidéo…",
+      "waitingHint": "Votre téléphone prépare le fichier. Cela peut prendre un moment pour une vidéo longue.",
+      "pickHint": "Après votre choix, votre téléphone peut mettre un moment à préparer le fichier."
     },
     "created": "Figure ajoutée",
     "moreOptions": "Plus d'options",
