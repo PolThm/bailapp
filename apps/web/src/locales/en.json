@@ -417,13 +417,15 @@
         "videoRequired": "A video is required",
         "offline": "You need to be online to upload a video.",
         "cannotDecode": "Your browser cannot read this video's format. On iPhone, try exporting it from Photos first.",
-        "noEncoder": "Your device cannot convert a video at this size. Try a shorter or smaller clip."
+        "noEncoder": "Your device cannot convert a video at this size. Try a shorter or smaller clip.",
+        "canceled": "Conversion canceled."
       },
       "sending": "Sending…",
       "captureFrame": "Use this frame",
       "thumbnailAlt": "Chosen preview image",
       "thumbnailHint": "Pause the video on the frame you want, then capture it.",
-      "thumbnailLabel": "Preview image"
+      "thumbnailLabel": "Preview image",
+      "preparing": "Preparing…"
     },
     "created": "Figure added",
     "moreOptions": "More options",

@@ -417,13 +417,15 @@
         "videoRequired": "Une vidéo est requise",
         "offline": "Vous devez être en ligne pour envoyer une vidéo.",
         "cannotDecode": "Votre navigateur ne sait pas lire le format de cette vidéo. Sur iPhone, essayez de l'exporter depuis Photos d'abord.",
-        "noEncoder": "Votre appareil ne peut pas convertir une vidéo de cette taille. Essayez un extrait plus court ou plus petit."
+        "noEncoder": "Votre appareil ne peut pas convertir une vidéo de cette taille. Essayez un extrait plus court ou plus petit.",
+        "canceled": "Conversion annulée."
       },
       "sending": "Envoi…",
       "captureFrame": "Utiliser cette image",
       "thumbnailAlt": "Image d'aperçu choisie",
       "thumbnailHint": "Mettez la vidéo en pause sur l'image voulue, puis capturez-la.",
-      "thumbnailLabel": "Image d'aperçu"
+      "thumbnailLabel": "Image d'aperçu",
+      "preparing": "Préparation…"
     },
     "created": "Figure ajoutée",
     "moreOptions": "Plus d'options",

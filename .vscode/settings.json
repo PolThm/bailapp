@@ -72,11 +72,5 @@
   "editor.renderValidationDecorations": "on",
   "editor.codeLens": true,
   // Show errors in gutter
-  "editor.gutter": true,
-  // Problem colors
-  "workbench.colorCustomizations": {
-    "editorError.foreground": "#f14c4c",
-    "editorWarning.foreground": "#cca700",
-    "editorInfo.foreground": "#75beff"
-  }
+  "editor.gutter": true
 }

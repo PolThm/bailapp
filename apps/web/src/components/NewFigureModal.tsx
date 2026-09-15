@@ -103,6 +103,8 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   const [uploadedVideo, setUploadedVideo] = useState<UploadedVideoDraft | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // True while the picked file is being read and converted.
+  const [isVideoProcessing, setIsVideoProcessing] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // The real YouTube title, kept apart so a user-shortened title does not lose it.
@@ -166,7 +168,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   };
 
   const handleClose = () => {
-    if (isSubmitting) return;
+    if (isSubmitting || isVideoProcessing) return;
     resetAll();
     onClose();
   };
@@ -287,6 +289,10 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
     }
   };
 
+  // Converting takes minutes on a phone; letting the user switch source,
+  // submit or close mid-way would throw that work away silently.
+  const isLocked = isSubmitting || isVideoProcessing;
+
   const eligibility = shortEligibility();
   const format = effectiveFormat();
 
@@ -305,7 +311,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
                 key={option}
                 type="button"
                 onClick={() => switchSource(option)}
-                disabled={isSubmitting}
+                disabled={isLocked}
                 className={`rounded px-3 py-2 text-sm font-medium transition-colors ${
                   source === option
                     ? 'bg-background text-foreground shadow-sm'
@@ -346,6 +352,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
               error={errors.uploadedVideo}
               disabled={isSubmitting}
               format={format}
+              onProcessingChange={setIsVideoProcessing}
             />
           )}
 
@@ -604,13 +611,17 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
               variant="outline"
               onClick={handleClose}
               className="flex-1"
-              disabled={isSubmitting}
+              disabled={isLocked}
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" className="flex-1" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSubmitting ? t('newFigure.upload.sending') : t('newFigure.addButton')}
+            <Button type="submit" className="flex-1" disabled={isLocked}>
+              {isLocked && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting
+                ? t('newFigure.upload.sending')
+                : isVideoProcessing
+                  ? t('newFigure.upload.preparing')
+                  : t('newFigure.addButton')}
             </Button>
           </div>
         </form>

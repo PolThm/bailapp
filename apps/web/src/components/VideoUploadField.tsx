@@ -35,6 +35,8 @@ interface VideoUploadFieldProps {
   onChange: (draft: UploadedVideoDraft | null) => void;
   error?: string;
   disabled?: boolean;
+  /** Fires while the file is being read and converted, so the form can lock. */
+  onProcessingChange?: (isProcessing: boolean) => void;
   /**
    * Format the figure will be published as. Comes from the modal because the
    * user may override what the video's own aspect ratio suggested.
@@ -51,6 +53,7 @@ const ERROR_KEY_BY_CODE: Record<VideoCompressionErrorCode, string> = {
   'cannot-decode': 'cannotDecode',
   'no-encoder': 'noEncoder',
   'too-long': 'tooLong',
+  canceled: 'canceled',
   'encode-failed': 'encodeFailed',
 };
 
@@ -60,11 +63,14 @@ export function VideoUploadField({
   error,
   disabled,
   format,
+  onProcessingChange,
 }: VideoUploadFieldProps) {
   const { t } = useTranslation();
   const posthog = usePostHog();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const previewRef = useRef<HTMLVideoElement | null>(null);
+  const busyPanelRef = useRef<HTMLDivElement | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const [stage, setStage] = useState<Stage>(value ? 'ready' : 'idle');
   const [progress, setProgress] = useState(0);
   const [internalError, setInternalError] = useState<string | null>(null);
@@ -99,11 +105,18 @@ export function VideoUploadField({
     setStage('analyzing');
 
     try {
-      const compressed = await compressVideo(file, (ratio) => {
-        if (!isMountedRef.current) return;
-        setStage('compressing');
-        setProgress(ratio);
-      });
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      const compressed = await compressVideo(
+        file,
+        (ratio) => {
+          if (!isMountedRef.current) return;
+          setStage('compressing');
+          setProgress(ratio);
+        },
+        controller.signal
+      );
 
       // Grab the poster a moment in, so it is not the black frame many
       // recordings open on.
@@ -136,6 +149,12 @@ export function VideoUploadField({
       if (!isMountedRef.current) return;
       const code = caught instanceof VideoCompressionError ? caught.code : 'encode-failed';
       const detail = caught instanceof Error ? caught.message : String(caught);
+
+      if (code === 'canceled') {
+        setStage('idle');
+        setProgress(0);
+        return;
+      }
 
       setInternalError(t(`newFigure.upload.errors.${ERROR_KEY_BY_CODE[code]}`));
       // Shown because these failures depend on the device's codec support, and
@@ -202,6 +221,16 @@ export function VideoUploadField({
   const previewFormat = format ?? value?.videoFormat ?? 'classic';
 
   const isBusy = stage === 'analyzing' || stage === 'compressing';
+
+  // iOS keeps its picker up while it exports the clip from Photos, so the user
+  // lands back in the form with work already running. Scrolling the panel into
+  // view is what makes that visible instead of looking like nothing happened.
+  useEffect(() => {
+    onProcessingChange?.(isBusy);
+    if (isBusy) {
+      busyPanelRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [isBusy, onProcessingChange]);
   const displayedError = internalError ?? error;
 
   return (
@@ -325,31 +354,48 @@ export function VideoUploadField({
         </div>
       ) : (
         <div
-          className={`flex flex-col items-center justify-center gap-3 rounded-md border border-dashed p-6 ${
-            displayedError ? 'border-destructive' : 'border-input'
+          ref={busyPanelRef}
+          className={`flex flex-col items-center justify-center gap-3 rounded-md border p-6 ${
+            isBusy
+              ? 'border-solid border-primary/50 bg-primary/5'
+              : displayedError
+                ? 'border-dashed border-destructive'
+                : 'border-dashed border-input'
           }`}
         >
           {isBusy ? (
             <>
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              <p className="text-sm font-medium">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              <p className="text-base font-semibold">
                 {stage === 'analyzing'
                   ? t('newFigure.upload.analyzing')
                   : t('newFigure.upload.compressing', { percent: Math.round(progress * 100) })}
               </p>
-              {stage === 'compressing' && (
-                <>
-                  <div className="h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full bg-primary transition-[width] duration-200"
-                      style={{ width: `${Math.round(progress * 100)}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {t('newFigure.upload.compressingHint')}
-                  </p>
-                </>
-              )}
+              {/* The bar is always present, indeterminate while analysing.
+                  A spinner alone reads as "nothing is happening", which is
+                  exactly the complaint on iOS, where the picker sits over the
+                  form while the clip is exported from Photos. */}
+              <div className="h-2 w-full max-w-xs overflow-hidden rounded-full bg-muted">
+                {stage === 'compressing' ? (
+                  <div
+                    className="h-full rounded-full bg-primary transition-[width] duration-200"
+                    style={{ width: `${Math.max(2, Math.round(progress * 100))}%` }}
+                  />
+                ) : (
+                  <div className="h-full w-1/3 animate-pulse rounded-full bg-primary" />
+                )}
+              </div>
+              <p className="text-center text-xs text-muted-foreground">
+                {t('newFigure.upload.compressingHint')}
+              </p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => abortRef.current?.abort()}
+              >
+                {t('newFigure.upload.cancel')}
+              </Button>
             </>
           ) : (
             <>

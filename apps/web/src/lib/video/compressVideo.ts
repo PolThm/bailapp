@@ -40,6 +40,7 @@ export type VideoCompressionErrorCode =
   | 'cannot-decode'
   | 'no-encoder'
   | 'too-long'
+  | 'canceled'
   | 'encode-failed';
 
 export class VideoCompressionError extends Error {
@@ -141,7 +142,8 @@ export async function probeVideo(file: File): Promise<{
  */
 export async function compressVideo(
   file: File,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  signal?: AbortSignal
 ): Promise<CompressedVideo> {
   if (!(await canCompressVideo())) {
     throw new VideoCompressionError('unsupported-browser');
@@ -232,13 +234,27 @@ export async function compressVideo(
     conversion.onProgress = (progress) => onProgress(progress);
   }
 
+  // Conversion runs for minutes on a phone, so abandoning it has to be
+  // possible; otherwise the form has to stay locked until it finishes.
+  const onAbort = () => void conversion.cancel();
+  signal?.addEventListener('abort', onAbort, { once: true });
+
   try {
     await conversion.execute();
   } catch (error) {
+    if (signal?.aborted) {
+      throw new VideoCompressionError('canceled');
+    }
     throw new VideoCompressionError(
       'encode-failed',
       error instanceof Error ? error.message : undefined
     );
+  } finally {
+    signal?.removeEventListener('abort', onAbort);
+  }
+
+  if (signal?.aborted) {
+    throw new VideoCompressionError('canceled');
   }
 
   if (!target.buffer) {
