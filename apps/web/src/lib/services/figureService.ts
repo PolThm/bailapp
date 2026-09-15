@@ -23,6 +23,13 @@ import { db } from '@/lib/firebase';
 
 const FIGURES_COLLECTION = 'figures';
 
+/**
+ * Visibility every figure is created with: reachable by link, absent from the
+ * catalogue. Exported so callers building the local copy use the same value -
+ * the security rules reject anything else on create anyway.
+ */
+export const INITIAL_FIGURE_VISIBILITY = 'unlisted' as const;
+
 /** On-disk shape: same fields as `Figure`, but dates are Timestamps. */
 export interface FirestoreFigure extends Omit<Figure, 'id' | 'createdAt' | 'lastOpenedAt'> {
   createdAt: Timestamp;
@@ -108,7 +115,7 @@ export async function createFigureInFirestore(figure: Figure): Promise<void> {
   try {
     const data = figureToFirestoreFigure({
       ...figure,
-      visibility: 'unlisted',
+      visibility: INITIAL_FIGURE_VISIBILITY,
       moderationStatus: figure.moderationStatus ?? 'none',
     });
     await setDoc(doc(db, FIGURES_COLLECTION, figure.id), data);

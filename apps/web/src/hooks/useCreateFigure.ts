@@ -5,7 +5,7 @@ import type { Figure, VideoLanguage } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useFigures } from '@/hooks/useFigures';
 import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
-import { createFigureInFirestore } from '@/lib/services/figureService';
+import { INITIAL_FIGURE_VISIBILITY, createFigureInFirestore } from '@/lib/services/figureService';
 import {
   deleteFigureVideoFromStorage,
   uploadFigureVideoToStorage,
@@ -53,9 +53,10 @@ export function useCreateFigure() {
       phrasesCount: data.phrasesCount,
       videoLanguage:
         data.videoLanguage ?? LANGUAGE_BY_LOCALE[i18n.language?.split('-')[0]] ?? 'english',
-      // Every figure starts private; the security rules enforce it too.
-      // Going public happens through review, from the profile.
-      visibility: 'private',
+      // Must match what createFigureInFirestore stores, or the in-memory copy
+      // misreports its own state: isUnlistedFigure would reject it, and the
+      // figure would neither be badged nor auto-favourited after creation.
+      visibility: INITIAL_FIGURE_VISIBILITY,
       videoFormat: data.videoFormat,
       importedBy: user.displayName || 'User',
       createdAt: new Date().toISOString(),
