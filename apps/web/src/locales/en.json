@@ -399,7 +399,7 @@
     "upload": {
       "pickFile": "Choose a video",
       "changeFile": "Choose another video",
-      "hint": "5 minutes max. The video is converted to 540p on your device before being sent, so the upload stays light.",
+      "hint": "5 minutes max.",
       "privacyNotice": "Your video stays private. Anyone you give the link to will be able to watch it.",
       "analyzing": "Analysing the video…",
       "compressing": "Converting… {{percent}}%",
@@ -440,7 +440,11 @@
     "previewStartTime": "Preview start",
     "previewStartTimeHint": "Where the hover preview begins. Defaults to the frame you picked.",
     "shortNeedsPortrait": "Shorts must be portrait videos.",
-    "shortTooLong": "Shorts cannot exceed 1 minute."
+    "shortTooLong": "Shorts cannot exceed 1 minute.",
+    "orientation": {
+      "classic": "Landscape",
+      "short": "Portrait"
+    }
   },
   "pwa": {
     "update": {

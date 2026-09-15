@@ -2,8 +2,12 @@ import { createContext, useContext } from 'react';
 import type { Figure, DanceStyle } from '@/types';
 
 export interface FiguresContextType {
+  /** Everything the user can reach: catalogue, their own, and favourited links. */
   figures: Figure[];
   shorts: Figure[];
+  /** The curated catalogue alone, for the public browse surface. */
+  catalogueFigures: Figure[];
+  catalogueShorts: Figure[];
   /** The signed-in user's own figures, whatever their visibility. */
   userFigures: Figure[];
   isLoadingUserFigures: boolean;

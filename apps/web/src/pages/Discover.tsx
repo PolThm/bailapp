@@ -34,7 +34,7 @@ function shuffleArray<T>(array: T[]): T[] {
 
 export function Discover() {
   const { t } = useTranslation();
-  const { figures, shorts } = useFigures();
+  const { catalogueFigures: figures, catalogueShorts: shorts } = useFigures();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { user } = useAuth();

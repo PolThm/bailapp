@@ -23,7 +23,7 @@ import { useFigures } from '@/hooks/useFigures';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { useOrientation } from '@/hooks/useOrientation';
 import { getFigureFromFirestore } from '@/lib/services/figureService';
-import { getFigurePlayerTarget } from '@/utils/figureVideo';
+import { getFigurePlayerTarget, isUnlistedFigure } from '@/utils/figureVideo';
 import { parseTimeToSeconds } from '@/utils/timeParser';
 
 // YouTube IFrame Player API types
@@ -73,7 +73,7 @@ export function FigureDetail() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { getFigure } = useFigures();
-  const { isFavorite, toggleFavorite, updateLastOpened } = useFavorites();
+  const { isFavorite, toggleFavorite, updateLastOpened, addToFavorites } = useFavorites();
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -118,6 +118,27 @@ export function FigureDetail() {
 
   const figure = contextFigure ?? fetchedFigure ?? undefined;
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
+  // Following a link to an unlisted figure is what puts it in your library:
+  // it is in no catalogue query, so without this the link is the only way back
+  // to it. Own figures are excluded - they are already listed in the profile.
+  const autoFavouritedRef = useRef<string | null>(null);
+  // The favourites context returns fresh function identities each render, so
+  // they are read through a ref: listing them as dependencies would re-run
+  // this on every render.
+  const favouritesApiRef = useRef({ isFavorite, addToFavorites });
+  favouritesApiRef.current = { isFavorite, addToFavorites };
+
+  const unlistedFigureId =
+    figure && user && isUnlistedFigure(figure) && figure.ownerId !== user.uid ? figure.id : null;
+
+  useEffect(() => {
+    if (!unlistedFigureId) return;
+    if (autoFavouritedRef.current === unlistedFigureId) return;
+    if (favouritesApiRef.current.isFavorite(unlistedFigureId)) return;
+
+    autoFavouritedRef.current = unlistedFigureId;
+    favouritesApiRef.current.addToFavorites(unlistedFigureId);
+  }, [unlistedFigureId]);
   const lastUpdatedIdRef = useRef<string | null>(null);
 
   // Initialize refs at the top level (before any conditional returns)

@@ -387,7 +387,7 @@ export function VideoUploadField({
           {isBusy ? (
             <>
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="text-base font-semibold">
+              <p className="text-base font-semibold text-primary">
                 {stage === 'waiting'
                   ? t('newFigure.upload.waiting')
                   : stage === 'analyzing'

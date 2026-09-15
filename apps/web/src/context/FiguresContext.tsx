@@ -93,6 +93,12 @@ export function FiguresProvider({ children }: { children: ReactNode }) {
     [remoteFigures, withLastOpened]
   );
 
+  // Discover shows the curated catalogue only. User figures reach people
+  // through a link and live in favourites and the profile, never in the
+  // public browse surface.
+  const catalogueFigures = useMemo(() => withLastOpened([...classicVideoList]), [withLastOpened]);
+  const catalogueShorts = useMemo(() => withLastOpened([...shortVideoList]), [withLastOpened]);
+
   const userFigures = useMemo(
     () => (user ? remoteFigures.filter((figure) => figure.ownerId === user.uid) : ([] as Figure[])),
     [remoteFigures, user]
@@ -137,6 +143,8 @@ export function FiguresProvider({ children }: { children: ReactNode }) {
       value={{
         figures,
         shorts,
+        catalogueFigures,
+        catalogueShorts,
         userFigures,
         isLoadingUserFigures,
         getFigure,

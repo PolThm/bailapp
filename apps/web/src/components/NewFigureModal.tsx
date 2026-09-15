@@ -98,7 +98,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   const { t } = useTranslation();
   const { isOffline } = useOfflineStatus();
 
-  const [source, setSource] = useState<VideoSource>('youtube');
+  const [source, setSource] = useState<VideoSource>('upload');
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [uploadedVideo, setUploadedVideo] = useState<UploadedVideoDraft | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -158,7 +158,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   const resetAll = () => {
     if (uploadedVideo) URL.revokeObjectURL(uploadedVideo.localPreviewUrl);
     setForm(EMPTY_FORM);
-    setSource('youtube');
+    setSource('upload');
     setUploadedVideo(null);
     setErrors({});
     setSubmitError(null);
@@ -306,7 +306,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Video source */}
           <div className="grid grid-cols-2 gap-2 rounded-md bg-muted p-1">
-            {(['youtube', 'upload'] as const).map((option) => (
+            {(['upload', 'youtube'] as const).map((option) => (
               <button
                 key={option}
                 type="button"
@@ -376,7 +376,9 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
                         : 'border-input text-muted-foreground hover:text-foreground'
                     } ${disabled ? 'cursor-not-allowed opacity-40' : ''}`}
                   >
-                    {t(`badges.videoFormat.${option}`)}
+                    {source === 'upload'
+                      ? t(`newFigure.orientation.${option}`)
+                      : t(`badges.videoFormat.${option}`)}
                   </button>
                 );
               })}
