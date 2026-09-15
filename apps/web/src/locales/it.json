@@ -427,8 +427,6 @@
       "thumbnailHint": "Metti in pausa il video sul fotogramma che vuoi, poi catturalo.",
       "thumbnailLabel": "Immagine di anteprima",
       "preparing": "Preparazione…",
-      "waiting": "In attesa del video…",
-      "waitingHint": "Il tuo telefono sta preparando il file. Può richiedere un momento per un video lungo.",
       "pickHint": "Dopo la scelta, il telefono può impiegare un momento a preparare il file."
     },
     "created": "Figura aggiunta",

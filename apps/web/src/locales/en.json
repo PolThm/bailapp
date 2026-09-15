@@ -427,8 +427,6 @@
       "thumbnailHint": "Pause the video on the frame you want, then capture it.",
       "thumbnailLabel": "Preview image",
       "preparing": "Preparing…",
-      "waiting": "Waiting for the video…",
-      "waitingHint": "Your phone is preparing the file. This can take a moment for a long clip.",
       "pickHint": "After you choose it, your phone may take a moment to prepare the file."
     },
     "created": "Figure added",

@@ -46,9 +46,7 @@ interface VideoUploadFieldProps {
   format?: VideoFormat;
 }
 
-type Stage =
-  /** Picker is open, or iOS is still exporting the asset from Photos. */
-  'waiting' | 'idle' | 'analyzing' | 'compressing' | 'ready';
+type Stage = 'idle' | 'analyzing' | 'compressing' | 'ready';
 
 const ERROR_KEY_BY_CODE: Record<VideoCompressionErrorCode, string> = {
   'unsupported-browser': 'unsupportedBrowser',
@@ -228,33 +226,17 @@ export function VideoUploadField({
   // Falls back to what the video itself suggests until the modal says otherwise.
   const previewFormat = format ?? value?.videoFormat ?? 'classic';
 
-  const isBusy = stage === 'waiting' || stage === 'analyzing' || stage === 'compressing';
-
-  // The file input's 'cancel' event fires when the picker is dismissed without
-  // a choice, which must not strand the waiting stage. Attached natively since
-  // React does not type it. Spec'd, and available from Safari 16.4 - the same
-  // floor WebCodecs already sets for this feature.
-  useEffect(() => {
-    const input = inputRef.current;
-    if (!input) return;
-
-    const onCancel = () => setStage((current) => (current === 'waiting' ? 'idle' : current));
-    input.addEventListener('cancel', onCancel);
-    return () => input.removeEventListener('cancel', onCancel);
-  }, []);
+  const isBusy = stage === 'analyzing' || stage === 'compressing';
 
   // iOS keeps its picker up while it exports the clip from Photos, so the user
   // lands back in the form with work already running. Scrolling the panel into
   // view is what makes that visible instead of looking like nothing happened.
   useEffect(() => {
-    // Deliberately not 'waiting': that stage depends on the picker's cancel
-    // event to end, and a browser without it would leave the modal locked with
-    // no way out. Only real work - which always terminates - locks the form.
-    onProcessingChange?.(stage === 'analyzing' || stage === 'compressing');
+    onProcessingChange?.(isBusy);
     if (isBusy) {
       busyPanelRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
-  }, [stage, isBusy, onProcessingChange]);
+  }, [isBusy, onProcessingChange]);
   const displayedError = internalError ?? error;
 
   return (
@@ -399,11 +381,9 @@ export function VideoUploadField({
             <>
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
               <p className="text-base font-semibold text-primary">
-                {stage === 'waiting'
-                  ? t('newFigure.upload.waiting')
-                  : stage === 'analyzing'
-                    ? t('newFigure.upload.analyzing')
-                    : t('newFigure.upload.compressing', { percent: Math.round(progress * 100) })}
+                {stage === 'analyzing'
+                  ? t('newFigure.upload.analyzing')
+                  : t('newFigure.upload.compressing', { percent: Math.round(progress * 100) })}
               </p>
               {/* The bar is always present, indeterminate while analysing.
                   A spinner alone reads as "nothing is happening", which is
@@ -420,20 +400,16 @@ export function VideoUploadField({
                 )}
               </div>
               <p className="text-center text-xs text-muted-foreground">
-                {stage === 'waiting'
-                  ? t('newFigure.upload.waitingHint')
-                  : t('newFigure.upload.compressingHint')}
+                {t('newFigure.upload.compressingHint')}
               </p>
-              {stage !== 'waiting' && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => abortRef.current?.abort()}
-                >
-                  {t('newFigure.upload.cancel')}
-                </Button>
-              )}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => abortRef.current?.abort()}
+              >
+                {t('newFigure.upload.cancel')}
+              </Button>
             </>
           ) : (
             <>
@@ -444,9 +420,6 @@ export function VideoUploadField({
                 onClick={() => {
                   setInternalError(null);
                   setErrorDetail(null);
-                  // Set before the picker opens, so control returning from it
-                  // lands on a form that already says what is happening.
-                  setStage('waiting');
                   inputRef.current?.click();
                 }}
                 disabled={disabled}
