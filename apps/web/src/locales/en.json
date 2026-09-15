@@ -432,18 +432,10 @@
     "created": "Figure added",
     "moreOptions": "More options",
     "moreOptionsHint": "Description, level, timing, language — all optional",
-    "videoFormat": "Format",
-    "videoFormatHint": "Detected automatically. Change it only if it looks wrong.",
     "videoLanguagePlaceholder": "Select a language",
     "privacyExplainer": "Your figure stays private: only you can see it. You can submit it to the public catalogue later, from your profile.",
     "previewStartTime": "Preview start",
-    "previewStartTimeHint": "Where the hover preview begins. Defaults to the frame you picked.",
-    "shortNeedsPortrait": "Shorts must be portrait videos.",
-    "shortTooLong": "Shorts cannot exceed 1 minute.",
-    "orientation": {
-      "classic": "Landscape",
-      "short": "Portrait"
-    }
+    "previewStartTimeHint": "Where the hover preview begins. Defaults to the frame you picked."
   },
   "pwa": {
     "update": {

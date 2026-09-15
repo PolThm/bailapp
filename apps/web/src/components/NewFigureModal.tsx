@@ -25,7 +25,6 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { VideoUploadField, type UploadedVideoDraft } from '@/components/VideoUploadField';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-import { SHORT_MAX_DURATION_SECONDS } from '@/lib/video/constants';
 import { fetchYouTubeMeta } from '@/lib/youtubeOembed';
 import { formatSecondsToTime } from '@/utils/timeParser';
 import { getYouTubeThumbnail, getYouTubeVideoId, isYouTubeShort } from '@/utils/youtube';
@@ -79,8 +78,6 @@ type FormState = {
   complexity?: Complexity;
   phrasesCount: string;
   videoLanguage?: VideoLanguage;
-  /** Undefined means "follow the video" (URL shape, or uploaded aspect ratio). */
-  videoFormat?: VideoFormat;
 };
 
 const EMPTY_FORM: FormState = {
@@ -110,7 +107,6 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   // The real YouTube title, kept apart so a user-shortened title does not lose it.
   const [resolvedFullTitle, setResolvedFullTitle] = useState<string | null>(null);
   const [isResolvingMeta, setIsResolvingMeta] = useState(false);
-  const [isYoutubePortrait, setIsYoutubePortrait] = useState<boolean | null>(null);
   // Once the title field is touched, autofill must never overwrite it again.
   const titleTouchedRef = useRef(false);
 
@@ -122,7 +118,6 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   useEffect(() => {
     if (source !== 'youtube' || !videoId) {
       setResolvedFullTitle(null);
-      setIsYoutubePortrait(null);
       return;
     }
 
@@ -137,7 +132,6 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
           return;
         }
         setResolvedFullTitle(meta.title);
-        setIsYoutubePortrait(meta.isPortrait);
         setForm((prev) => ({
           ...prev,
           // Never clobber what the user typed.
@@ -163,7 +157,6 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
     setErrors({});
     setSubmitError(null);
     setResolvedFullTitle(null);
-    setIsYoutubePortrait(null);
     titleTouchedRef.current = false;
   };
 
@@ -179,36 +172,13 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
     setSubmitError(null);
     titleTouchedRef.current = false;
     setResolvedFullTitle(null);
-    setIsYoutubePortrait(null);
   };
 
   /**
-   * A short is portrait and at most a minute. Uploads are checked against both
-   * facts; for YouTube only the orientation is knowable (oEmbed exposes no
-   * duration), and a /shorts/ URL is authoritative on its own.
+   * Derived from the video itself: aspect ratio and duration for an upload,
+   * URL shape for YouTube. There is no manual override - the rule decides.
    */
-  const shortEligibility = (): { allowed: boolean; reason?: string } => {
-    if (source === 'upload') {
-      if (!uploadedVideo) return { allowed: false };
-      if (uploadedVideo.height <= uploadedVideo.width) {
-        return { allowed: false, reason: t('newFigure.shortNeedsPortrait') };
-      }
-      if (uploadedVideo.durationSeconds > SHORT_MAX_DURATION_SECONDS) {
-        return { allowed: false, reason: t('newFigure.shortTooLong') };
-      }
-      return { allowed: true };
-    }
-
-    if (isYouTubeShort(form.youtubeUrl)) return { allowed: true };
-    if (isYoutubePortrait === false) {
-      return { allowed: false, reason: t('newFigure.shortNeedsPortrait') };
-    }
-    return { allowed: true };
-  };
-
-  /** Format follows the video unless the user overrode it. */
   const effectiveFormat = (): VideoFormat => {
-    if (form.videoFormat) return form.videoFormat;
     if (source === 'upload') return uploadedVideo?.videoFormat ?? 'classic';
     return isYouTubeShort(form.youtubeUrl) ? 'short' : 'classic';
   };
@@ -297,7 +267,6 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   // submit or close mid-way would throw that work away silently.
   const isLocked = isSubmitting || isVideoProcessing;
 
-  const eligibility = shortEligibility();
   const format = effectiveFormat();
 
   return (
@@ -371,38 +340,6 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
               thumbnailError={errors.thumbnail}
             />
           )}
-
-          {/* Format */}
-          <div className="space-y-2">
-            <Label>{t('newFigure.videoFormat')}</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {(['classic', 'short'] as const).map((option) => {
-                const disabled = option === 'short' && !eligibility.allowed;
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    disabled={disabled}
-                    onClick={() =>
-                      update({ videoFormat: form.videoFormat === option ? undefined : option })
-                    }
-                    className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
-                      format === option
-                        ? 'border-primary bg-primary/10 text-foreground'
-                        : 'border-input text-muted-foreground hover:text-foreground'
-                    } ${disabled ? 'cursor-not-allowed opacity-40' : ''}`}
-                  >
-                    {source === 'upload'
-                      ? t(`newFigure.orientation.${option}`)
-                      : t(`badges.videoFormat.${option}`)}
-                  </button>
-                );
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {eligibility.reason ?? t('newFigure.videoFormatHint')}
-            </p>
-          </div>
 
           {/* Title */}
           <div className="space-y-2">

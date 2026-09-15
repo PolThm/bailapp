@@ -432,18 +432,10 @@
     "created": "Figura añadida",
     "moreOptions": "Más opciones",
     "moreOptionsHint": "Descripción, nivel, tiempos, idioma — todo opcional",
-    "videoFormat": "Formato",
-    "videoFormatHint": "Detectado automáticamente. Cámbialo solo si parece incorrecto.",
     "videoLanguagePlaceholder": "Elegir un idioma",
     "privacyExplainer": "Tu figura sigue siendo privada: solo tú puedes verla. Podrás proponerla al catálogo público más adelante, desde tu perfil.",
     "previewStartTime": "Inicio de la vista previa",
-    "previewStartTimeHint": "Dónde empieza la vista previa al pasar el cursor. Por defecto, el fotograma elegido.",
-    "shortNeedsPortrait": "Los shorts deben ser vídeos en formato vertical.",
-    "shortTooLong": "Un short no puede superar 1 minuto.",
-    "orientation": {
-      "classic": "Horizontal",
-      "short": "Vertical"
-    }
+    "previewStartTimeHint": "Dónde empieza la vista previa al pasar el cursor. Por defecto, el fotograma elegido."
   },
   "pwa": {
     "update": {

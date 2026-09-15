@@ -432,18 +432,10 @@
     "created": "Figure ajoutée",
     "moreOptions": "Plus d'options",
     "moreOptionsHint": "Description, niveau, minutage, langue — tout est facultatif",
-    "videoFormat": "Format",
-    "videoFormatHint": "Détecté automatiquement. Ne le changez que si le résultat vous semble faux.",
     "videoLanguagePlaceholder": "Choisir une langue",
     "privacyExplainer": "Votre figure reste privée : vous seul pouvez la voir. Vous pourrez la proposer au catalogue public plus tard, depuis votre profil.",
     "previewStartTime": "Début de l'aperçu",
-    "previewStartTimeHint": "Où démarre l'aperçu au survol. Par défaut, l'image que vous avez choisie.",
-    "shortNeedsPortrait": "Les shorts doivent être des vidéos en format portrait.",
-    "shortTooLong": "Un short ne peut pas dépasser 1 minute.",
-    "orientation": {
-      "classic": "Paysage",
-      "short": "Portrait"
-    }
+    "previewStartTimeHint": "Où démarre l'aperçu au survol. Par défaut, l'image que vous avez choisie."
   },
   "pwa": {
     "update": {
