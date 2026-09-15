@@ -66,6 +66,26 @@ export function getFigureVideoFormat(figure: Figure): VideoFormat {
 }
 
 /**
+ * How a figure's media should fill its frame.
+ *
+ * Uploads keep their source aspect ratio through conversion, which often does
+ * not match the frame they are shown in - a portrait clip published as a
+ * classic, say. Cropping one of those zooms into the middle of the dancer, so
+ * they are contained on black instead: the whole frame stays visible, with
+ * bars only where the ratios differ. Where they match, contain and cover are
+ * identical, so this costs nothing.
+ *
+ * YouTube figures keep cover: their thumbnails are always 16:9 regardless of
+ * the video, so containing them would add bars that serve no purpose.
+ *
+ * Deliberately based on the source alone, not on stored dimensions - figures
+ * created before those were recorded must behave correctly too.
+ */
+export function getFigureMediaClass(figure: Figure): string {
+  return isUploadedFigure(figure) ? 'bg-black object-contain' : 'object-cover';
+}
+
+/**
  * Poster image. YouTube thumbnails are synthesised from the video id, while
  * uploads carry a frame captured at upload time.
  */

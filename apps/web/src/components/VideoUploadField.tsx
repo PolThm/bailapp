@@ -313,7 +313,7 @@ export function VideoUploadField({
                 <img
                   src={thumbnailPreviewUrl}
                   alt={t('newFigure.upload.thumbnailAlt')}
-                  className={`shrink-0 rounded bg-muted object-cover ${
+                  className={`shrink-0 rounded bg-black object-contain ${
                     previewFormat === 'short' ? 'h-20 w-[45px]' : 'h-14 w-24'
                   }`}
                 />

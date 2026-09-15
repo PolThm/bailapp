@@ -11,7 +11,7 @@ import { useFigures } from '@/hooks/useFigures';
 import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { deleteFigureFromFirestore } from '@/lib/services/figureService';
 import { deleteFigureVideoFromStorage } from '@/lib/services/figureUploadService';
-import { getFigureThumbnail } from '@/utils/figureVideo';
+import { getFigureMediaClass, getFigureThumbnail } from '@/utils/figureVideo';
 
 /** Lets a user follow up on the videos they uploaded: review status, submit, delete. */
 export function MyVideosCard() {
@@ -73,7 +73,7 @@ export function MyVideosCard() {
                     <img
                       src={getFigureThumbnail(figure)}
                       alt={figure.shortTitle}
-                      className="h-12 w-20 rounded object-cover"
+                      className={`h-12 w-20 rounded ${getFigureMediaClass(figure)}`}
                       loading="lazy"
                     />
                   </Link>
