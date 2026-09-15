@@ -465,5 +465,13 @@
   "comingSoon": {
     "title": "Bientôt disponible",
     "description": "On y travaille ! Tu pourras bientôt ajouter tes propres figures."
+  },
+  "editFigure": {
+    "title": "Modifier la figure",
+    "save": "Enregistrer",
+    "saved": "Figure mise à jour",
+    "errors": {
+      "saveFailed": "Impossible d'enregistrer les modifications. Réessayez."
+    }
   }
 }

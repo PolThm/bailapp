@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Heart, Share2, Clock } from 'lucide-react';
+import { Heart, Share2, Clock, Pencil } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Figure } from '@/types';
 import { AuthModal } from '@/components/AuthModal';
+import { EditFigureModal } from '@/components/EditFigureModal';
 import { HeaderBackTitle } from '@/components/HeaderBackTitle';
 import { Loader } from '@/components/Loader';
 import { MasteryLevelModal } from '@/components/MasteryLevelModal';
@@ -23,7 +24,8 @@ import { useFigures } from '@/hooks/useFigures';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
 import { useMasteryLevel } from '@/hooks/useMasteryLevel';
 import { useOrientation } from '@/hooks/useOrientation';
-import { getFigureFromFirestore } from '@/lib/services/figureService';
+import { useToast } from '@/hooks/useToast';
+import { getFigureFromFirestore, updateFigureInFirestore } from '@/lib/services/figureService';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
 import { getFigurePlayerTarget, isUnlistedFigure } from '@/utils/figureVideo';
 import { parseTimeToSeconds } from '@/utils/timeParser';
@@ -74,12 +76,14 @@ export function FigureDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { getFigure } = useFigures();
+  const { getFigure, updateFigure } = useFigures();
+  const { showToast } = useToast();
   const { isFavorite, toggleFavorite, updateLastOpened, addToFavorites } = useFavorites();
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMasteryModal, setShowMasteryModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: 'success' | 'info' | 'error';
@@ -369,6 +373,7 @@ export function FigureDetail() {
   const playerTarget = getFigurePlayerTarget(figure);
 
   const isFav = isFavorite(figure.id);
+  const isOwner = Boolean(user && figure.ownerId === user.uid);
 
   // Native equivalent of the IFrame API polling above: pause rather than stop
   // at the excerpt's end, and re-arm if the viewer seeks back.
@@ -493,6 +498,20 @@ export function FigureDetail() {
             >
               <Share2 className="h-5 w-5" />
             </Button>
+            {/* Owner only: the security rules reject an update from anyone
+                else, so offering it to others would only produce a refusal. */}
+            {isOwner && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setShowEditModal(true)}
+                aria-label={t('editFigure.title')}
+                title={t('editFigure.title')}
+                className="min-h-[48px] min-w-[48px]"
+              >
+                <Pencil className="h-5 w-5" />
+              </Button>
+            )}
           </div>
 
           {/* Badges */}
@@ -642,6 +661,30 @@ export function FigureDetail() {
       </div>
 
       {/* Auth Dialog */}
+      {isOwner && (
+        <EditFigureModal
+          open={showEditModal}
+          figure={figure}
+          onClose={() => setShowEditModal(false)}
+          onSubmit={async (updates) => {
+            await updateFigureInFirestore(figure.id, updates);
+            // Nulls mean "removed" in Firestore; locally that is an absent
+            // field, so they are translated before touching the context.
+            const localUpdates = Object.fromEntries(
+              Object.entries(updates).map(([key, value]) => [
+                key,
+                value === null ? undefined : value,
+              ])
+            ) as Partial<Figure>;
+            updateFigure(figure.id, localUpdates);
+            setFetchedFigure((current) =>
+              current && current.id === figure.id ? { ...current, ...localUpdates } : current
+            );
+            showToast(t('editFigure.saved'), 'success');
+          }}
+        />
+      )}
+
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       {/* Mastery Level Modal */}

@@ -1,6 +1,7 @@
 import {
   Timestamp,
   collection,
+  deleteField,
   deleteDoc,
   doc,
   getDoc,
@@ -208,19 +209,30 @@ export async function getPublicFiguresFromFirestore(): Promise<Figure[]> {
 }
 
 /**
+ * A figure update. `null` means remove the field, which `undefined` cannot
+ * express: undefined is how "leave this one alone" is spelled, so clearing a
+ * description would otherwise silently keep the old text.
+ */
+export type FigureUpdates = { [K in keyof Figure]?: Figure[K] | null };
+
+/**
  * Metadata edits by the owner. `visibility` and `ownerId` are stripped: the
  * security rules refuse to let either change here, and only moderation can
  * promote a figure.
  */
 export async function updateFigureInFirestore(
   figureId: string,
-  updates: Partial<Figure>
+  updates: FigureUpdates
 ): Promise<void> {
   try {
     const payload: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(updates)) {
       if (value === undefined || key === 'id' || key === 'visibility' || key === 'ownerId') {
+        continue;
+      }
+      if (value === null) {
+        payload[key] = deleteField();
         continue;
       }
       payload[key] = key === 'lastOpenedAt' ? Timestamp.fromDate(new Date(value as string)) : value;

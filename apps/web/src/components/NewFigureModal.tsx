@@ -10,21 +10,14 @@ import type {
   VideoLanguage,
   VideoSource,
 } from '@/types';
+import { FigureMetadataFields } from '@/components/FigureMetadataFields';
 import { Button } from '@/components/ui/button';
-import { Collapsible } from '@/components/ui/collapsible';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { VideoUploadField, type UploadedVideoDraft } from '@/components/VideoUploadField';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
+import { EMPTY_FIGURE_METADATA, type FigureMetadataValues } from '@/lib/figureMetadata';
 import { fetchYouTubeMeta } from '@/lib/youtubeOembed';
 import { formatSecondsToTime } from '@/utils/timeParser';
 import { getYouTubeThumbnail, getYouTubeVideoId, isYouTubeShort } from '@/utils/youtube';
@@ -64,32 +57,9 @@ export interface NewFigureFormData {
   videoLanguage?: VideoLanguage;
 }
 
-type FormState = {
-  youtubeUrl: string;
-  shortTitle: string;
-  description: string;
-  videoAuthor: string;
-  startTime: string;
-  endTime: string;
-  previewStartTime: string;
-  danceStyle?: DanceStyle;
-  danceSubStyle?: DanceSubStyle;
-  figureType?: FigureType;
-  complexity?: Complexity;
-  phrasesCount: string;
-  videoLanguage?: VideoLanguage;
-};
+type FormState = FigureMetadataValues & { youtubeUrl: string };
 
-const EMPTY_FORM: FormState = {
-  youtubeUrl: '',
-  shortTitle: '',
-  description: '',
-  videoAuthor: '',
-  startTime: '',
-  endTime: '',
-  previewStartTime: '',
-  phrasesCount: '',
-};
+const EMPTY_FORM: FormState = { ...EMPTY_FIGURE_METADATA, youtubeUrl: '' };
 
 export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps) {
   const { t } = useTranslation();
@@ -341,220 +311,19 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
             />
           )}
 
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="shortTitle">
-              {t('newFigure.figureTitle')} {t('newFigure.required')}
-              {isResolvingMeta && (
+          <FigureMetadataFields
+            values={form}
+            onChange={update}
+            errors={errors}
+            titleAdornment={
+              isResolvingMeta ? (
                 <Loader2 className="ml-2 inline h-3 w-3 animate-spin text-muted-foreground" />
-              )}
-            </Label>
-            <Input
-              id="shortTitle"
-              placeholder={t('newFigure.titlePlaceholder')}
-              value={form.shortTitle}
-              onChange={(e) => {
-                titleTouchedRef.current = true;
-                update({ shortTitle: e.target.value });
-              }}
-              className={errors.shortTitle ? 'border-destructive' : ''}
-            />
-            {errors.shortTitle && <p className="text-sm text-destructive">{errors.shortTitle}</p>}
-          </div>
-
-          {/* Dance style */}
-          <div className="space-y-2">
-            <Label htmlFor="danceStyle">
-              {t('newFigure.danceStyle')} {t('newFigure.required')}
-            </Label>
-            <div className="grid grid-cols-2 gap-2">
-              {(['salsa', 'bachata'] as const).map((style) => (
-                <button
-                  key={style}
-                  type="button"
-                  onClick={() => update({ danceStyle: style, danceSubStyle: undefined })}
-                  className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
-                    form.danceStyle === style
-                      ? 'border-primary bg-primary/10 text-foreground'
-                      : errors.danceStyle
-                        ? 'border-destructive text-muted-foreground'
-                        : 'border-input text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {t(`badges.danceStyle.${style}`)}
-                </button>
-              ))}
-            </div>
-            {errors.danceStyle && <p className="text-sm text-destructive">{errors.danceStyle}</p>}
-          </div>
-
-          {/* Everything below is optional */}
-          <Collapsible title={t('newFigure.moreOptions')} hint={t('newFigure.moreOptionsHint')}>
-            <div className="space-y-2">
-              <Label htmlFor="description">{t('newFigure.description')}</Label>
-              <Textarea
-                id="description"
-                placeholder={t('newFigure.descriptionPlaceholder')}
-                rows={3}
-                value={form.description}
-                onChange={(e) => update({ description: e.target.value })}
-              />
-            </div>
-
-            {form.danceStyle && (
-              <div className="space-y-2">
-                <Label>{t('newFigure.danceSubStyle')}</Label>
-                <Select
-                  value={form.danceSubStyle}
-                  onValueChange={(value) => update({ danceSubStyle: value as DanceSubStyle })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('newFigure.danceSubStylePlaceholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(form.danceStyle === 'salsa'
-                      ? ([
-                          ['cuban', 'cuban'],
-                          ['la-style', 'la-style'],
-                          ['ny-style', 'ny-style'],
-                          ['puerto-rican', 'puerto-rican'],
-                          ['colombian', 'colombian'],
-                          ['rueda-de-casino', 'ruedadecasino'],
-                          ['romantica', 'romantica'],
-                        ] as const)
-                      : ([
-                          ['dominican', 'dominican'],
-                          ['modern', 'modern'],
-                          ['sensual', 'sensual'],
-                          ['urban', 'urban'],
-                          ['fusion', 'fusion'],
-                          ['ballroom', 'ballroom'],
-                        ] as const)
-                    ).map(([value, key]) => (
-                      <SelectItem key={value} value={value}>
-                        {t(`badges.danceSubStyle.${key}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label>{t('newFigure.complexity')}</Label>
-              <Select
-                value={form.complexity}
-                onValueChange={(value) => update({ complexity: value as Complexity })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('newFigure.complexityPlaceholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basic">{t('badges.complexity.basic')}</SelectItem>
-                  <SelectItem value="basic-intermediate">
-                    {t('badges.complexity.basicIntermediate')}
-                  </SelectItem>
-                  <SelectItem value="intermediate">
-                    {t('badges.complexity.intermediate')}
-                  </SelectItem>
-                  <SelectItem value="intermediate-advanced">
-                    {t('badges.complexity.intermediateAdvanced')}
-                  </SelectItem>
-                  <SelectItem value="advanced">{t('badges.complexity.advanced')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('newFigure.figureType')}</Label>
-              <Select
-                value={form.figureType}
-                onValueChange={(value) => update({ figureType: value as FigureType })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('newFigure.figureTypePlaceholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="figure">{t('badges.figureType.figure')}</SelectItem>
-                  <SelectItem value="basic-step">{t('badges.figureType.basicStep')}</SelectItem>
-                  <SelectItem value="complex-step">{t('badges.figureType.complexStep')}</SelectItem>
-                  <SelectItem value="mix">{t('badges.figureType.mix')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="startTime">{t('newFigure.startTime')}</Label>
-                <Input
-                  id="startTime"
-                  placeholder={t('newFigure.timePlaceholder')}
-                  value={form.startTime}
-                  onChange={(e) => update({ startTime: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="endTime">{t('newFigure.endTime')}</Label>
-                <Input
-                  id="endTime"
-                  placeholder={t('newFigure.timePlaceholder')}
-                  value={form.endTime}
-                  onChange={(e) => update({ endTime: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="previewStartTime">{t('newFigure.previewStartTime')}</Label>
-              <Input
-                id="previewStartTime"
-                placeholder={t('newFigure.timePlaceholder')}
-                value={form.previewStartTime}
-                onChange={(e) => update({ previewStartTime: e.target.value })}
-              />
-              <p className="text-xs text-muted-foreground">{t('newFigure.previewStartTimeHint')}</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phrasesCount">{t('newFigure.phrasesCount')}</Label>
-              <Input
-                id="phrasesCount"
-                type="number"
-                min="1"
-                placeholder={t('newFigure.phrasesCountPlaceholder')}
-                value={form.phrasesCount}
-                onChange={(e) => update({ phrasesCount: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="videoAuthor">{t('newFigure.videoAuthor')}</Label>
-              <Input
-                id="videoAuthor"
-                placeholder={t('newFigure.videoAuthorPlaceholder')}
-                value={form.videoAuthor}
-                onChange={(e) => update({ videoAuthor: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('newFigure.videoLanguage')}</Label>
-              <Select
-                value={form.videoLanguage}
-                onValueChange={(value) => update({ videoLanguage: value as VideoLanguage })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('newFigure.videoLanguagePlaceholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="french">🇫🇷 {t('badges.videoLanguage.french')}</SelectItem>
-                  <SelectItem value="english">🇬🇧 {t('badges.videoLanguage.english')}</SelectItem>
-                  <SelectItem value="spanish">🇪🇸 {t('badges.videoLanguage.spanish')}</SelectItem>
-                  <SelectItem value="italian">🇮🇹 {t('badges.videoLanguage.italian')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </Collapsible>
+              ) : null
+            }
+            onTitleChange={() => {
+              titleTouchedRef.current = true;
+            }}
+          />
 
           <p className="text-xs text-muted-foreground">{t('newFigure.privacyExplainer')}</p>
 
