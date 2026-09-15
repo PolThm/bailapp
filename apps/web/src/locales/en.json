@@ -418,7 +418,8 @@
         "offline": "You need to be online to upload a video.",
         "cannotDecode": "Your browser cannot read this video's format. On iPhone, try exporting it from Photos first.",
         "noEncoder": "Your device cannot convert a video at this size. Try a shorter or smaller clip.",
-        "canceled": "Conversion canceled."
+        "canceled": "Conversion canceled.",
+        "thumbnailRequired": "A preview image is required. Pause the video where you want and capture that frame."
       },
       "sending": "Sending…",
       "captureFrame": "Use this frame",

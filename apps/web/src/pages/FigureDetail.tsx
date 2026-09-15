@@ -118,9 +118,9 @@ export function FigureDetail() {
 
   const figure = contextFigure ?? fetchedFigure ?? undefined;
   const { masteryLevel, setMasteryLevel, hasMasteryLevel } = useMasteryLevel(figure?.id);
-  // Following a link to an unlisted figure is what puts it in your library:
-  // it is in no catalogue query, so without this the link is the only way back
-  // to it. Own figures are excluded - they are already listed in the profile.
+  // Opening an unlisted figure is what puts it in your library: it appears in
+  // no catalogue query, so favourites is the only way back to it. This covers
+  // your own uploads too, which land here right after being created.
   const autoFavouritedRef = useRef<string | null>(null);
   // The favourites context returns fresh function identities each render, so
   // they are read through a ref: listing them as dependencies would re-run
@@ -128,8 +128,7 @@ export function FigureDetail() {
   const favouritesApiRef = useRef({ isFavorite, addToFavorites });
   favouritesApiRef.current = { isFavorite, addToFavorites };
 
-  const unlistedFigureId =
-    figure && user && isUnlistedFigure(figure) && figure.ownerId !== user.uid ? figure.id : null;
+  const unlistedFigureId = figure && user && isUnlistedFigure(figure) ? figure.id : null;
 
   useEffect(() => {
     if (!unlistedFigureId) return;

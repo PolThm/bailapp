@@ -35,6 +35,8 @@ interface VideoUploadFieldProps {
   onChange: (draft: UploadedVideoDraft | null) => void;
   error?: string;
   disabled?: boolean;
+  /** Validation message when no poster frame has been captured. */
+  thumbnailError?: string;
   /** Fires while the file is being read and converted, so the form can lock. */
   onProcessingChange?: (isProcessing: boolean) => void;
   /**
@@ -66,6 +68,7 @@ export function VideoUploadField({
   disabled,
   format,
   onProcessingChange,
+  thumbnailError,
 }: VideoUploadFieldProps) {
   const { t } = useTranslation();
   const posthog = usePostHog();
@@ -312,8 +315,14 @@ export function VideoUploadField({
           {/* Poster picker. Thumbnail and hint share the first row; the button
               takes its own, since a narrow modal cannot fit all three without
               crushing the text to one word per line. */}
-          <div className="space-y-3 rounded-md border border-input p-3">
-            <p className="text-sm font-medium">{t('newFigure.upload.thumbnailLabel')}</p>
+          <div
+            className={`space-y-3 rounded-md border p-3 ${
+              thumbnailError ? 'border-destructive' : 'border-input'
+            }`}
+          >
+            <p className="text-sm font-medium">
+              {t('newFigure.upload.thumbnailLabel')} {t('newFigure.required')}
+            </p>
 
             <div className="flex items-center gap-3">
               {/* Matches the card that will display it: portrait for a short,
@@ -355,6 +364,8 @@ export function VideoUploadField({
                 </>
               )}
             </Button>
+
+            {thumbnailError && <p className="text-sm text-destructive">{thumbnailError}</p>}
           </div>
 
           <div className="flex items-center justify-between gap-2">
@@ -446,7 +457,7 @@ export function VideoUploadField({
               <p className="text-center text-xs text-muted-foreground">
                 {t('newFigure.upload.hint')}
               </p>
-              <p className="text-center text-xs text-muted-foreground">
+              <p className="text-center text-xs font-medium text-primary">
                 {t('newFigure.upload.pickHint')}
               </p>
             </>

@@ -226,6 +226,10 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
       }
     } else if (!uploadedVideo) {
       nextErrors.uploadedVideo = t('newFigure.upload.errors.videoRequired');
+    } else if (!uploadedVideo.thumbnailBlob) {
+      // Automatic capture can fail on some devices; the manual button is the
+      // recourse, so the message points at it rather than just refusing.
+      nextErrors.thumbnail = t('newFigure.upload.errors.thumbnailRequired');
     }
     if (!form.shortTitle.trim()) nextErrors.shortTitle = t('newFigure.errors.titleRequired');
     if (!form.danceStyle) nextErrors.danceStyle = t('newFigure.errors.danceStyleRequired');
@@ -348,11 +352,23 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
           ) : (
             <VideoUploadField
               value={uploadedVideo}
-              onChange={setUploadedVideo}
+              onChange={(draft) => {
+                setUploadedVideo(draft);
+                // Capturing a frame answers the complaint, so the error should
+                // go with it rather than linger until the next submit.
+                if (draft?.thumbnailBlob) {
+                  setErrors((current) => {
+                    if (!current.thumbnail) return current;
+                    const { thumbnail: _removed, ...rest } = current;
+                    return rest;
+                  });
+                }
+              }}
               error={errors.uploadedVideo}
               disabled={isSubmitting}
               format={format}
               onProcessingChange={setIsVideoProcessing}
+              thumbnailError={errors.thumbnail}
             />
           )}
 

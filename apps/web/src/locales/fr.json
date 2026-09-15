@@ -418,7 +418,8 @@
         "offline": "Vous devez être en ligne pour envoyer une vidéo.",
         "cannotDecode": "Votre navigateur ne sait pas lire le format de cette vidéo. Sur iPhone, essayez de l'exporter depuis Photos d'abord.",
         "noEncoder": "Votre appareil ne peut pas convertir une vidéo de cette taille. Essayez un extrait plus court ou plus petit.",
-        "canceled": "Conversion annulée."
+        "canceled": "Conversion annulée.",
+        "thumbnailRequired": "Une image d'aperçu est requise. Mettez la vidéo en pause où vous voulez et capturez cette image."
       },
       "sending": "Envoi…",
       "captureFrame": "Utiliser cette image",

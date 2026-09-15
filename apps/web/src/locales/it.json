@@ -418,7 +418,8 @@
         "offline": "Devi essere online per caricare un video.",
         "cannotDecode": "Il tuo browser non riesce a leggere il formato di questo video. Su iPhone, prova prima a esportarlo da Foto.",
         "noEncoder": "Il tuo dispositivo non può convertire un video di queste dimensioni. Prova con una clip più breve o più piccola.",
-        "canceled": "Conversione annullata."
+        "canceled": "Conversione annullata.",
+        "thumbnailRequired": "È richiesta un'immagine di anteprima. Metti in pausa il video dove vuoi e cattura quel fotogramma."
       },
       "sending": "Invio…",
       "captureFrame": "Usa questo fotogramma",
