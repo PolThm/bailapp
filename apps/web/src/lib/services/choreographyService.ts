@@ -29,6 +29,9 @@ function cleanMovements(movements: ChoreographyMovement[]): ChoreographyMovement
     if (movement.mentionType !== undefined && movement.mentionType !== null) {
       clean.mentionType = movement.mentionType;
     }
+    if (movement.phrasesCount !== undefined && movement.phrasesCount !== null) {
+      clean.phrasesCount = movement.phrasesCount;
+    }
     return clean;
   });
 }

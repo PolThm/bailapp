@@ -70,6 +70,7 @@ function SortableMovementItem({
   onCopy,
   colorUpdateKey,
   onColorChange,
+  onPhrasesCountChange,
   isReadOnly,
   currentChoreographyId,
   ownerId,
@@ -88,6 +89,7 @@ function SortableMovementItem({
   onCopy?: () => void;
   colorUpdateKey: number;
   onColorChange: () => void;
+  onPhrasesCountChange?: (phrasesCount: number | undefined) => void;
   isReadOnly?: boolean;
   currentChoreographyId?: string;
   ownerId?: string | null;
@@ -158,6 +160,7 @@ function SortableMovementItem({
               onDuplicate={onDuplicate}
               onCopy={onCopy}
               onColorChange={onColorChange}
+              onPhrasesCountChange={onPhrasesCountChange}
               isReadOnly={isReadOnly}
               currentChoreographyId={currentChoreographyId}
               ownerId={ownerId}
@@ -541,6 +544,21 @@ export function ChoreographyDetail() {
     setEditingId(null);
   };
 
+  const handleUpdateMovementPhrasesCount = (movementId: string, phrasesCount?: number) => {
+    if (!canEdit) return;
+    const updatedMovements = choreography.movements.map((m: ChoreographyMovement) =>
+      m.id === movementId ? { ...m, phrasesCount } : m
+    );
+    // Optimistic update for public choreography
+    if (isViewingPublicChoreography && publicChoreography) {
+      setPublicChoreography({
+        ...publicChoreography,
+        movements: updatedMovements,
+      });
+    }
+    updateChoreography(choreography.id, { movements: updatedMovements }, choreography.ownerId);
+  };
+
   const handleDeleteMovement = (movementId: string) => {
     if (!canEdit) return;
     const updatedMovements = choreography.movements
@@ -566,6 +584,7 @@ export function ChoreographyDetail() {
         order: movement.order + 1,
         mentionId: movement.mentionId,
         mentionType: movement.mentionType,
+        phrasesCount: movement.phrasesCount,
       };
       const updatedMovements = [
         ...choreography.movements.slice(0, movement.order + 1),
@@ -1049,6 +1068,12 @@ export function ChoreographyDetail() {
                   onCopy={canEdit ? () => handleCopyMovement(movement) : undefined}
                   colorUpdateKey={colorUpdateKey}
                   onColorChange={canEdit ? handleColorChange : () => {}}
+                  onPhrasesCountChange={
+                    canEdit
+                      ? (phrasesCount) =>
+                          handleUpdateMovementPhrasesCount(movement.id, phrasesCount)
+                      : undefined
+                  }
                   isReadOnly={!canEdit}
                   currentChoreographyId={choreography.id}
                 />

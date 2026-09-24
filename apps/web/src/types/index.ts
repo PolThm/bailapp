@@ -92,6 +92,7 @@ export interface ChoreographyMovement {
   order: number;
   mentionId?: string; // ID of the mentioned choreography or figure
   mentionType?: MentionType; // Type of the mention: 'choreography' or 'figure'
+  phrasesCount?: number; // Set manually; takes precedence over the linked figure's count
 }
 
 export type ChoreographySharingMode = 'view-only' | 'collaborative';
