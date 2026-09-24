@@ -86,10 +86,13 @@ export interface Figure {
 
 export type MentionType = 'choreography' | 'figure';
 
+export type ChoreographyMovementType = 'movement' | 'separator';
+
 export interface ChoreographyMovement {
   id: string;
   name: string;
   order: number;
+  type?: ChoreographyMovementType; // Absent means 'movement'
   mentionId?: string; // ID of the mentioned choreography or figure
   mentionType?: MentionType; // Type of the mention: 'choreography' or 'figure'
   phrasesCount?: number; // Set manually; takes precedence over the linked figure's count

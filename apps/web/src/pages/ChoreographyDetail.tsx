@@ -32,13 +32,15 @@ import {
   Users,
   Lock,
   GripVertical,
+  SeparatorHorizontal,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import type { ChoreographyMovement, Choreography } from '@/types';
+import type { ChoreographyMovement, ChoreographyMovementType, Choreography } from '@/types';
 import type { User } from 'firebase/auth';
 import { AuthModal } from '@/components/AuthModal';
 import { ChoreographyMovementItem } from '@/components/ChoreographyMovementItem';
+import { ChoreographySeparatorItem } from '@/components/ChoreographySeparatorItem';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { EmptyState } from '@/components/EmptyState';
 import { HeaderBackTitle } from '@/components/HeaderBackTitle';
@@ -178,6 +180,69 @@ function SortableMovementItem({
   );
 }
 
+function SortableSeparatorItem({
+  separator,
+  isEditing,
+  onStartEdit,
+  onEndEdit,
+  onDelete,
+  onDuplicate,
+  onCopy,
+  onPhrasesCountChange,
+  isReadOnly,
+}: {
+  separator: ChoreographyMovement;
+  isEditing: boolean;
+  onStartEdit: () => void;
+  onEndEdit: (name: string) => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onCopy?: () => void;
+  onPhrasesCountChange?: (phrasesCount: number | undefined) => void;
+  isReadOnly?: boolean;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: separator.id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition: isDragging ? 'none' : transition,
+        opacity: isDragging ? 0.7 : 1,
+      }}
+      className={`border border-transparent px-2 pb-1 pt-3 ${isDragging ? 'z-50' : ''}`}
+    >
+      <div className="flex items-center gap-2">
+        {/* Drag Handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab touch-none select-none rounded p-1.5 text-muted-foreground transition-colors hover:text-foreground active:cursor-grabbing"
+        >
+          <GripVertical className="h-5 w-5" />
+        </div>
+
+        <div className="flex-1">
+          <ChoreographySeparatorItem
+            separator={separator}
+            isEditing={isEditing}
+            onStartEdit={onStartEdit}
+            onEndEdit={onEndEdit}
+            onDelete={onDelete}
+            onDuplicate={onDuplicate}
+            onCopy={onCopy}
+            onPhrasesCountChange={onPhrasesCountChange}
+            isReadOnly={isReadOnly}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ChoreographyDetail() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -201,6 +266,7 @@ export function ChoreographyDetail() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [colorUpdateKey, setColorUpdateKey] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
+  const [showAddMenu, setShowAddMenu] = useState(false);
   const [publicChoreography, setPublicChoreography] = useState<Choreography | null>(null);
   const [isLoadingPublic, setIsLoadingPublic] = useState(false);
   const [toast, setToast] = useState<{
@@ -499,7 +565,7 @@ export function ChoreographyDetail() {
     }
   };
 
-  const handleAddMovement = () => {
+  const handleAddItem = (type: ChoreographyMovementType) => {
     // For example choreography, show auth modal if user is not authenticated
     if (isExampleChoreography && !user) {
       setShowAuthModal(true);
@@ -510,6 +576,7 @@ export function ChoreographyDetail() {
       id: crypto.randomUUID(),
       name: '',
       order: choreography.movements.length,
+      ...(type === 'separator' ? { type } : {}),
     };
     const updatedMovements = [...choreography.movements, newMovement];
     // Optimistic update for public choreography
@@ -521,6 +588,13 @@ export function ChoreographyDetail() {
     }
     updateChoreography(choreography.id, { movements: updatedMovements }, choreography.ownerId);
     setEditingId(newMovement.id);
+  };
+
+  const handleAddMovement = () => handleAddItem('movement');
+
+  const handleAddSeparator = () => {
+    setShowAddMenu(false);
+    handleAddItem('separator');
   };
 
   const handleUpdateMovementName = (
@@ -579,12 +653,9 @@ export function ChoreographyDetail() {
     const movement = choreography.movements.find((m: ChoreographyMovement) => m.id === movementId);
     if (movement) {
       const newMovement: ChoreographyMovement = {
+        ...movement,
         id: crypto.randomUUID(),
-        name: movement.name,
         order: movement.order + 1,
-        mentionId: movement.mentionId,
-        mentionType: movement.mentionType,
-        phrasesCount: movement.phrasesCount,
       };
       const updatedMovements = [
         ...choreography.movements.slice(0, movement.order + 1),
@@ -621,7 +692,13 @@ export function ChoreographyDetail() {
     };
     localStorage.setItem('copiedMovement', JSON.stringify(copiedData));
     setCopiedMovement(copiedData);
-    setToast({ message: t('choreographies.movements.copySuccess'), type: 'success' });
+    setToast({
+      message:
+        movement.type === 'separator'
+          ? t('choreographies.movements.separatorCopySuccess')
+          : t('choreographies.movements.copySuccess'),
+      type: 'success',
+    });
   };
 
   const handlePasteMovement = () => {
@@ -647,7 +724,13 @@ export function ChoreographyDetail() {
     localStorage.removeItem('copiedMovement');
     setCopiedMovement(null);
 
-    setToast({ message: t('choreographies.movements.pasteSuccess'), type: 'success' });
+    setToast({
+      message:
+        newMovement.type === 'separator'
+          ? t('choreographies.movements.separatorPasteSuccess')
+          : t('choreographies.movements.pasteSuccess'),
+      type: 'success',
+    });
   };
 
   const handleShare = async () => {
@@ -1036,48 +1119,77 @@ export function ChoreographyDetail() {
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={movementIds} strategy={verticalListSortingStrategy}>
             <div className="mx-auto my-6 w-full max-w-lg space-y-2">
-              {sortedMovements.map((movement) => (
-                <SortableMovementItem
-                  key={`${movement.id}-${colorUpdateKey}`}
-                  movement={movement}
-                  choreography={choreography}
-                  isEditing={editingId === movement.id}
-                  ownerId={ownerId}
-                  onStartEdit={() => canEdit && setEditingId(movement.id)}
-                  onEndEdit={(name, mentionId, mentionType) => {
-                    if (!canEdit) return;
-                    if (!name.trim()) {
-                      // If empty name and it's a new movement (no name originally), delete it
-                      if (!movement.name) {
+              {sortedMovements.map((movement) =>
+                movement.type === 'separator' ? (
+                  <SortableSeparatorItem
+                    key={movement.id}
+                    separator={movement}
+                    isEditing={editingId === movement.id}
+                    onStartEdit={() => canEdit && setEditingId(movement.id)}
+                    onEndEdit={(name) => {
+                      if (!canEdit) return;
+                      if (name) {
+                        handleUpdateMovementName(movement.id, name);
+                      } else if (!movement.name) {
                         handleDeleteMovement(movement.id);
                       } else {
-                        // Keep original name if editing existing
-                        handleUpdateMovementName(
-                          movement.id,
-                          movement.name,
-                          movement.mentionId,
-                          movement.mentionType
-                        );
+                        setEditingId(null);
                       }
-                    } else {
-                      handleUpdateMovementName(movement.id, name, mentionId, mentionType);
+                    }}
+                    onDelete={() => canEdit && handleDeleteMovement(movement.id)}
+                    onDuplicate={() => canEdit && handleDuplicateMovement(movement.id)}
+                    onCopy={canEdit ? () => handleCopyMovement(movement) : undefined}
+                    onPhrasesCountChange={
+                      canEdit
+                        ? (phrasesCount) =>
+                            handleUpdateMovementPhrasesCount(movement.id, phrasesCount)
+                        : undefined
                     }
-                  }}
-                  onDelete={() => canEdit && handleDeleteMovement(movement.id)}
-                  onDuplicate={() => canEdit && handleDuplicateMovement(movement.id)}
-                  onCopy={canEdit ? () => handleCopyMovement(movement) : undefined}
-                  colorUpdateKey={colorUpdateKey}
-                  onColorChange={canEdit ? handleColorChange : () => {}}
-                  onPhrasesCountChange={
-                    canEdit
-                      ? (phrasesCount) =>
-                          handleUpdateMovementPhrasesCount(movement.id, phrasesCount)
-                      : undefined
-                  }
-                  isReadOnly={!canEdit}
-                  currentChoreographyId={choreography.id}
-                />
-              ))}
+                    isReadOnly={!canEdit}
+                  />
+                ) : (
+                  <SortableMovementItem
+                    key={`${movement.id}-${colorUpdateKey}`}
+                    movement={movement}
+                    choreography={choreography}
+                    isEditing={editingId === movement.id}
+                    ownerId={ownerId}
+                    onStartEdit={() => canEdit && setEditingId(movement.id)}
+                    onEndEdit={(name, mentionId, mentionType) => {
+                      if (!canEdit) return;
+                      if (!name.trim()) {
+                        // If empty name and it's a new movement (no name originally), delete it
+                        if (!movement.name) {
+                          handleDeleteMovement(movement.id);
+                        } else {
+                          // Keep original name if editing existing
+                          handleUpdateMovementName(
+                            movement.id,
+                            movement.name,
+                            movement.mentionId,
+                            movement.mentionType
+                          );
+                        }
+                      } else {
+                        handleUpdateMovementName(movement.id, name, mentionId, mentionType);
+                      }
+                    }}
+                    onDelete={() => canEdit && handleDeleteMovement(movement.id)}
+                    onDuplicate={() => canEdit && handleDuplicateMovement(movement.id)}
+                    onCopy={canEdit ? () => handleCopyMovement(movement) : undefined}
+                    colorUpdateKey={colorUpdateKey}
+                    onColorChange={canEdit ? handleColorChange : () => {}}
+                    onPhrasesCountChange={
+                      canEdit
+                        ? (phrasesCount) =>
+                            handleUpdateMovementPhrasesCount(movement.id, phrasesCount)
+                        : undefined
+                    }
+                    isReadOnly={!canEdit}
+                    currentChoreographyId={choreography.id}
+                  />
+                )
+              )}
             </div>
           </SortableContext>
         </DndContext>
@@ -1102,11 +1214,36 @@ export function ChoreographyDetail() {
               <Plus className="mr-2 h-4 w-4" />
               {t('choreographies.movements.add')}
             </Button>
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setShowAddMenu(!showAddMenu)}
+                aria-label={t('choreographies.movements.moreActions')}
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+              {showAddMenu && (
+                <>
+                  {/* Overlay to close menu on click outside */}
+                  <div className="fixed inset-0 z-[50]" onClick={() => setShowAddMenu(false)} />
+                  <div className="absolute bottom-full right-0 z-[60] mb-2 min-w-[200px] rounded-md border bg-popover py-1 shadow-lg">
+                    <button
+                      onClick={handleAddSeparator}
+                      className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-accent"
+                    >
+                      <SeparatorHorizontal className="h-4 w-4" />
+                      {t('choreographies.movements.addSeparator')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             {canPaste && (
               <Button
                 variant="default"
+                size="icon"
                 onClick={handlePasteMovement}
-                className="h-10 w-10 p-0"
                 aria-label={t('choreographies.movements.paste')}
               >
                 <Clipboard className="h-4 w-4" />

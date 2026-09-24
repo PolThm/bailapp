@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ChoreographyMovement, MentionType, DanceStyle } from '@/types';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { MentionSuggestionsModal } from '@/components/MentionSuggestionsModal';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { PhrasesCountBadge, PhrasesCountModal } from '@/components/PhrasesCount';
 import { Input } from '@/components/ui/input';
 import movementListEN from '@/data/movementLists/movementListEN.json';
 import movementListES from '@/data/movementLists/movementListES.json';
@@ -61,7 +60,6 @@ export function ChoreographyMovementItem({
   const { getFigure } = useFigures();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPhrasesModal, setShowPhrasesModal] = useState(false);
-  const [phrasesInput, setPhrasesInput] = useState('');
   const [showMenu, setShowMenu] = useState(false);
   const [showMentionModal, setShowMentionModal] = useState(false);
   const [editName, setEditName] = useState(movement.name);
@@ -301,15 +299,7 @@ export function ChoreographyMovementItem({
 
   const handleOpenPhrasesModal = () => {
     setShowMenu(false);
-    setPhrasesInput(movement.phrasesCount !== undefined ? String(movement.phrasesCount) : '');
     setShowPhrasesModal(true);
-  };
-
-  const handleSavePhrasesCount = (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = parseInt(phrasesInput, 10);
-    onPhrasesCountChange?.(Number.isFinite(parsed) && parsed > 0 ? parsed : undefined);
-    setShowPhrasesModal(false);
   };
 
   return (
@@ -386,15 +376,7 @@ export function ChoreographyMovementItem({
         )}
 
         {/* Phrases Count */}
-        {phrasesCount !== undefined && (
-          <span
-            className="flex shrink-0 items-center gap-1 text-xs font-medium text-muted-foreground"
-            title={t('choreographies.movements.phrasesCount')}
-          >
-            <Clock className="h-4 w-4" />
-            {phrasesCount}
-          </span>
-        )}
+        {phrasesCount !== undefined && <PhrasesCountBadge count={phrasesCount} />}
 
         {/* Menu Button */}
         {!isReadOnly && (
@@ -471,48 +453,15 @@ export function ChoreographyMovementItem({
       />
 
       {/* Phrases Count Modal */}
-      <Dialog open={showPhrasesModal} onOpenChange={() => setShowPhrasesModal(false)}>
-        <DialogContent>
-          <DialogHeader onClose={() => setShowPhrasesModal(false)}>
-            <DialogTitle>{t('choreographies.movements.phrasesCount')}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSavePhrasesCount} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                type="number"
-                inputMode="numeric"
-                min={1}
-                autoFocus
-                value={phrasesInput}
-                onChange={(e) => setPhrasesInput(e.target.value)}
-                placeholder={
-                  figurePhrasesCount !== undefined
-                    ? String(figurePhrasesCount)
-                    : t('newFigure.phrasesCountPlaceholder')
-                }
-              />
-              <p className="text-xs text-muted-foreground">
-                {figurePhrasesCount !== undefined
-                  ? t('choreographies.movements.phrasesCountFigureHint')
-                  : t('choreographies.movements.phrasesCountHint')}
-              </p>
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowPhrasesModal(false)}
-                className="flex-1"
-              >
-                {t('common.cancel')}
-              </Button>
-              <Button type="submit" className="flex-1">
-                {t('common.save')}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {onPhrasesCountChange && (
+        <PhrasesCountModal
+          open={showPhrasesModal}
+          onClose={() => setShowPhrasesModal(false)}
+          value={movement.phrasesCount}
+          figurePhrasesCount={figurePhrasesCount}
+          onSave={onPhrasesCountChange}
+        />
+      )}
 
       {/* Mention Suggestions Modal */}
       <MentionSuggestionsModal

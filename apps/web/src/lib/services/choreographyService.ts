@@ -23,6 +23,9 @@ function cleanMovements(movements: ChoreographyMovement[]): ChoreographyMovement
       order: movement.order,
     };
     // Only include mentionId and mentionType if they are defined and not null
+    if (movement.type !== undefined && movement.type !== null) {
+      clean.type = movement.type;
+    }
     if (movement.mentionId !== undefined && movement.mentionId !== null) {
       clean.mentionId = movement.mentionId;
     }
