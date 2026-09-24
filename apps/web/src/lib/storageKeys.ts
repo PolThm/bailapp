@@ -4,6 +4,8 @@ export enum StorageKey {
   LANGUAGE = 'language',
   DISCOVER_SHOW_IMAGES = 'discover_showImages',
   FAVORITES_SHOW_IMAGES = 'favorites_showImages',
+  DISCOVER_FILTERS = 'discover_filters',
+  FAVORITES_FILTERS = 'favorites_filters',
   CHOREOGRAPHIES = 'choreographies',
   EXAMPLE_CHOREOGRAPHY_SHOWN = 'exampleChoreographyShown',
   AUTO_FAVOURITED_FIGURES = 'autoFavouritedFigures',

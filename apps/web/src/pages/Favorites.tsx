@@ -58,7 +58,7 @@ export function Favorites() {
     filteredFigures,
     hasActiveFilters,
     clearFilters,
-  } = useFigureFilters(favoriteFiguresData);
+  } = useFigureFilters(favoriteFiguresData, StorageKey.FAVORITES_FILTERS);
 
   const createFigure = useCreateFigure();
 

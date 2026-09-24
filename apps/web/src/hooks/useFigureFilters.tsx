@@ -1,12 +1,45 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { AdvancedFilters } from '@/components/AdvancedFiltersModal';
 import type { DanceStyle, Figure } from '@/types';
+import { getStorageKey, type StorageKey } from '@/lib/storageKeys';
 import { getFigureVideoFormat } from '@/utils/figureVideo';
 
-export function useFigureFilters(figures: Figure[]) {
-  const [selectedStyle, setSelectedStyle] = useState<DanceStyle | 'all'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
+interface StoredFigureFilters {
+  selectedStyle: DanceStyle | 'all';
+  searchQuery: string;
+  advancedFilters: AdvancedFilters;
+}
+
+const DEFAULT_FILTERS: StoredFigureFilters = {
+  selectedStyle: 'all',
+  searchQuery: '',
+  advancedFilters: {},
+};
+
+function readStoredFilters(key: string): StoredFigureFilters {
+  try {
+    const stored = sessionStorage.getItem(key);
+    return stored ? { ...DEFAULT_FILTERS, ...JSON.parse(stored) } : DEFAULT_FILTERS;
+  } catch {
+    return DEFAULT_FILTERS;
+  }
+}
+
+// Filters persist per page in sessionStorage, so they survive navigating away and back
+export function useFigureFilters(figures: Figure[], storageKey: StorageKey) {
+  const key = getStorageKey(storageKey);
+  const [initialFilters] = useState(() => readStoredFilters(key));
+  const [selectedStyle, setSelectedStyle] = useState(initialFilters.selectedStyle);
+  const [searchQuery, setSearchQuery] = useState(initialFilters.searchQuery);
+  const [advancedFilters, setAdvancedFilters] = useState(initialFilters.advancedFilters);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(key, JSON.stringify({ selectedStyle, searchQuery, advancedFilters }));
+    } catch {
+      // Storage can be unavailable (private mode, quota); filters then just reset on remount
+    }
+  }, [key, selectedStyle, searchQuery, advancedFilters]);
 
   const filteredFigures = useMemo(() => {
     let filtered = figures;

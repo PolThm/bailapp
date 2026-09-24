@@ -102,7 +102,7 @@ export function Discover() {
     filteredFigures: filteredFiguresWithShorts,
     hasActiveFilters,
     clearFilters,
-  } = useFigureFilters([...figures, ...shorts]);
+  } = useFigureFilters([...figures, ...shorts], StorageKey.DISCOVER_FILTERS);
 
   // Pagination state
   const ITEMS_PER_PAGE = 36; // Number of items to load per page
