@@ -1,6 +1,7 @@
 import type { Figure, VideoFormat } from '@/types';
 import { parseTimeToSeconds } from '@/utils/timeParser';
 import {
+  getYouTubeClipEmbedUrl,
   getYouTubeEmbedUrl,
   getYouTubePreviewUrl,
   getYouTubeShortPreviewUrl,
@@ -203,4 +204,28 @@ export function getFigurePlayerTarget(figure: Figure): FigureVideoTarget | null 
     url: getYouTubeEmbedUrl(videoId, figure.startTime, undefined, true),
     videoId,
   };
+}
+
+/**
+ * Excerpt of a figure's video, played from start to end. Missing bounds fall
+ * back to the figure's own excerpt.
+ */
+export function getFigureClipTarget(
+  figure: Figure,
+  startTime?: string,
+  endTime?: string
+): FigureVideoTarget | null {
+  const clipStart = startTime || figure.startTime;
+  const clipEnd = endTime || figure.endTime;
+
+  if (isUploadedFigure(figure)) {
+    return getFigurePlayerTarget({ ...figure, startTime: clipStart, endTime: clipEnd });
+  }
+
+  const videoId = figure.youtubeUrl ? getYouTubeVideoId(figure.youtubeUrl) : null;
+  if (!videoId) {
+    return null;
+  }
+
+  return { kind: 'iframe', url: getYouTubeClipEmbedUrl(videoId, clipStart, clipEnd), videoId };
 }

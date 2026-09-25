@@ -15,6 +15,8 @@ interface MentionSuggestionsModalProps {
   onSelect: (mentionId: string, mentionType: MentionType, displayName: string) => void;
   searchQuery?: string;
   currentChoreographyId?: string; // ID of the current choreography to exclude from the list
+  figuresOnly?: boolean;
+  title?: string;
 }
 
 interface MentionItem {
@@ -30,6 +32,8 @@ export function MentionSuggestionsModal({
   onSelect,
   searchQuery: initialSearchQuery = '',
   currentChoreographyId,
+  figuresOnly = false,
+  title,
 }: MentionSuggestionsModalProps) {
   const { t } = useTranslation();
   const { choreographies } = useChoreographies();
@@ -87,7 +91,7 @@ export function MentionSuggestionsModal({
     const items: MentionItem[] = [];
 
     // 1. All user's choreographies (excluding current one)
-    const sortedChoreographies = sortByLastOpened(choreographies);
+    const sortedChoreographies = figuresOnly ? [] : sortByLastOpened(choreographies);
     sortedChoreographies.forEach((choreography: Choreography) => {
       // Exclude the current choreography from the list
       if (currentChoreographyId && choreography.id === currentChoreographyId) {
@@ -126,7 +130,7 @@ export function MentionSuggestionsModal({
     });
 
     return items;
-  }, [choreographies, figures, shorts, favorites, currentChoreographyId]);
+  }, [choreographies, figures, shorts, favorites, currentChoreographyId, figuresOnly]);
 
   // Filter items based on search query
   const filteredItems = useMemo(() => {
@@ -199,7 +203,7 @@ export function MentionSuggestionsModal({
         >
           {/* Title */}
           <h2 className="p-4 text-lg font-semibold">
-            {t('choreographies.movements.mentionTitle')}
+            {title ?? t('choreographies.movements.mentionTitle')}
           </h2>
 
           {/* Search Bar */}

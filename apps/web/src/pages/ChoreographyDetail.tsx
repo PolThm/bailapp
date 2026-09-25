@@ -73,6 +73,7 @@ function SortableMovementItem({
   colorUpdateKey,
   onColorChange,
   onPhrasesCountChange,
+  onVideoChange,
   isReadOnly,
   currentChoreographyId,
   ownerId,
@@ -92,6 +93,7 @@ function SortableMovementItem({
   colorUpdateKey: number;
   onColorChange: () => void;
   onPhrasesCountChange?: (phrasesCount: number | undefined) => void;
+  onVideoChange?: (video: import('@/types').MovementVideo | undefined) => void;
   isReadOnly?: boolean;
   currentChoreographyId?: string;
   ownerId?: string | null;
@@ -163,6 +165,7 @@ function SortableMovementItem({
               onCopy={onCopy}
               onColorChange={onColorChange}
               onPhrasesCountChange={onPhrasesCountChange}
+              onVideoChange={onVideoChange}
               isReadOnly={isReadOnly}
               currentChoreographyId={currentChoreographyId}
               ownerId={ownerId}
@@ -605,7 +608,9 @@ export function ChoreographyDetail() {
   ) => {
     if (!canEdit) return;
     const updatedMovements = choreography.movements.map((m: ChoreographyMovement) =>
-      m.id === movementId ? { ...m, name, mentionId, mentionType } : m
+      m.id === movementId
+        ? { ...m, name, mentionId, mentionType, ...(mentionId ? { video: undefined } : {}) }
+        : m
     );
     // Optimistic update for public choreography
     if (isViewingPublicChoreography && publicChoreography) {
@@ -618,10 +623,10 @@ export function ChoreographyDetail() {
     setEditingId(null);
   };
 
-  const handleUpdateMovementPhrasesCount = (movementId: string, phrasesCount?: number) => {
+  const handleUpdateMovement = (movementId: string, updates: Partial<ChoreographyMovement>) => {
     if (!canEdit) return;
     const updatedMovements = choreography.movements.map((m: ChoreographyMovement) =>
-      m.id === movementId ? { ...m, phrasesCount } : m
+      m.id === movementId ? { ...m, ...updates } : m
     );
     // Optimistic update for public choreography
     if (isViewingPublicChoreography && publicChoreography) {
@@ -1141,8 +1146,7 @@ export function ChoreographyDetail() {
                     onCopy={canEdit ? () => handleCopyMovement(movement) : undefined}
                     onPhrasesCountChange={
                       canEdit
-                        ? (phrasesCount) =>
-                            handleUpdateMovementPhrasesCount(movement.id, phrasesCount)
+                        ? (phrasesCount) => handleUpdateMovement(movement.id, { phrasesCount })
                         : undefined
                     }
                     isReadOnly={!canEdit}
@@ -1181,9 +1185,11 @@ export function ChoreographyDetail() {
                     onColorChange={canEdit ? handleColorChange : () => {}}
                     onPhrasesCountChange={
                       canEdit
-                        ? (phrasesCount) =>
-                            handleUpdateMovementPhrasesCount(movement.id, phrasesCount)
+                        ? (phrasesCount) => handleUpdateMovement(movement.id, { phrasesCount })
                         : undefined
+                    }
+                    onVideoChange={
+                      canEdit ? (video) => handleUpdateMovement(movement.id, { video }) : undefined
                     }
                     isReadOnly={!canEdit}
                     currentChoreographyId={choreography.id}

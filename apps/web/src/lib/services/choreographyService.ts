@@ -35,6 +35,11 @@ function cleanMovements(movements: ChoreographyMovement[]): ChoreographyMovement
     if (movement.phrasesCount !== undefined && movement.phrasesCount !== null) {
       clean.phrasesCount = movement.phrasesCount;
     }
+    if (movement.video?.figureId) {
+      clean.video = { figureId: movement.video.figureId };
+      if (movement.video.startTime) clean.video.startTime = movement.video.startTime;
+      if (movement.video.endTime) clean.video.endTime = movement.video.endTime;
+    }
     return clean;
   });
 }

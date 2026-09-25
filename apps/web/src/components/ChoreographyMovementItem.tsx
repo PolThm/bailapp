@@ -1,10 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, Trash2, Copy, Palette, Clipboard, Clock } from 'lucide-react';
+import {
+  MoreVertical,
+  Trash2,
+  Copy,
+  Palette,
+  Clipboard,
+  Clock,
+  PlayCircle,
+  Video,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import type { ChoreographyMovement, MentionType, DanceStyle } from '@/types';
+import type { ChoreographyMovement, MentionType, DanceStyle, MovementVideo } from '@/types';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { MentionSuggestionsModal } from '@/components/MentionSuggestionsModal';
+import { MovementVideoModal, MovementVideoPlayerModal } from '@/components/MovementVideo';
 import { PhrasesCountBadge, PhrasesCountModal } from '@/components/PhrasesCount';
 import { Input } from '@/components/ui/input';
 import movementListEN from '@/data/movementLists/movementListEN.json';
@@ -34,6 +44,7 @@ interface ChoreographyMovementItemProps {
   onCopy?: () => void;
   onColorChange?: () => void;
   onPhrasesCountChange?: (phrasesCount: number | undefined) => void;
+  onVideoChange?: (video: MovementVideo | undefined) => void;
   isReadOnly?: boolean;
   currentChoreographyId?: string; // ID of the current choreography to exclude from mentions
   ownerId?: string | null; // Owner ID of the current choreography (for shared choreographies)
@@ -51,6 +62,7 @@ export function ChoreographyMovementItem({
   onCopy,
   onColorChange,
   onPhrasesCountChange,
+  onVideoChange,
   isReadOnly = false,
   currentChoreographyId,
   ownerId,
@@ -60,6 +72,9 @@ export function ChoreographyMovementItem({
   const { getFigure } = useFigures();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPhrasesModal, setShowPhrasesModal] = useState(false);
+  const [showVideoPicker, setShowVideoPicker] = useState(false);
+  const [videoDraftFigureId, setVideoDraftFigureId] = useState<string | null>(null);
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showMentionModal, setShowMentionModal] = useState(false);
   const [editName, setEditName] = useState(movement.name);
@@ -297,6 +312,28 @@ export function ChoreographyMovementItem({
     }
   };
 
+  const hasMention = Boolean(movement.mentionId && movement.mentionType);
+
+  const handleVideoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowVideoPlayer(true);
+  };
+
+  const handleOpenVideoModal = () => {
+    setShowMenu(false);
+    if (movement.video) {
+      setVideoDraftFigureId(movement.video.figureId);
+    } else {
+      setShowVideoPicker(true);
+    }
+  };
+
+  const handleChangeVideoFigure = () => {
+    setVideoDraftFigureId(null);
+    setShowVideoPicker(true);
+  };
+
   const handleOpenPhrasesModal = () => {
     setShowMenu(false);
     setShowPhrasesModal(true);
@@ -363,6 +400,14 @@ export function ChoreographyMovementItem({
                   >
                     {movement.name.startsWith('@') ? movement.name : `@${movement.name}`}
                   </span>
+                ) : movement.video ? (
+                  <span
+                    onClick={handleVideoClick}
+                    className="cursor-pointer text-primary hover:underline"
+                  >
+                    <PlayCircle className="mr-1 inline h-4 w-4 align-text-bottom" />
+                    {movement.name}
+                  </span>
                 ) : (
                   movement.name
                 )}
@@ -391,7 +436,7 @@ export function ChoreographyMovementItem({
 
             {/* Menu Dropdown */}
             {showMenu && (
-              <div className="absolute right-0 top-full z-10 mt-1 min-w-[160px] rounded-lg border bg-background shadow-lg">
+              <div className="absolute right-0 top-full z-10 mt-1 min-w-[200px] rounded-lg border bg-background shadow-lg">
                 {onCopy && (
                   <button
                     onClick={handleCopy}
@@ -422,6 +467,17 @@ export function ChoreographyMovementItem({
                   >
                     <Clock className="h-4 w-4" />
                     {t('choreographies.movements.phrasesCount')}
+                  </button>
+                )}
+                {onVideoChange && !hasMention && (
+                  <button
+                    onClick={handleOpenVideoModal}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left transition-colors hover:bg-muted"
+                  >
+                    <Video className="h-4 w-4" />
+                    {movement.video
+                      ? t('choreographies.movements.editVideo')
+                      : t('choreographies.movements.linkVideo')}
                   </button>
                 )}
                 <button
@@ -460,6 +516,37 @@ export function ChoreographyMovementItem({
           value={movement.phrasesCount}
           figurePhrasesCount={figurePhrasesCount}
           onSave={onPhrasesCountChange}
+        />
+      )}
+
+      {/* Video Link Modals: pick a figure, then set the excerpt */}
+      {onVideoChange && (
+        <>
+          <MentionSuggestionsModal
+            open={showVideoPicker}
+            onClose={() => setShowVideoPicker(false)}
+            onSelect={(figureId) => setVideoDraftFigureId(figureId)}
+            figuresOnly
+            title={t('choreographies.movements.linkVideo')}
+          />
+          {videoDraftFigureId && (
+            <MovementVideoModal
+              open
+              onClose={() => setVideoDraftFigureId(null)}
+              figureId={videoDraftFigureId}
+              video={movement.video}
+              onChangeFigure={handleChangeVideoFigure}
+              onSave={onVideoChange}
+            />
+          )}
+        </>
+      )}
+      {movement.video && (
+        <MovementVideoPlayerModal
+          open={showVideoPlayer}
+          onClose={() => setShowVideoPlayer(false)}
+          title={movement.name}
+          video={movement.video}
         />
       )}
 

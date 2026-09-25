@@ -77,6 +77,29 @@ export function getYouTubeEmbedUrl(
 }
 
 /**
+ * Get YouTube embed URL that plays only the given excerpt, starting right away
+ */
+export function getYouTubeClipEmbedUrl(
+  videoId: string,
+  startTime?: string,
+  endTime?: string
+): string {
+  const params: string[] = ['autoplay=1', 'playsinline=1', 'rel=0'];
+
+  const startSeconds = startTime ? parseTimeToSeconds(startTime) : null;
+  if (startSeconds !== null) {
+    params.push(`start=${startSeconds}`);
+  }
+
+  const endSeconds = endTime ? parseTimeToSeconds(endTime) : null;
+  if (endSeconds !== null) {
+    params.push(`end=${endSeconds}`);
+  }
+
+  return `https://www.youtube.com/embed/${videoId}?${params.join('&')}`;
+}
+
+/**
  * Get YouTube preview video URL (autoplay, muted, loop, no controls)
  * Used for hover previews like on YouTube's website
  * Preview starts at previewStartTime (position in the video, same format as startTime),

@@ -88,6 +88,12 @@ export type MentionType = 'choreography' | 'figure';
 
 export type ChoreographyMovementType = 'movement' | 'separator';
 
+export interface MovementVideo {
+  figureId: string; // Figure whose video is played
+  startTime?: string; // Format: HH:MM:SS or MM:SS; falls back to the figure's own
+  endTime?: string; // Format: HH:MM:SS or MM:SS; falls back to the figure's own
+}
+
 export interface ChoreographyMovement {
   id: string;
   name: string;
@@ -96,6 +102,7 @@ export interface ChoreographyMovement {
   mentionId?: string; // ID of the mentioned choreography or figure
   mentionType?: MentionType; // Type of the mention: 'choreography' or 'figure'
   phrasesCount?: number; // Set manually; takes precedence over the linked figure's count
+  video?: MovementVideo; // Only for movements without a mention
 }
 
 export type ChoreographySharingMode = 'view-only' | 'collaborative';
