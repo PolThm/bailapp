@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import type { Figure, MovementVideo } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -244,10 +245,15 @@ function MovementVideoClip({ figure, video }: { figure: Figure; video: MovementV
 
   return (
     <div className="space-y-2">
-      <p className="truncate text-sm text-muted-foreground">
-        {figure.shortTitle}
-        {range && ` · ${range}`}
-      </p>
+      <div>
+        <Link
+          to={`/figure/${figure.id}`}
+          className="block truncate text-sm text-primary hover:underline"
+        >
+          @{figure.shortTitle}
+        </Link>
+        {range && <p className="text-sm text-muted-foreground">{range}</p>}
+      </div>
       {target?.kind === 'iframe' && (
         <iframe
           src={target.url}
