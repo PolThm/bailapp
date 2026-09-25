@@ -201,7 +201,7 @@ export function MovementVideoPlayerModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
-        <DialogHeader onClose={onClose}>
+        <DialogHeader className="text-left">
           <DialogTitle className="line-clamp-2 leading-tight">{title}</DialogTitle>
         </DialogHeader>
         {figure ? (
@@ -244,15 +244,13 @@ function MovementVideoClip({ figure, video }: { figure: Figure; video: MovementV
   };
 
   return (
-    <div className="space-y-2">
-      <div>
-        <Link
-          to={`/figure/${figure.id}`}
-          className="block truncate text-sm text-primary hover:underline"
-        >
+    <div className="space-y-3">
+      {/* The range sits next to the name, and wraps under it when both don't fit */}
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm">
+        <Link to={`/figure/${figure.id}`} className="min-w-0 truncate text-primary hover:underline">
           @{figure.shortTitle}
         </Link>
-        {range && <p className="text-sm text-muted-foreground">{range}</p>}
+        {range && <span className="whitespace-nowrap text-muted-foreground">{range}</span>}
       </div>
       {target?.kind === 'iframe' && (
         <iframe
