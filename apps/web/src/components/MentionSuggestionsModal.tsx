@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Search, Music2, Heart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Choreography, Figure, MentionType } from '@/types';
+import type { Choreography, DanceStyle, Figure, MentionType } from '@/types';
 import { Input } from '@/components/ui/input';
 import { useChoreographies } from '@/context/ChoreographiesContext';
 import { useFavorites } from '@/context/FavoritesContext';
@@ -16,6 +16,7 @@ interface MentionSuggestionsModalProps {
   searchQuery?: string;
   currentChoreographyId?: string; // ID of the current choreography to exclude from the list
   figuresOnly?: boolean;
+  danceStyle?: DanceStyle; // Only lists figures of this style
   title?: string;
 }
 
@@ -33,6 +34,7 @@ export function MentionSuggestionsModal({
   searchQuery: initialSearchQuery = '',
   currentChoreographyId,
   figuresOnly = false,
+  danceStyle,
   title,
 }: MentionSuggestionsModalProps) {
   const { t } = useTranslation();
@@ -106,7 +108,9 @@ export function MentionSuggestionsModal({
     });
 
     // 2. Favorite figures (after a separator) - include both figures and shorts
-    const allFigures = [...figures, ...shorts];
+    const allFigures = [...figures, ...shorts].filter(
+      (figure: Figure) => !danceStyle || figure.danceStyle === danceStyle
+    );
     const favoriteFigures = allFigures.filter((figure: Figure) => favorites.includes(figure.id));
     const sortedFavoriteFigures = sortByLastOpened(favoriteFigures);
     sortedFavoriteFigures.forEach((figure: Figure) => {
@@ -130,7 +134,7 @@ export function MentionSuggestionsModal({
     });
 
     return items;
-  }, [choreographies, figures, shorts, favorites, currentChoreographyId, figuresOnly]);
+  }, [choreographies, figures, shorts, favorites, currentChoreographyId, figuresOnly, danceStyle]);
 
   // Filter items based on search query
   const filteredItems = useMemo(() => {

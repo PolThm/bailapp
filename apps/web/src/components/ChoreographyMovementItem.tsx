@@ -527,6 +527,7 @@ export function ChoreographyMovementItem({
             onClose={() => setShowVideoPicker(false)}
             onSelect={(figureId) => setVideoDraftFigureId(figureId)}
             figuresOnly
+            danceStyle={danceStyle}
             title={t('choreographies.movements.linkVideo')}
           />
           {videoDraftFigureId && (
@@ -563,6 +564,7 @@ export function ChoreographyMovementItem({
         onSelect={handleMentionSelect}
         searchQuery={editName.trim().startsWith('@') ? editName.trim().slice(1) : ''}
         currentChoreographyId={currentChoreographyId}
+        danceStyle={danceStyle}
       />
     </>
   );
