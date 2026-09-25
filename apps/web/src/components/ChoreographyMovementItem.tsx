@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import {
   MoreVertical,
   Trash2,
@@ -16,7 +16,7 @@ import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { MentionSuggestionsModal } from '@/components/MentionSuggestionsModal';
 import { MovementVideoModal, MovementVideoPlayerModal } from '@/components/MovementVideo';
 import { PhrasesCountBadge, PhrasesCountModal } from '@/components/PhrasesCount';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import movementListEN from '@/data/movementLists/movementListEN.json';
 import movementListES from '@/data/movementLists/movementListES.json';
 import movementListFR from '@/data/movementLists/movementListFR.json';
@@ -82,7 +82,7 @@ export function ChoreographyMovementItem({
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSelectingSuggestion, setIsSelectingSuggestion] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
@@ -98,6 +98,14 @@ export function ChoreographyMovementItem({
       inputRef.current.select();
     }
   }, [isEditing]);
+
+  // The editor grows with its text instead of scrolling on a single line
+  useLayoutEffect(() => {
+    const element = inputRef.current;
+    if (!isEditing || !element) return;
+    element.style.height = 'auto';
+    element.style.height = `${element.scrollHeight + element.offsetHeight - element.clientHeight}px`;
+  }, [editName, isEditing]);
 
   useEffect(() => {
     if (!isEditing) {
@@ -200,6 +208,7 @@ export function ChoreographyMovementItem({
 
   const handleNameKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       if (showSuggestions && selectedIndex >= 0 && suggestions[selectedIndex]) {
         // Select suggestion
         const selectedSuggestion = suggestions[selectedIndex];
@@ -219,16 +228,12 @@ export function ChoreographyMovementItem({
       setEditName(movement.name);
       setShowSuggestions(false);
       onEndEdit(movement.name);
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === 'ArrowDown' && showSuggestions && suggestions.length > 0) {
       e.preventDefault();
-      if (showSuggestions && suggestions.length > 0) {
-        setSelectedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev));
-      }
-    } else if (e.key === 'ArrowUp') {
+      setSelectedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev));
+    } else if (e.key === 'ArrowUp' && showSuggestions) {
       e.preventDefault();
-      if (showSuggestions) {
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
-      }
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
     }
   };
 
@@ -345,10 +350,12 @@ export function ChoreographyMovementItem({
         {/* Name (editable on click) */}
         {isEditing ? (
           <div className="relative flex-1">
-            <Input
+            <Textarea
               ref={inputRef}
+              rows={1}
               value={editName}
-              onChange={(e) => setEditName(e.target.value)}
+              // Names stay on one logical line, even when pasted with line breaks
+              onChange={(e) => setEditName(e.target.value.replace(/[\r\n]+/g, ' '))}
               onBlur={(e) => {
                 // Only handle blur if we're not selecting a suggestion
                 // and the blur is not going to the suggestions dropdown
@@ -361,7 +368,7 @@ export function ChoreographyMovementItem({
               }}
               onKeyDown={handleNameKeyDown}
               placeholder={t('choreographies.movements.namePlaceholder')}
-              className="w-full"
+              className="min-h-10 w-full resize-none overflow-hidden"
             />
             {/* Suggestions dropdown */}
             {showSuggestions && suggestions.length > 0 && (
@@ -387,12 +394,12 @@ export function ChoreographyMovementItem({
         ) : (
           <div
             onClick={handleNameClick}
-            className={`-mx-2 -my-1 flex min-h-[32px] flex-1 items-start rounded px-2 py-1 ${
+            className={`-mx-2 -my-1 flex min-h-[32px] min-w-0 flex-1 items-start rounded px-2 py-1 ${
               isReadOnly ? '' : 'cursor-text hover:bg-muted/50'
             }`}
           >
             {movement.name ? (
-              <span className="line-clamp-5 break-words">
+              <span className="min-w-0 break-words">
                 {movement.mentionId && movement.mentionType ? (
                   <span
                     onClick={handleMentionClick}
