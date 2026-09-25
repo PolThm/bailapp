@@ -197,10 +197,7 @@
       "removeVideo": "Retirer la vidéo",
       "video": "Vidéo",
       "changeVideo": "Changer",
-      "videoTimesHint": "Laisse vide pour garder l'extrait de la figure.",
       "videoUnavailable": "Cette vidéo n'est plus disponible",
-      "videoTimeInvalid": "Utilise le format MM:SS",
-      "videoEndBeforeStart": "La fin doit être après le début",
       "changeColor": "Changer couleur",
       "moreActions": "Plus d'actions",
       "addSeparator": "Ajouter un séparateur",
@@ -354,7 +351,22 @@
     "signInToSave": "Sauvegarde tes préférences et accède à tes données personnelles.",
     "signInToContinue": "Connecte-toi pour continuer"
   },
+  "videoTrimmer": {
+    "excerpt": "Extrait",
+    "start": "Début",
+    "end": "Fin",
+    "playClip": "Lire l'extrait",
+    "setStart": "Début ici",
+    "setEnd": "Fin ici",
+    "preview": "Aperçu",
+    "setPreview": "Ici",
+    "clearPreview": "Réinitialiser l'aperçu",
+    "needsVideo": "Ajoute d'abord une vidéo pour choisir l'extrait.",
+    "loadFailed": "Impossible de charger la vidéo."
+  },
   "common": {
+    "decreaseTime": "Retirer une seconde",
+    "increaseTime": "Ajouter une seconde",
     "error": "Une erreur s'est produite",
     "tryAgain": "Réessayer",
     "close": "Fermer",
@@ -392,9 +404,6 @@
     "descriptionPlaceholder": "Détails supplémentaires sur cette figure...",
     "videoAuthor": "Auteur de la vidéo (optionnel)",
     "videoAuthorPlaceholder": "Nom de la chaîne ou du créateur",
-    "startTime": "Temps de début (optionnel)",
-    "endTime": "Temps de fin (optionnel)",
-    "timePlaceholder": "MM:SS",
     "danceStyle": "Style de danse",
     "danceStylePlaceholder": "Sélectionner le style",
     "danceSubStyle": "Sous-style de danse (optionnel)",
@@ -457,7 +466,6 @@
     "moreOptionsHint": "Description, niveau, minutage, langue — tout est facultatif",
     "videoLanguagePlaceholder": "Choisir une langue",
     "privacyExplainer": "Votre figure reste privée : vous seul pouvez la voir. Vous pourrez la proposer au catalogue public plus tard, depuis votre profil.",
-    "previewStartTime": "Début de l'aperçu",
     "previewStartTimeHint": "Où démarre l'aperçu au survol. Par défaut, l'image que vous avez choisie."
   },
   "pwa": {

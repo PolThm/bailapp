@@ -7,6 +7,7 @@ import { FigureMetadataFields } from '@/components/FigureMetadataFields';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { EMPTY_FIGURE_METADATA, type FigureMetadataValues } from '@/lib/figureMetadata';
+import { getFigureEmbeddedSource, getFigureVideoFormat } from '@/utils/figureVideo';
 
 interface EditFigureModalProps {
   open: boolean;
@@ -58,6 +59,7 @@ export function EditFigureModal({ open, figure, onClose, onSubmit }: EditFigureM
 
   const update = (patch: Partial<FigureMetadataValues>) =>
     setForm((current) => ({ ...current, ...patch }));
+  const trimmerSource = getFigureEmbeddedSource(figure);
 
   const handleClose = () => {
     if (isSubmitting) return;
@@ -117,7 +119,16 @@ export function EditFigureModal({ open, figure, onClose, onSubmit }: EditFigureM
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <FigureMetadataFields values={form} onChange={update} errors={errors} />
+          <FigureMetadataFields
+            values={form}
+            onChange={update}
+            errors={errors}
+            video={
+              trimmerSource
+                ? { source: trimmerSource, format: getFigureVideoFormat(figure) }
+                : undefined
+            }
+          />
 
           {submitError && <p className="text-sm text-destructive">{submitError}</p>}
 

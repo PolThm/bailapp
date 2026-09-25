@@ -34,3 +34,13 @@ export function formatSecondsToTime(seconds: number): string {
 
   return `${minutes}:${secs.toString().padStart(2, '0')}`;
 }
+
+/**
+ * Format seconds as zero-padded MM:SS, minutes growing past 59 instead of adding hours
+ */
+export function formatClockTime(seconds: number): string {
+  const whole = Math.max(0, Math.round(seconds));
+  const minutes = Math.floor(whole / 60);
+  const secs = whole % 60;
+  return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}

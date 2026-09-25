@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import type { EmbeddedVideoSource } from '@/hooks/useEmbeddedPlayer';
 import type {
   Complexity,
   DanceStyle,
@@ -238,6 +239,14 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
   const isLocked = isSubmitting || isVideoProcessing;
 
   const format = effectiveFormat();
+  const trimmerSource: EmbeddedVideoSource | null =
+    source === 'youtube'
+      ? videoId
+        ? { kind: 'youtube', videoId }
+        : null
+      : uploadedVideo
+        ? { kind: 'file', url: uploadedVideo.localPreviewUrl }
+        : null;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -323,6 +332,7 @@ export function NewFigureModal({ open, onClose, onSubmit }: NewFigureModalProps)
             onTitleChange={() => {
               titleTouchedRef.current = true;
             }}
+            video={trimmerSource ? { source: trimmerSource, format } : undefined}
           />
 
           <p className="text-xs text-muted-foreground">{t('newFigure.privacyExplainer')}</p>

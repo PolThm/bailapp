@@ -1,3 +1,4 @@
+import type { EmbeddedVideoSource } from '@/hooks/useEmbeddedPlayer';
 import type { Figure, VideoFormat } from '@/types';
 import { parseTimeToSeconds } from '@/utils/timeParser';
 import {
@@ -228,4 +229,13 @@ export function getFigureClipTarget(
   }
 
   return { kind: 'iframe', url: getYouTubeClipEmbedUrl(videoId, clipStart, clipEnd), videoId };
+}
+
+/** What an interactive player (e.g. the trimmer) should load for a figure. */
+export function getFigureEmbeddedSource(figure: Figure): EmbeddedVideoSource | null {
+  if (isUploadedFigure(figure)) {
+    return figure.videoUrl ? { kind: 'file', url: figure.videoUrl } : null;
+  }
+  const videoId = figure.youtubeUrl ? getYouTubeVideoId(figure.youtubeUrl) : null;
+  return videoId ? { kind: 'youtube', videoId } : null;
 }

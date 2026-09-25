@@ -4,11 +4,14 @@ import { Link } from 'react-router-dom';
 import type { Figure, MovementVideo } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { VideoTrimmer } from '@/components/VideoTrimmer';
 import { useFigures } from '@/hooks/useFigures';
-import { getFigureClipTarget, getFigureVideoFormat } from '@/utils/figureVideo';
-import { parseTimeToSeconds } from '@/utils/timeParser';
+import {
+  getFigureClipTarget,
+  getFigureEmbeddedSource,
+  getFigureVideoFormat,
+} from '@/utils/figureVideo';
 
 interface MovementVideoModalProps {
   open: boolean;
@@ -74,40 +77,15 @@ function MovementVideoForm({
   const keepsTimes = video?.figureId === figureId;
   const [startTime, setStartTime] = useState(keepsTimes ? (video?.startTime ?? '') : '');
   const [endTime, setEndTime] = useState(keepsTimes ? (video?.endTime ?? '') : '');
-  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const source = figure ? getFigureEmbeddedSource(figure) : null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmedStart = startTime.trim();
-    const trimmedEnd = endTime.trim();
-
-    const nextErrors: Record<string, string> = {};
-    if (trimmedStart && parseTimeToSeconds(trimmedStart) === null) {
-      nextErrors.startTime = t('choreographies.movements.videoTimeInvalid');
-    }
-    if (trimmedEnd && parseTimeToSeconds(trimmedEnd) === null) {
-      nextErrors.endTime = t('choreographies.movements.videoTimeInvalid');
-    }
-    if (Object.keys(nextErrors).length === 0) {
-      // Compare the bounds actually played, which fall back to the figure's own
-      const effectiveStart = trimmedStart || figure?.startTime;
-      const effectiveEnd = trimmedEnd || figure?.endTime;
-      const startSeconds = effectiveStart ? parseTimeToSeconds(effectiveStart) : null;
-      const endSeconds = effectiveEnd ? parseTimeToSeconds(effectiveEnd) : null;
-      if (startSeconds !== null && endSeconds !== null && endSeconds <= startSeconds) {
-        nextErrors.endTime = t('choreographies.movements.videoEndBeforeStart');
-      }
-    }
-
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      return;
-    }
-
     onSave({
       figureId,
-      ...(trimmedStart ? { startTime: trimmedStart } : {}),
-      ...(trimmedEnd ? { endTime: trimmedEnd } : {}),
+      ...(startTime ? { startTime } : {}),
+      ...(endTime ? { endTime } : {}),
     });
   };
 
@@ -129,35 +107,20 @@ function MovementVideoForm({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="movementVideoStart">{t('newFigure.startTime')}</Label>
-            <Input
-              id="movementVideoStart"
-              placeholder={figure?.startTime || t('newFigure.timePlaceholder')}
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              className={errors.startTime ? 'border-destructive' : ''}
-            />
-            {errors.startTime && <p className="text-sm text-destructive">{errors.startTime}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="movementVideoEnd">{t('newFigure.endTime')}</Label>
-            <Input
-              id="movementVideoEnd"
-              placeholder={figure?.endTime || t('newFigure.timePlaceholder')}
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              className={errors.endTime ? 'border-destructive' : ''}
-            />
-            {errors.endTime && <p className="text-sm text-destructive">{errors.endTime}</p>}
-          </div>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {t('choreographies.movements.videoTimesHint')}
-        </p>
-      </div>
+      {figure && source && (
+        <VideoTrimmer
+          source={source}
+          format={getFigureVideoFormat(figure)}
+          start={startTime}
+          end={endTime}
+          onChange={(range) => {
+            setStartTime(range.start);
+            setEndTime(range.end);
+          }}
+          defaultStart={figure.startTime}
+          defaultEnd={figure.endTime}
+        />
+      )}
 
       {video && (
         <button

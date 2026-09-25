@@ -197,10 +197,7 @@
       "removeVideo": "Quitar vídeo",
       "video": "Vídeo",
       "changeVideo": "Cambiar",
-      "videoTimesHint": "Déjalo vacío para mantener el fragmento de la figura.",
       "videoUnavailable": "Este vídeo ya no está disponible",
-      "videoTimeInvalid": "Usa el formato MM:SS",
-      "videoEndBeforeStart": "El final debe ser posterior al inicio",
       "changeColor": "Cambiar color",
       "moreActions": "Más acciones",
       "addSeparator": "Añadir un separador",
@@ -354,7 +351,22 @@
     "signInToSave": "Guarda tus preferencias y accede a tus datos personales.",
     "signInToContinue": "Inicia sesión para continuar"
   },
+  "videoTrimmer": {
+    "excerpt": "Fragmento",
+    "start": "Inicio",
+    "end": "Fin",
+    "playClip": "Reproducir fragmento",
+    "setStart": "Inicio aquí",
+    "setEnd": "Fin aquí",
+    "preview": "Vista previa",
+    "setPreview": "Aquí",
+    "clearPreview": "Restablecer vista previa",
+    "needsVideo": "Añade primero un vídeo para elegir el fragmento.",
+    "loadFailed": "No se pudo cargar el vídeo."
+  },
   "common": {
+    "decreaseTime": "Quitar un segundo",
+    "increaseTime": "Añadir un segundo",
     "error": "Ocurrió un error",
     "tryAgain": "Intentar de nuevo",
     "close": "Cerrar",
@@ -392,9 +404,6 @@
     "descriptionPlaceholder": "Detalles adicionales sobre esta figura...",
     "videoAuthor": "Autor del video (opcional)",
     "videoAuthorPlaceholder": "Nombre del canal o creador",
-    "startTime": "Tiempo de inicio (opcional)",
-    "endTime": "Tiempo de fin (opcional)",
-    "timePlaceholder": "MM:SS",
     "danceStyle": "Estilo de baile",
     "danceStylePlaceholder": "Seleccionar estilo",
     "danceSubStyle": "Subestilo de baile (opcional)",
@@ -457,7 +466,6 @@
     "moreOptionsHint": "Descripción, nivel, tiempos, idioma — todo opcional",
     "videoLanguagePlaceholder": "Elegir un idioma",
     "privacyExplainer": "Tu figura sigue siendo privada: solo tú puedes verla. Podrás proponerla al catálogo público más adelante, desde tu perfil.",
-    "previewStartTime": "Inicio de la vista previa",
     "previewStartTimeHint": "Dónde empieza la vista previa al pasar el cursor. Por defecto, el fotograma elegido."
   },
   "pwa": {

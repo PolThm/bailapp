@@ -199,10 +199,7 @@
       "removeVideo": "Rimuovi video",
       "video": "Video",
       "changeVideo": "Cambia",
-      "videoTimesHint": "Lascia vuoto per mantenere l'estratto della figura.",
       "videoUnavailable": "Questo video non è più disponibile",
-      "videoTimeInvalid": "Usa il formato MM:SS",
-      "videoEndBeforeStart": "La fine deve essere dopo l'inizio",
       "changeColor": "Cambia colore",
       "moreActions": "Altre azioni",
       "addSeparator": "Aggiungi un separatore",
@@ -354,7 +351,22 @@
     "signInToSave": "Salva le tue preferenze e accedi ai tuoi dati personali.",
     "signInToContinue": "Accedi per continuare"
   },
+  "videoTrimmer": {
+    "excerpt": "Estratto",
+    "start": "Inizio",
+    "end": "Fine",
+    "playClip": "Riproduci estratto",
+    "setStart": "Inizio qui",
+    "setEnd": "Fine qui",
+    "preview": "Anteprima",
+    "setPreview": "Qui",
+    "clearPreview": "Reimposta anteprima",
+    "needsVideo": "Aggiungi prima un video per scegliere l'estratto.",
+    "loadFailed": "Impossibile caricare il video."
+  },
   "common": {
+    "decreaseTime": "Togli un secondo",
+    "increaseTime": "Aggiungi un secondo",
     "error": "Si è verificato un errore",
     "tryAgain": "Riprova",
     "close": "Chiudi",
@@ -392,9 +404,6 @@
     "descriptionPlaceholder": "Dettagli aggiuntivi su questa figura...",
     "videoAuthor": "Autore Video (opzionale)",
     "videoAuthorPlaceholder": "Nome del canale o creatore",
-    "startTime": "Tempo Inizio (opzionale)",
-    "endTime": "Tempo Fine (opzionale)",
-    "timePlaceholder": "MM:SS",
     "danceStyle": "Stile di Danza",
     "danceStylePlaceholder": "Seleziona stile di danza",
     "danceSubStyle": "Sotto-Stile di Danza (opzionale)",
@@ -457,7 +466,6 @@
     "moreOptionsHint": "Descrizione, livello, tempi, lingua — tutto facoltativo",
     "videoLanguagePlaceholder": "Scegli una lingua",
     "privacyExplainer": "La tua figura resta privata: solo tu puoi vederla. Potrai proporla al catalogo pubblico più avanti, dal tuo profilo.",
-    "previewStartTime": "Inizio dell'anteprima",
     "previewStartTimeHint": "Dove inizia l'anteprima al passaggio del mouse. Per impostazione predefinita, il fotogramma scelto."
   },
   "pwa": {

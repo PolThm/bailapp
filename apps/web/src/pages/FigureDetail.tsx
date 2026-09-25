@@ -27,44 +27,11 @@ import { useOrientation } from '@/hooks/useOrientation';
 import { useToast } from '@/hooks/useToast';
 import { getFigureFromFirestore, updateFigureInFirestore } from '@/lib/services/figureService';
 import { getStorageKey, StorageKey } from '@/lib/storageKeys';
+import { loadYouTubeIframeApi, type YTPlayer, type YTPlayerEvent } from '@/lib/youtubeIframeApi';
 import { getFigurePlayerTarget, isUnlistedFigure } from '@/utils/figureVideo';
 import { parseTimeToSeconds } from '@/utils/timeParser';
 
-// YouTube IFrame Player API types
-interface YTPlayer {
-  getCurrentTime(): number;
-  pauseVideo(): void;
-  destroy(): void;
-}
-
-interface YTPlayerEvent {
-  data: number;
-}
-
-interface YTPlayerConstructor {
-  new (
-    element: HTMLIFrameElement,
-    config: {
-      events: {
-        onReady?: () => void;
-        onStateChange?: (event: YTPlayerEvent) => void;
-      };
-    }
-  ): YTPlayer;
-}
-
-interface YTNamespace {
-  Player: YTPlayerConstructor;
-  PlayerState: {
-    PLAYING: number;
-  };
-}
-
 declare global {
-  interface Window {
-    YT?: YTNamespace;
-    onYouTubeIframeAPIReady?: () => void;
-  }
   interface Document {
     webkitFullscreenElement?: Element;
     mozFullScreenElement?: Element;
@@ -323,24 +290,13 @@ export function FigureDetail() {
       });
     };
 
-    // Check if API is already loaded
-    if (window.YT && window.YT.Player) {
-      onYouTubeIframeAPIReady();
-    } else {
-      // Load the API
-      if (!window.onYouTubeIframeAPIReady) {
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
-        window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
-      } else {
-        window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
-      }
-    }
+    let cancelled = false;
+    loadYouTubeIframeApi().then(() => {
+      if (!cancelled) onYouTubeIframeAPIReady();
+    });
 
     return () => {
+      cancelled = true;
       if (intervalId) {
         clearInterval(intervalId);
       }

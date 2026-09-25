@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { EmbeddedVideoSource } from '@/hooks/useEmbeddedPlayer';
 import type { FigureMetadataValues } from '@/lib/figureMetadata';
-import type { Complexity, DanceSubStyle, FigureType, VideoLanguage } from '@/types';
+import type { Complexity, DanceSubStyle, FigureType, VideoFormat, VideoLanguage } from '@/types';
 import { Collapsible } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { VideoTrimmer } from '@/components/VideoTrimmer';
 
 /**
  * The metadata half of a figure form: everything that is not the video itself.
@@ -29,6 +31,8 @@ interface FigureMetadataFieldsProps {
   titleAdornment?: ReactNode;
   /** Fires on the first title keystroke, so autofill can stop overwriting it. */
   onTitleChange?: () => void;
+  /** The figure's video, needed to pick the excerpt on it. */
+  video?: { source: EmbeddedVideoSource; format: VideoFormat };
 }
 
 export function FigureMetadataFields({
@@ -37,6 +41,7 @@ export function FigureMetadataFields({
   errors,
   titleAdornment,
   onTitleChange,
+  video,
 }: FigureMetadataFieldsProps) {
   const { t } = useTranslation();
 
@@ -180,36 +185,22 @@ export function FigureMetadataFields({
           </Select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="startTime">{t('newFigure.startTime')}</Label>
-            <Input
-              id="startTime"
-              placeholder={t('newFigure.timePlaceholder')}
-              value={form.startTime}
-              onChange={(e) => update({ startTime: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="endTime">{t('newFigure.endTime')}</Label>
-            <Input
-              id="endTime"
-              placeholder={t('newFigure.timePlaceholder')}
-              value={form.endTime}
-              onChange={(e) => update({ endTime: e.target.value })}
-            />
-          </div>
-        </div>
-
         <div className="space-y-2">
-          <Label htmlFor="previewStartTime">{t('newFigure.previewStartTime')}</Label>
-          <Input
-            id="previewStartTime"
-            placeholder={t('newFigure.timePlaceholder')}
-            value={form.previewStartTime}
-            onChange={(e) => update({ previewStartTime: e.target.value })}
-          />
-          <p className="text-xs text-muted-foreground">{t('newFigure.previewStartTimeHint')}</p>
+          <Label>{t('videoTrimmer.excerpt')}</Label>
+          {video ? (
+            <VideoTrimmer
+              key={video.source.kind === 'youtube' ? video.source.videoId : video.source.url}
+              source={video.source}
+              format={video.format}
+              start={form.startTime}
+              end={form.endTime}
+              onChange={(range) => update({ startTime: range.start, endTime: range.end })}
+              previewStart={form.previewStartTime}
+              onPreviewStartChange={(previewStartTime) => update({ previewStartTime })}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">{t('videoTrimmer.needsVideo')}</p>
+          )}
         </div>
 
         <div className="space-y-2">

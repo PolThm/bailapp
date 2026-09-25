@@ -199,10 +199,7 @@
       "removeVideo": "Remove video",
       "video": "Video",
       "changeVideo": "Change",
-      "videoTimesHint": "Leave empty to keep the figure's own excerpt.",
       "videoUnavailable": "This video is no longer available",
-      "videoTimeInvalid": "Use the MM:SS format",
-      "videoEndBeforeStart": "End must be after start",
       "changeColor": "Change color",
       "moreActions": "More actions",
       "addSeparator": "Add a separator",
@@ -354,7 +351,22 @@
     "signInToSave": "Save your preferences and access your personal data.",
     "signInToContinue": "Sign in to continue"
   },
+  "videoTrimmer": {
+    "excerpt": "Excerpt",
+    "start": "Start",
+    "end": "End",
+    "playClip": "Play excerpt",
+    "setStart": "Start here",
+    "setEnd": "End here",
+    "preview": "Preview",
+    "setPreview": "Here",
+    "clearPreview": "Reset preview",
+    "needsVideo": "Add a video first to pick the excerpt.",
+    "loadFailed": "Couldn't load the video."
+  },
   "common": {
+    "decreaseTime": "Remove one second",
+    "increaseTime": "Add one second",
     "error": "An error occurred",
     "tryAgain": "Try Again",
     "close": "Close",
@@ -392,9 +404,6 @@
     "descriptionPlaceholder": "Additional details about this figure...",
     "videoAuthor": "Video Author (optional)",
     "videoAuthorPlaceholder": "Channel or creator name",
-    "startTime": "Start Time (optional)",
-    "endTime": "End Time (optional)",
-    "timePlaceholder": "MM:SS",
     "danceStyle": "Dance Style",
     "danceStylePlaceholder": "Select dance style",
     "danceSubStyle": "Dance Sub-Style (optional)",
@@ -457,7 +466,6 @@
     "moreOptionsHint": "Description, level, timing, language — all optional",
     "videoLanguagePlaceholder": "Select a language",
     "privacyExplainer": "Your figure stays private: only you can see it. You can submit it to the public catalogue later, from your profile.",
-    "previewStartTime": "Preview start",
     "previewStartTimeHint": "Where the hover preview begins. Defaults to the frame you picked."
   },
   "pwa": {
