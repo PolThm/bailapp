@@ -68,6 +68,14 @@
     overflow: hidden;
   }
 
+  @media all and (display-mode: standalone) {
+    /* 100vh includes the opaque status bar (WebKit #316008); older black-translucent installs
+       launch with dvh one top inset short (WebKit #313800), which the min() term covers. */
+    body {
+      min-height: calc(100dvh + min(env(safe-area-inset-top), 100vh - 100dvh));
+    }
+  }
+
   #root {
     min-height: 100%;
   }
@@ -126,5 +134,28 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+}
+
+.status-bar-fill {
+  display: none;
+}
+
+/* iOS 26+ blurs the top of Home Screen apps unless an opaque, fixed, full-width box over 10px tall
+   sits at the top edge; WebKit then paints the status bar in its colour instead. */
+@supports (-webkit-touch-callout: none) {
+  @media all and (display-mode: standalone) and (orientation: portrait) {
+    .status-bar-fill {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 12px;
+      background-color: hsl(var(--background));
+      pointer-events: none;
+      /* Below the splash screen and modals, which then colour the bar themselves. */
+      z-index: 40;
+    }
   }
 }

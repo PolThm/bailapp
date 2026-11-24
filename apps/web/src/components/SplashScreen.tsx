@@ -31,9 +31,8 @@ export function SplashScreen({ onFinish, shouldHide = false }: SplashScreenProps
   }, [shouldHide, isVisible, onFinish]);
 
   return (
-    // Starts below the status bar: iOS 26.1+ draws a gradient over that zone, which reads badly on red.
     <div
-      className={`fixed inset-x-0 bottom-0 top-[env(safe-area-inset-top)] z-[9999] flex flex-col items-center justify-center bg-primary pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] transition-opacity duration-300 ${
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-primary pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] transition-opacity duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >

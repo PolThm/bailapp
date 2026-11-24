@@ -26,7 +26,8 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- iOS 26.1+ draws a gradient over 'black-translucent'; the opaque bar takes its colour from .status-bar-fill. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Bailapp" />
     
     <!-- iOS Splash Screens -->
@@ -53,6 +54,7 @@
     <title>Bailapp</title>
   </head>
   <body>
+    <div class="status-bar-fill" aria-hidden="true"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
