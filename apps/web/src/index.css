@@ -152,7 +152,7 @@
       left: 0;
       right: 0;
       height: 12px;
-      background-color: hsl(var(--background));
+      background-color: hsl(var(--primary));
       pointer-events: none;
       /* Below the splash screen and modals, which then colour the bar themselves. */
       z-index: 40;
